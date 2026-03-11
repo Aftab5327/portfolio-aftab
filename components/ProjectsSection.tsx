@@ -92,6 +92,7 @@ export default function ProjectsSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
+        className="reveal-up"
       >
         <p className="text-xs uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">Projects</p>
         <h1 className="fluid-subhead mt-3 font-semibold text-slate-900 dark:text-white">Things I Have Built</h1>
@@ -105,7 +106,7 @@ export default function ProjectsSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
-            className="group relative flex min-h-[360px] flex-col overflow-hidden rounded-2xl border border-white/10 border-t-2 border-t-transparent bg-[#131313] p-5 shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all duration-200 hover:-translate-y-1 hover:border-t-emerald-400"
+            className="reveal-up group relative flex min-h-[360px] flex-col overflow-hidden rounded-2xl border border-white/10 border-t-2 border-t-transparent bg-[#131313] p-5 shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all duration-200 hover:-translate-y-1 hover:border-t-emerald-400"
           >
             <span className="absolute right-4 top-4 text-xs font-medium tracking-[0.16em] text-slate-500/70">
               {(index + 1).toString().padStart(2, "0")}

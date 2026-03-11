@@ -75,7 +75,12 @@ export default function AboutSection() {
             B.E. + CDAC. I build full-stack systems that solve real-world problems with precision and purpose.
           </p>
 
-          <div className="mt-6 rounded-2xl border border-slate-300/70 bg-white/55 p-5 dark:border-white/20 dark:bg-white/5">
+          <div className="reveal-up mt-6 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-4 text-sm leading-relaxed text-slate-800 dark:text-slate-100">
+            <span className="font-semibold text-emerald-700 dark:text-emerald-300">🎯 For Recruiters:</span> Aftab
+            bridges hardware & software, web & IoT. B.E. + CDAC. Open to Full Stack, IoT & AI roles.
+          </div>
+
+          <div className="reveal-up mt-6 rounded-2xl border border-slate-300/70 bg-white/55 p-5 dark:border-white/20 dark:bg-white/5">
             <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-300">
               Activities I Love
             </h2>
@@ -91,7 +96,7 @@ export default function AboutSection() {
             </div>
           </div>
 
-          <blockquote className="fluid-body mt-6 border-l-2 border-emerald-400/70 pl-4 italic leading-relaxed text-slate-700 dark:text-slate-200">
+          <blockquote className="reveal-up fluid-body mt-6 border-l-2 border-emerald-400/70 pl-4 italic leading-relaxed text-slate-700 dark:text-slate-200">
             &quot;Most developers live in one world - web or hardware. I chose to master both.&quot;
           </blockquote>
           <p className="fluid-body mt-2 font-medium text-slate-800 dark:text-slate-200">- Aftab Dhalait</p>
@@ -104,7 +109,7 @@ export default function AboutSection() {
           transition={{ duration: 0.55, delay: 0.12 }}
           className="space-y-6"
         >
-          <div className="rounded-2xl border border-slate-300/70 bg-white/55 p-5 dark:border-white/20 dark:bg-white/5">
+          <div className="reveal-up rounded-2xl border border-slate-300/70 bg-white/55 p-5 dark:border-white/20 dark:bg-white/5">
             <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-300">
               Education Timeline
             </h2>
@@ -123,7 +128,7 @@ export default function AboutSection() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-300/70 bg-white/55 p-5 dark:border-white/20 dark:bg-white/5">
+          <div className="reveal-up rounded-2xl border border-slate-300/70 bg-white/55 p-5 dark:border-white/20 dark:bg-white/5">
             <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-300">
               Quick Stats
             </h2>
@@ -139,7 +144,7 @@ export default function AboutSection() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="reveal-up flex flex-wrap gap-3">
             <button
               type="button"
               onClick={() => scrollToSection("contact")}

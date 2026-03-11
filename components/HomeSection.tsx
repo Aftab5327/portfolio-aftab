@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 
 const ROLES = [
   "Full Stack Developer",
-  "IoT Specialist & Embedded Engineer",
-  "React & Backend Specialist"
+  "IoT Engineer",
+  "AI Builder",
+  "MERN Stack Developer"
 ];
 
 const TYPE_SPEED = 70;
@@ -17,7 +18,6 @@ export default function HomeSection() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showQuote, setShowQuote] = useState(false);
 
   const currentRole = useMemo(() => ROLES[roleIndex], [roleIndex]);
 
@@ -42,9 +42,6 @@ export default function HomeSection() {
     }
 
     if (!isDeleting && typedText === currentRole) {
-      if (roleIndex === 0 && !showQuote) {
-        setShowQuote(true);
-      }
       timer = setTimeout(() => {
         setIsDeleting(true);
       }, WORD_PAUSE);
@@ -64,7 +61,7 @@ export default function HomeSection() {
     }, NEXT_WORD_DELAY);
 
     return () => clearTimeout(timer);
-  }, [currentRole, isDeleting, roleIndex, showQuote, typedText]);
+  }, [currentRole, isDeleting, roleIndex, typedText]);
 
   return (
     <section className="relative overflow-hidden rounded-3xl glass px-6 py-[60px] sm:px-8 sm:py-[60px] lg:px-16 lg:py-20">
@@ -82,11 +79,14 @@ export default function HomeSection() {
           Aftab Dhalait
         </h1>
 
-        <blockquote
-          className={`fluid-body mt-7 max-w-3xl border-l-2 border-slate-300/80 pl-4 leading-relaxed text-slate-700 transition-opacity duration-700 dark:border-white/30 dark:text-slate-200 ${
-            showQuote ? "opacity-100" : "opacity-0"
-          }`}
-        >
+        <p className="fluid-body mt-4 min-h-[1.75rem] text-slate-700 dark:text-slate-200">
+          <span className="inline-flex items-center font-semibold text-accent">
+            {typedText}
+            <span className="ml-1 h-5 w-[2px] animate-pulse bg-accent" />
+          </span>
+        </p>
+
+        <blockquote className="mt-4 mb-4 max-w-[600px] border-l-2 border-slate-300/80 pl-4 text-[1rem] leading-[1.7] text-slate-600 dark:border-white/30 dark:text-slate-300 md:text-[1.1rem]">
           From crafting pixel-perfect interfaces to engineering embedded systems &mdash; I build software that lives
           in browsers, servers, and the real world. Whether it&apos;s a React frontend, a scalable backend API, or an
           IoT device talking to the cloud, I connect every layer of the stack with precision and purpose.
@@ -97,14 +97,11 @@ export default function HomeSection() {
         </div>
 
         <p className="fluid-body mt-8 leading-relaxed text-slate-700 dark:text-slate-200">
-          I am looking for a <span className="font-semibold text-slate-900 dark:text-white">&rarr; </span>
-          <span className="inline-flex min-h-[1.5em] items-center font-semibold text-accent">
-            {typedText}
-            <span className="ml-1 h-5 w-[2px] animate-pulse bg-accent" />
-          </span>
+          I build across full-stack applications, AI systems, and connected IoT products with a focus on practical
+          outcomes.
         </p>
 
-        <div className="mt-10 flex">
+        <div className="reveal-up mt-10 flex">
           <button
             type="button"
             onClick={() => scrollToSection("projects")}

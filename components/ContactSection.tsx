@@ -86,14 +86,14 @@ export default function ContactSection() {
       transition={{ duration: 0.65, ease: "easeOut" }}
       className="rounded-3xl glass px-6 py-[60px] sm:px-8 sm:py-[60px] lg:px-16 lg:py-20"
     >
-      <p className="text-xs uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">Contact Me</p>
-      <h1 className="fluid-subhead mt-3 font-semibold text-slate-900 dark:text-white">
+      <p className="reveal-up text-xs uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">Contact Me</p>
+      <h1 className="reveal-up fluid-subhead mt-3 font-semibold text-slate-900 dark:text-white">
         Let&apos;s Start a Conversation
       </h1>
-      <p className="fluid-body mt-3 text-slate-700 dark:text-slate-200">Bring your ideas to life</p>
+      <p className="reveal-up fluid-body mt-3 text-slate-700 dark:text-slate-200">Bring your ideas to life</p>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-white/10 bg-[#131313] p-5 sm:p-6">
+        <div className="reveal-up rounded-2xl border border-white/10 bg-[#131313] p-5 sm:p-6">
           {/* EmailJS Setup:
               1. Go to https://emailjs.com and create free account
               2. Add Email Service and connect Gmail
@@ -175,7 +175,7 @@ export default function ContactSection() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-[#131313] p-5 sm:p-6">
+          <div className="reveal-up rounded-2xl border border-white/10 bg-[#131313] p-5 sm:p-6">
             <h2 className="fluid-subhead font-semibold text-white">Ready to collaborate?</h2>
             <p className="fluid-body mt-2 text-slate-300">Here&apos;s how you can reach me</p>
           </div>
@@ -184,7 +184,7 @@ export default function ContactSection() {
           <ContactCard icon={<FiPhone className="text-[#4ade80]" />} label="Mobile" value="+91 9370312566" />
           <ContactCard icon={<FiMapPin className="text-[#4ade80]" />} label="Location" value="Pune, India" />
 
-          <div className="rounded-2xl border border-white/10 border-l-4 border-l-[#4ade80] bg-[#131313] p-5 sm:p-6">
+          <div className="reveal-up rounded-2xl border border-white/10 border-l-4 border-l-[#4ade80] bg-[#131313] p-5 sm:p-6">
             <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Connect</p>
             <div className="mt-3 flex items-center gap-2">
               <SocialIcon href="https://github.com/Aftab5327" ariaLabel="GitHub" icon={<FaGithub />} />
@@ -241,7 +241,7 @@ type ContactCardProps = {
 
 function ContactCard({ icon, label, value }: ContactCardProps) {
   return (
-    <div className="rounded-2xl border border-white/10 border-l-4 border-l-[#4ade80] bg-[#131313] p-5 sm:p-6">
+    <div className="reveal-up rounded-2xl border border-white/10 border-l-4 border-l-[#4ade80] bg-[#131313] p-5 sm:p-6">
       <div className="flex items-start gap-3">
         <div className="mt-0.5">{icon}</div>
         <div>
