@@ -2,8 +2,6 @@
 
 import { FormEvent, useMemo, useState } from "react";
 
-const GEMINI_API_KEY = "AIzaSyC1D6CC-blnreIqoDxUGrp_kGI8ENQDFQ8";
-
 const QUICK_PROMPTS = ["Top Skills", "IoT Projects", "Availability", "Why Hire?"];
 
 const SYSTEM_CONTEXT = `You are Aftab Dhalait's portfolio AI assistant.
@@ -76,28 +74,29 @@ export default function AIChatSection() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  {
-                    text: `${SYSTEM_CONTEXT}
+      const fullPromptString = `${SYSTEM_CONTEXT}
 
-Recruiter question: ${trimmedMessage}`
-                  }
-                ]
-              }
-            ]
-          })
-        }
-      );
+Recruiter question: ${trimmedMessage}`;
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userMessage: trimmedMessage,
+          fullPromptString
+        })
+      });
 
       const data = await response.json();
+      console.log("AI chat API response", {
+        ok: response.ok,
+        status: response.status,
+        data
+      });
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Gemini request failed.");
+      }
+
       const reply =
         data?.candidates?.[0]?.content?.parts?.[0]?.text ??
         "I couldn't generate a reply right now. Please try again in a moment.";
@@ -110,7 +109,8 @@ Recruiter question: ${trimmedMessage}`
           text: reply
         }
       ]);
-    } catch {
+    } catch (caughtError) {
+      console.log("AI chat request failed", caughtError);
       setError("Unable to reach the AI assistant right now. Please try again.");
     } finally {
       setIsLoading(false);
