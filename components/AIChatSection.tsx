@@ -74,16 +74,10 @@ export default function AIChatSection() {
     setIsLoading(true);
 
     try {
-      const fullPromptString = `${SYSTEM_CONTEXT}
-
-Recruiter question: ${trimmedMessage}`;
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userMessage: trimmedMessage,
-          fullPromptString
-        })
+        body: JSON.stringify({ message: trimmedMessage })
       });
 
       const data = await response.json();
@@ -97,9 +91,7 @@ Recruiter question: ${trimmedMessage}`;
         throw new Error(data?.error || "Gemini request failed.");
       }
 
-      const reply =
-        data?.candidates?.[0]?.content?.parts?.[0]?.text ??
-        "I couldn't generate a reply right now. Please try again in a moment.";
+      const reply = data?.reply ?? "I couldn't generate a reply right now. Please try again in a moment.";
 
       setMessages((prev) => [
         ...prev,
