@@ -1,12 +1,28 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Bricolage_Grotesque, JetBrains_Mono, Sora } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Providers from "@/app/providers";
 
-const jakarta = Plus_Jakarta_Sans({
+const display = Bricolage_Grotesque({
   subsets: ["latin"],
+  weight: ["700", "800"],
+  variable: "--font-display",
+  display: "swap"
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-mono",
+  display: "swap"
+});
+
+const body = Sora({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-body",
   display: "swap"
 });
 
@@ -45,18 +61,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`dark ${display.variable} ${mono.variable} ${body.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var key='aftab-portfolio-theme';var saved=localStorage.getItem(key);var theme=saved==='light'?'light':'dark';var root=document.documentElement;if(theme==='dark'){root.classList.add('dark');root.style.colorScheme='dark';}else{root.classList.remove('dark');root.style.colorScheme='light';}}catch(e){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}})();`
+            __html: `(function(){try{var key='aftab-portfolio-theme';var saved=localStorage.getItem(key);var theme=saved==='light'?'light':'dark';var root=document.documentElement;if(theme==='dark'){root.classList.add('dark');root.classList.remove('light');root.style.colorScheme='dark';}else{root.classList.add('light');root.classList.remove('dark');root.style.colorScheme='light';}}catch(e){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}})();`
           }}
         />
       </head>
-      <body className={jakarta.className}>
+      <body className="font-sans antialiased">
         <Providers>
           <Navbar />
-          <main className="mx-auto w-[min(1100px,94%)] pb-12 pt-10 md:pt-14">{children}</main>
+          <main className="mx-auto w-[min(1180px,92%)] pb-16 pt-6 md:pt-8">{children}</main>
           <Footer />
         </Providers>
       </body>

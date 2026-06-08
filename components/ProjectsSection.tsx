@@ -1,13 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sora } from "next/font/google";
-
-const sora = Sora({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap"
-});
+import { FiArrowUpRight } from "react-icons/fi";
 
 type Project = {
   title: string;
@@ -86,59 +80,65 @@ const projects: Project[] = [
 
 export default function ProjectsSection() {
   return (
-    <section className="rounded-3xl glass px-6 py-[60px] sm:px-8 sm:py-[60px] lg:px-16 lg:py-20">
+    <section className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="reveal-up"
       >
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">Projects</p>
-        <h1 className="fluid-subhead mt-3 font-semibold text-slate-900 dark:text-white">Things I Have Built</h1>
+        <p className="font-mono text-sm text-teal">// projects</p>
+        <h2 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">Things I Have Built</h2>
       </motion.div>
 
-      <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project, index) => (
           <motion.article
             key={project.title}
             initial={{ opacity: 0, y: 22 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
-            className="reveal-up group relative flex min-h-[360px] flex-col overflow-hidden rounded-2xl border border-white/10 border-t-2 border-t-transparent bg-[#131313] p-5 shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all duration-200 hover:-translate-y-1 hover:border-t-emerald-400"
+            transition={{ duration: 0.45, delay: index * 0.06, ease: "easeOut" }}
+            className="group flex min-h-[360px] flex-col overflow-hidden rounded-xl border border-line bg-panel2 transition-all duration-200 hover:-translate-y-1.5 hover:border-teal/60 hover:shadow-glow"
           >
-            <span className="absolute right-4 top-4 text-xs font-medium tracking-[0.16em] text-slate-500/70">
-              {(index + 1).toString().padStart(2, "0")}
-            </span>
-
-            <span className="inline-flex w-fit rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-300">
-              {project.category}
-            </span>
-
-            <h2 className={`${sora.className} mt-4 pr-10 text-xl font-bold leading-snug text-white`}>{project.title}</h2>
-
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">{project.description}</p>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {project.techTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-emerald-400/35 bg-emerald-500/5 px-2.5 py-1 text-[11px] font-medium text-emerald-300"
-                >
-                  {tag}
-                </span>
-              ))}
+            {/* IDE window top bar */}
+            <div className="flex items-center justify-between border-b border-line bg-panel px-4 py-2.5">
+              <div className="flex items-center gap-1.5" aria-hidden>
+                <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+              </div>
+              <span className="font-mono text-xs text-txtfaint">{(index + 1).toString().padStart(2, "0")}</span>
             </div>
 
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-auto inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-emerald-400/50 px-4 py-2 text-sm font-medium text-emerald-300 transition-colors duration-200 hover:bg-emerald-500/10 sm:w-fit"
-            >
-              GitHub
-            </a>
+            <div className="flex flex-1 flex-col p-5">
+              <span className="font-mono text-[11px] text-teal">{project.category}</span>
+
+              <h3 className="mt-3 font-display text-xl font-bold leading-snug text-txt">{project.title}</h3>
+
+              <p className="mt-3 text-sm leading-relaxed text-txtdim">{project.description}</p>
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                {project.techTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-md border border-line bg-panel px-2.5 py-1 font-mono text-[11px] text-txtdim"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-auto inline-flex w-fit items-center gap-1.5 pt-6 font-mono text-sm text-teal transition-colors hover:text-txt"
+              >
+                View on GitHub
+                <FiArrowUpRight className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </div>
           </motion.article>
         ))}
       </div>

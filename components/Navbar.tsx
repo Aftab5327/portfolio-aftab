@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiX, FiMail } from "react-icons/fi";
+import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const links = [
@@ -17,6 +18,14 @@ const links = [
 export default function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const sectionIds = links.map((link) => link.id);
@@ -48,84 +57,132 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  const handleNavClick = () => {
-    setMenuOpen(false);
-  };
+  const handleNavClick = () => setMenuOpen(false);
 
   return (
     <motion.header
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: "easeOut" }}
-      className="sticky top-4 z-40 mx-auto w-[min(1100px,94%)] rounded-2xl glass"
+      className={`sticky top-0 z-40 w-full transition-colors duration-300 ${
+        scrolled
+          ? "border-b border-line bg-bg/80 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
+      }`}
     >
-      <nav className="flex items-center justify-between px-4 py-4 md:px-8">
+      <nav className="mx-auto flex w-[min(1180px,92%)] items-center justify-between py-4">
         <a
           href="#home"
           onClick={handleNavClick}
-          className="inline-flex min-h-11 items-center text-sm font-semibold tracking-[0.2em] text-slate-900 transition-colors dark:text-white"
+          className="logo font-mono text-sm font-semibold tracking-tight text-txt transition-colors"
         >
-          AD
+          {"<A/>"} Aftab <span className="text-teal">Dhalait</span>
         </a>
 
-        <div className="flex items-center gap-3 md:gap-6">
-          <ul className="hidden items-center gap-3 text-sm md:gap-6 sm:flex">
-            {links.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={handleNavClick}
-                  className={`inline-flex min-h-11 items-center px-1 transition-colors duration-300 hover:text-[#4ade80] ${
-                    activeSection === link.id ? "font-semibold text-[#4ade80]" : "text-slate-700 dark:text-slate-200"
-                  }`}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+        <ul className="hidden items-center gap-7 md:flex">
+          {links.map((link) => (
+            <li key={link.href}>
+              <a
+                href={link.href}
+                onClick={handleNavClick}
+                className={`font-mono text-[13px] transition-colors duration-200 hover:text-teal ${
+                  activeSection === link.id ? "text-teal" : "text-txtdim"
+                }`}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex items-center gap-3">
+          <a
+            href="https://www.linkedin.com/in/aftab-dhalait-33821226a/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="LinkedIn"
+            className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal lg:inline"
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://github.com/Aftab5327"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub"
+            className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal lg:inline"
+          >
+            GitHub
+          </a>
+          <a
+            href="mailto:aftab.iot@gmail.com"
+            aria-label="Email Aftab"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-teal text-bg transition-transform duration-200 hover:-translate-y-0.5"
+          >
+            <FiMail className="h-4 w-4" />
+          </a>
+
+          <ThemeToggle />
 
           <button
             type="button"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300/70 bg-white/70 text-slate-800 transition-all duration-300 hover:scale-105 active:scale-95 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 sm:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-txt transition-colors hover:border-teal hover:text-teal md:hidden"
           >
             {menuOpen ? <FiX className="h-5 w-5" /> : <FiMenu className="h-5 w-5" />}
           </button>
-
-          <ThemeToggle />
         </div>
       </nav>
 
       {menuOpen ? (
-        <div className="fixed inset-0 z-50 flex min-h-screen flex-col bg-[#0d0d0d] px-6 py-10 sm:hidden">
+        <div className="fixed inset-0 z-50 flex min-h-screen flex-col bg-bg px-6 py-6 md:hidden">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold tracking-[0.2em] text-white">AD</span>
+            <span className="logo font-mono text-sm font-semibold text-txt">
+              {"<A/>"} Aftab <span className="text-teal">Dhalait</span>
+            </span>
             <button
               type="button"
               aria-label="Close menu"
               onClick={() => setMenuOpen(false)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line text-txt"
             >
               <FiX className="h-5 w-5" />
             </button>
           </div>
-          <ul className="mt-10 flex flex-1 flex-col justify-center gap-3">
+          <ul className="mt-8 flex flex-1 flex-col justify-center gap-2">
             {links.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
                   onClick={handleNavClick}
-                  className={`inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-white/10 px-4 py-3 text-lg transition-colors ${
-                    activeSection === link.id ? "font-semibold text-[#4ade80]" : "text-slate-200"
+                  className={`flex min-h-12 w-full items-center rounded-xl border border-line px-5 font-mono text-lg transition-colors ${
+                    activeSection === link.id ? "bg-panel text-teal" : "text-txtdim"
                   }`}
                 >
+                  <span className="mr-3 text-txtfaint">{`0${links.indexOf(link) + 1}`}</span>
                   {link.label}
                 </a>
               </li>
             ))}
           </ul>
+          <div className="flex items-center gap-4 font-mono text-[13px] text-txtdim">
+            <a href="https://github.com/Aftab5327" target="_blank" rel="noreferrer" className="hover:text-teal">
+              GitHub
+            </a>
+            <a
+              href="https://www.linkedin.com/in/aftab-dhalait-33821226a/"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-teal"
+            >
+              LinkedIn
+            </a>
+            <a href="mailto:aftab.iot@gmail.com" className="hover:text-teal">
+              Email
+            </a>
+          </div>
         </div>
       ) : null}
     </motion.header>

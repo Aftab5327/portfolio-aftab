@@ -115,74 +115,83 @@ export default function AIChatSection() {
   };
 
   return (
-    <section className="rounded-3xl glass px-6 py-[60px] sm:px-8 sm:py-[60px] lg:px-16 lg:py-20">
-      <div className="reveal-up">
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">AI Chat</p>
-        <h1 className="fluid-subhead mt-3 font-semibold text-slate-900 dark:text-white">Ask My AI Assistant</h1>
-        <p className="fluid-body mt-3 text-slate-700 dark:text-slate-200">
+    <section className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16">
+      <div>
+        <p className="font-mono text-sm text-teal">// ai-chat</p>
+        <h2 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">Ask My AI Assistant</h2>
+        <p className="mt-3 text-[15px] text-txtdim">
           A recruiter-friendly assistant trained on Aftab&apos;s web, IoT, and AI experience.
         </p>
       </div>
 
-      <div className="reveal-up mt-8 rounded-2xl border border-white/10 bg-[#131313] p-5 shadow-[0_10px_30px_rgba(0,0,0,0.3)] sm:p-6">
-        <div className="flex flex-wrap gap-2">
-          {QUICK_PROMPTS.map((prompt) => (
-            <button
-              key={prompt}
-              type="button"
-              onClick={() => sendMessage(prompt)}
-              className="rounded-full border border-emerald-400/35 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-500/15"
-            >
-              {prompt}
-            </button>
-          ))}
+      <div className="mt-10 overflow-hidden rounded-2xl border border-line bg-panel2">
+        <div className="flex items-center gap-2 border-b border-line bg-panel px-4 py-2.5" aria-hidden>
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+          <span className="ml-2 font-mono text-xs text-txtfaint">assistant.sh</span>
         </div>
 
-        <div className="mt-5 space-y-3 rounded-2xl border border-white/10 bg-[#0f0f0f] p-4">
-          {hasMessages ? (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className={`max-w-[92%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                  message.role === "user"
-                    ? "ml-auto bg-emerald-500/15 text-emerald-100"
-                    : "border border-white/10 bg-white/5 text-slate-200"
-                }`}
+        <div className="p-5 sm:p-6">
+          <div className="flex flex-wrap gap-2">
+            {QUICK_PROMPTS.map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                onClick={() => sendMessage(prompt)}
+                className="rounded-md border border-line bg-panel px-3 py-1.5 font-mono text-xs text-txtdim transition-colors hover:border-teal hover:text-teal"
               >
-                <p className="mb-1 text-[11px] uppercase tracking-[0.14em] text-slate-400">
-                  {message.role === "user" ? "You" : "AI Assistant"}
-                </p>
-                <p className="whitespace-pre-wrap">{message.text}</p>
-              </div>
-            ))
-          ) : null}
-
-          {isLoading ? (
-            <div className="max-w-[92%] rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
-              Thinking...
-            </div>
-          ) : null}
-        </div>
-
-        <form onSubmit={handleSubmit} className="mt-5">
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <input
-              type="text"
-              value={userMessage}
-              onChange={(event) => setUserMessage(event.target.value)}
-              placeholder="Ask about Aftab's skills, projects, or availability..."
-              className="min-h-11 flex-1 rounded-xl border border-[#222220] bg-[#131313] px-4 py-3 text-sm text-[#f0ede8] outline-none transition-colors placeholder:text-[#7a7870] focus:border-[#4ade80]"
-            />
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#4ade80] px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              Send
-            </button>
+                {prompt}
+              </button>
+            ))}
           </div>
-          {error ? <p className="mt-3 text-sm text-red-400">{error}</p> : null}
-        </form>
+
+          <div className="mt-5 space-y-3 rounded-xl border border-line bg-bg2 p-4">
+            {hasMessages
+              ? messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`max-w-[92%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
+                      message.role === "user"
+                        ? "ml-auto border border-teal/30 bg-teal/10 text-txt"
+                        : "border border-line bg-panel text-txtdim"
+                    }`}
+                  >
+                    <p className="mb-1 font-mono text-[11px] text-teal">
+                      {message.role === "user" ? "> you" : "$ assistant"}
+                    </p>
+                    <p className="whitespace-pre-wrap">{message.text}</p>
+                  </div>
+                ))
+              : null}
+
+            {isLoading ? (
+              <div className="max-w-[92%] rounded-xl border border-line bg-panel px-4 py-3 font-mono text-sm text-txtdim">
+                Thinking<span className="animate-blink">_</span>
+              </div>
+            ) : null}
+          </div>
+
+          <form onSubmit={handleSubmit} className="mt-5">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                type="text"
+                value={userMessage}
+                onChange={(event) => setUserMessage(event.target.value)}
+                placeholder="Ask about Aftab's skills, projects, or availability..."
+                className="min-h-12 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-txt outline-none transition-colors placeholder:text-txtfaint focus:border-teal focus:ring-2 focus:ring-teal/40"
+              />
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-teal px-6 text-sm font-semibold text-bg transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                Send
+              </button>
+            </div>
+            {error ? <p className="mt-3 text-sm text-red-400">{error}</p> : null}
+          </form>
+        </div>
       </div>
     </section>
   );

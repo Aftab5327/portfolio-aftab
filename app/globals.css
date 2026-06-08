@@ -2,22 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg: #f9f9f7;
-  --text: #111110;
-  --muted: #6b6b65;
-  --accent: #16a34a;
-  --border: #e2e2de;
-  color-scheme: light;
+/* ── Design tokens (dark "code-editor / IDE" theme is the canonical look) ── */
+:root,
+html.dark {
+  --bg: #0a0f0d;
+  --bg-2: #0e1512;
+  --panel: #111a16;
+  --panel-2: #0c1310;
+  --line: #1d2a24;
+  --teal: #2dd4bf;
+  --teal-dim: #1aa896;
+  --green: #4ade80;
+  --txt: #e6efe9;
+  --txt-dim: #8aa399;
+  --txt-faint: #42554d;
+  --code: #22332c;
+  color-scheme: dark;
 }
 
-html.dark {
-  --bg: #0d0d0d;
-  --text: #f0ede8;
-  --muted: #7a7870;
-  --accent: #4ade80;
-  --border: #222220;
-  color-scheme: dark;
+/* Light variant keeps the toggle meaningful without breaking the IDE feel */
+html.light {
+  --bg: #eef2f0;
+  --bg-2: #e6ebe8;
+  --panel: #ffffff;
+  --panel-2: #f4f7f5;
+  --line: #d4ddd8;
+  --teal: #0f9d8e;
+  --teal-dim: #0c8678;
+  --green: #16a34a;
+  --txt: #0e1512;
+  --txt-dim: #4a5a52;
+  --txt-faint: #9aa9a2;
+  --code: #c9d6cf;
+  color-scheme: light;
 }
 
 * {
@@ -31,54 +48,52 @@ html {
 body {
   margin: 0;
   overflow-x: hidden;
-  color: var(--text);
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(14, 165, 233, 0.16), transparent 50%),
-    radial-gradient(900px 500px at 90% -10%, rgba(99, 102, 241, 0.14), transparent 45%),
-    linear-gradient(135deg, var(--bg) 0%, #ecece8 45%, #f3f3ef 100%);
+  color: var(--txt);
+  font-family: var(--font-body), system-ui, sans-serif;
   min-height: 100vh;
+  /* ambient radial teal glows: top-right + mid-left on near-black */
+  background:
+    radial-gradient(60% 50% at 88% -5%, rgba(45, 212, 191, 0.14), transparent 60%),
+    radial-gradient(48% 52% at -8% 42%, rgba(45, 212, 191, 0.1), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
   transition: background 300ms ease, color 300ms ease;
 }
 
+/* ── Type scale helpers ── */
+.fluid-display {
+  font-size: clamp(2.25rem, 5.6vw, 4.6rem);
+  line-height: 1.02;
+}
+
 .fluid-heading {
-  font-size: clamp(2rem, 6vw, 5rem);
+  font-size: clamp(1.8rem, 3.6vw, 2.9rem);
+  line-height: 1.08;
 }
 
 .fluid-subhead {
-  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
 }
 
 .fluid-body {
-  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  font-size: clamp(0.9rem, 1.4vw, 1.02rem);
 }
 
-html.dark body {
-  color: var(--text);
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(52, 211, 153, 0.22), transparent 50%),
-    radial-gradient(900px 500px at 90% -10%, rgba(56, 189, 248, 0.2), transparent 45%),
-    linear-gradient(135deg, var(--bg) 0%, #141411 45%, #11110f 100%);
+/* ── Panel surface (legacy ".glass" usages still resolve to a clean panel) ── */
+.glass,
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
 }
 
-.glass {
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(15, 23, 42, 0.14);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  transition: background 300ms ease, border-color 300ms ease;
-}
-
-html.dark .glass {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
+/* ── Scroll reveal ── */
 .reveal-up {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(28px);
   transition:
-    opacity 0.6s ease,
-    transform 0.6s ease;
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-visible {
@@ -86,6 +101,52 @@ html.dark .glass {
   transform: translateY(0);
 }
 
+/* ── Skill bars ── */
 .skill-bar-fill {
-  transition: width 0.9s ease;
+  transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Hero 3D avatar cut-out ──
+   Transparent PNG figure: contained (not cropped), no rounding, sized taller
+   than the disc and bottom-anchored so the figure spills over the top edge. */
+.avatar {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  transform: translateX(-50%);
+  width: auto;
+  height: 104%;
+  max-width: none;
+  object-fit: contain;
+  filter: contrast(1.03) saturate(1.05);
+  pointer-events: none;
+}
+
+/* ── Code-rain backdrop (low-opacity mono code, faded left → right) ── */
+.code-rain {
+  font-family: var(--font-mono), monospace;
+  color: var(--code);
+  white-space: pre;
+  user-select: none;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.85), transparent 78%);
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.85), transparent 78%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-pulseDot,
+  .animate-blink {
+    animation: none !important;
+  }
+}
+
+/* Accessible focus ring across interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
