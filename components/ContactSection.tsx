@@ -6,7 +6,9 @@ import emailjs from "@emailjs/browser";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FiArrowRight, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
-import { site } from "@/lib/site";
+import type { Profile } from "@/lib/schema";
+
+export type ContactProfile = Pick<Profile, "email" | "phone" | "location" | "socials">;
 
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ?? "";
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ?? "";
@@ -28,7 +30,7 @@ const initialValues: FormValues = {
   message: ""
 };
 
-export default function ContactSection() {
+export default function ContactSection({ profile }: { profile: ContactProfile }) {
   const [values, setValues] = useState<FormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +60,7 @@ export default function ContactSection() {
     if (Object.keys(validationErrors).length > 0) return;
 
     if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-      setStatus({ type: "error", message: `Contact form is unavailable. Please email ${site.email} directly.` });
+      setStatus({ type: "error", message: `Contact form is unavailable. Please email ${profile.email} directly.` });
       return;
     }
 
@@ -185,17 +187,17 @@ export default function ContactSection() {
             <p className="mt-2 text-[15px] text-txtdim">Here&apos;s how you can reach me</p>
           </div>
 
-          <ContactCard icon={<FiMail />} label="email" value={site.email} />
-          <ContactCard icon={<FiPhone />} label="mobile" value={site.phone} />
-          <ContactCard icon={<FiMapPin />} label="location" value={site.location} />
+          <ContactCard icon={<FiMail />} label="email" value={profile.email} />
+          <ContactCard icon={<FiPhone />} label="mobile" value={profile.phone} />
+          <ContactCard icon={<FiMapPin />} label="location" value={profile.location} />
 
           <div className="rounded-2xl border border-line bg-panel2 p-5 sm:p-6">
             <p className="font-mono text-xs text-txtdim">{"// connect"}</p>
             <div className="mt-3 flex items-center gap-2">
-              <SocialIcon href={site.socials.github} ariaLabel="GitHub" icon={<FaGithub />} />
-              <SocialIcon href={site.socials.linkedin} ariaLabel="LinkedIn" icon={<FaLinkedinIn />} />
-              {site.socials.twitter ? (
-                <SocialIcon href={site.socials.twitter} ariaLabel="X (Twitter)" icon={<FaXTwitter />} />
+              <SocialIcon href={profile.socials.github} ariaLabel="GitHub" icon={<FaGithub />} />
+              <SocialIcon href={profile.socials.linkedin} ariaLabel="LinkedIn" icon={<FaLinkedinIn />} />
+              {profile.socials.twitter ? (
+                <SocialIcon href={profile.socials.twitter} ariaLabel="X (Twitter)" icon={<FaXTwitter />} />
               ) : null}
             </div>
           </div>

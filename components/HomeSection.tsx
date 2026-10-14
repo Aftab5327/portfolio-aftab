@@ -3,14 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { FiArrowRight, FiMail } from "react-icons/fi";
-import { site } from "@/lib/site";
+import type { Profile } from "@/lib/schema";
 
-const ROLES = [
-  "Full Stack Developer",
-  "IoT Engineer",
-  "AI Builder",
-  "MERN Stack Developer"
-];
+export type HeroProfile = Pick<
+  Profile,
+  "name" | "firstName" | "title" | "roles" | "heroIntro" | "email" | "socials" | "resume" | "avatar"
+>;
 
 const TYPE_SPEED = 70;
 const DELETE_SPEED = 38;
@@ -27,8 +25,8 @@ const TECH_BADGES = [
   { name: "arduino", label: "Arduino", className: "left-[-2%] bottom-[6%]", delay: "1.1s", duration: "5.2s" }
 ];
 
-const CODE_RAIN = `const dev = {
-  name: "${site.name}",
+const codeRain = (name: string) => `const dev = {
+  name: "${name}",
   stack: ["React", "Next.js", "Node"],
   iot: ["Arduino", "ESP32", "MQTT"],
   build(idea) {
@@ -51,12 +49,13 @@ while (curious) {
   learn(); build(); refactor();
 }`;
 
-export default function HomeSection() {
+export default function HomeSection({ profile }: { profile: HeroProfile }) {
+  const roles = profile.roles;
   const [roleIndex, setRoleIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const currentRole = useMemo(() => ROLES[roleIndex], [roleIndex]);
+  const currentRole = useMemo(() => roles[roleIndex % roles.length], [roles, roleIndex]);
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -82,11 +81,11 @@ export default function HomeSection() {
 
     timer = setTimeout(() => {
       setIsDeleting(false);
-      setRoleIndex((prev) => (prev + 1) % ROLES.length);
+      setRoleIndex((prev) => (prev + 1) % roles.length);
     }, NEXT_WORD_DELAY);
 
     return () => clearTimeout(timer);
-  }, [currentRole, isDeleting, roleIndex, typedText]);
+  }, [currentRole, isDeleting, roles.length, typedText]);
 
   return (
     <div className="relative pt-2">
@@ -95,7 +94,7 @@ export default function HomeSection() {
         aria-hidden
         className="code-rain absolute -left-4 top-10 hidden text-[12px] leading-5 opacity-60 lg:block"
       >
-        {CODE_RAIN}
+        {codeRain(profile.name)}
       </pre>
 
       <section className="relative z-10 overflow-hidden rounded-card border border-line bg-panel shadow-card">
@@ -108,7 +107,7 @@ export default function HomeSection() {
               <span className="h-3 w-3 rounded-full bg-[#28c840]" />
             </div>
             <span className="font-mono text-sm font-semibold text-txt">
-              <span className="text-teal">&lt;A/&gt;</span> {site.name}
+              <span className="text-teal">&lt;A/&gt;</span> {profile.name}
             </span>
           </div>
 
@@ -129,7 +128,7 @@ export default function HomeSection() {
 
           <div className="flex items-center gap-3">
             <a
-              href={site.socials.linkedin}
+              href={profile.socials.linkedin}
               target="_blank"
               rel="noreferrer"
               className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal sm:inline"
@@ -137,7 +136,7 @@ export default function HomeSection() {
               LinkedIn
             </a>
             <a
-              href={site.socials.github}
+              href={profile.socials.github}
               target="_blank"
               rel="noreferrer"
               className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal sm:inline"
@@ -145,8 +144,8 @@ export default function HomeSection() {
               GitHub
             </a>
             <a
-              href={`mailto:${site.email}`}
-              aria-label={`Email ${site.firstName}`}
+              href={`mailto:${profile.email}`}
+              aria-label={`Email ${profile.firstName}`}
               className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-teal text-bg transition-transform hover:-translate-y-0.5"
             >
               <FiMail className="h-4 w-4" />
@@ -180,9 +179,9 @@ export default function HomeSection() {
             </div>
 
             <h1 className="fluid-display mt-5 font-display font-extrabold tracking-tight text-txt">
-              I&apos;m <span className="text-teal">{site.firstName}</span>,
+              I&apos;m <span className="text-teal">{profile.firstName}</span>,
               <br />
-              {site.title}
+              {profile.title}
             </h1>
 
             <p className="mt-4 min-h-[1.6rem] font-mono text-sm text-txtdim sm:text-base">
@@ -192,14 +191,12 @@ export default function HomeSection() {
             </p>
 
             <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-txtdim">
-              From crafting pixel-perfect interfaces to engineering embedded systems &mdash; I build software that lives
-              in browsers, servers, and the real world. React frontends, scalable backend APIs, and IoT devices talking
-              to the cloud, connected with precision and purpose.
+              {profile.heroIntro}
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-5">
               <a
-                href={site.resume}
+                href={profile.resume}
                 target="_blank"
                 rel="noopener"
                 className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-teal bg-teal/5 px-6 text-sm font-semibold text-teal transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal/15"
@@ -227,8 +224,8 @@ export default function HomeSection() {
               {/* 3D avatar cut-out — sits larger than the disc and spills over the top */}
               <Image
                 className="avatar"
-                src="/aftab.png"
-                alt={site.name}
+                src={profile.avatar}
+                alt={profile.name}
                 width={300}
                 height={300}
                 priority

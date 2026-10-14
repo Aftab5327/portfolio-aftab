@@ -6,12 +6,15 @@ import { motion } from "framer-motion";
 import { FiMenu, FiX, FiMail } from "react-icons/fi";
 import ThemeToggle from "@/components/ThemeToggle";
 import CommandPalette from "@/components/CommandPalette";
-import { sections, site } from "@/lib/site";
+import { sections } from "@/lib/config";
+import type { Profile } from "@/lib/schema";
 
 // Root-relative so the links also work from /projects/[slug].
 const links = sections.map((section) => ({ ...section, href: `/#${section.id}` }));
 
-export default function Navbar() {
+export type NavProfile = Pick<Profile, "firstName" | "lastName" | "email" | "resume" | "socials">;
+
+export default function Navbar({ profile }: { profile: NavProfile }) {
   const pathname = usePathname();
   const [activeSection, setActiveSection] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -91,7 +94,7 @@ export default function Navbar() {
           onClick={handleNavClick}
           className="logo font-mono text-sm font-semibold tracking-tight text-txt transition-colors"
         >
-          {"<A/>"} {site.firstName} <span className="text-teal">{site.lastName}</span>
+          {"<A/>"} {profile.firstName} <span className="text-teal">{profile.lastName}</span>
         </a>
 
         <ul className="hidden items-center gap-7 md:flex">
@@ -112,7 +115,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <a
-            href={site.socials.linkedin}
+            href={profile.socials.linkedin}
             target="_blank"
             rel="noreferrer"
             aria-label="LinkedIn"
@@ -121,7 +124,7 @@ export default function Navbar() {
             LinkedIn
           </a>
           <a
-            href={site.socials.github}
+            href={profile.socials.github}
             target="_blank"
             rel="noreferrer"
             aria-label="GitHub"
@@ -130,14 +133,14 @@ export default function Navbar() {
             GitHub
           </a>
           <a
-            href={`mailto:${site.email}`}
-            aria-label={`Email ${site.firstName}`}
+            href={`mailto:${profile.email}`}
+            aria-label={`Email ${profile.firstName}`}
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-teal text-bg transition-transform duration-200 hover:-translate-y-0.5"
           >
             <FiMail className="h-4 w-4" />
           </a>
 
-          <CommandPalette />
+          <CommandPalette profile={profile} />
           <ThemeToggle />
 
           <button
@@ -156,7 +159,7 @@ export default function Navbar() {
         <div className="fixed inset-0 z-50 flex min-h-screen flex-col bg-bg px-6 py-6 md:hidden">
           <div className="flex items-center justify-between">
             <span className="logo font-mono text-sm font-semibold text-txt">
-              {"<A/>"} {site.firstName} <span className="text-teal">{site.lastName}</span>
+              {"<A/>"} {profile.firstName} <span className="text-teal">{profile.lastName}</span>
             </span>
             <button
               type="button"
@@ -184,13 +187,13 @@ export default function Navbar() {
             ))}
           </ul>
           <div className="flex items-center gap-4 font-mono text-[13px] text-txtdim">
-            <a href={site.socials.github} target="_blank" rel="noreferrer" className="hover:text-teal">
+            <a href={profile.socials.github} target="_blank" rel="noreferrer" className="hover:text-teal">
               GitHub
             </a>
-            <a href={site.socials.linkedin} target="_blank" rel="noreferrer" className="hover:text-teal">
+            <a href={profile.socials.linkedin} target="_blank" rel="noreferrer" className="hover:text-teal">
               LinkedIn
             </a>
-            <a href={`mailto:${site.email}`} className="hover:text-teal">
+            <a href={`mailto:${profile.email}`} className="hover:text-teal">
               Email
             </a>
           </div>

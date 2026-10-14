@@ -4,7 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Providers from "@/app/providers";
-import { siteUrl } from "@/lib/site";
+import { siteUrl } from "@/lib/config";
+import { getProfile } from "@/lib/data";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -27,40 +28,33 @@ const body = Sora({
   display: "swap"
 });
 
+const profile = getProfile();
+const defaultTitle = `${profile.name} | Portfolio`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Aftab Dhalait | Portfolio",
-    template: "%s | Aftab Dhalait"
+    default: defaultTitle,
+    template: `%s | ${profile.name}`
   },
-  description:
-    "Software Developer specializing in Full Stack Development, IoT & Embedded Systems, and React & Backend Development. Based in Pune, India.",
-  keywords: [
-    "Aftab Dhalait",
-    "Full Stack Developer",
-    "IoT Developer",
-    "React Developer",
-    "Next.js Portfolio",
-    "MERN Stack",
-    "Embedded Systems",
-    "Pune India"
-  ],
+  description: profile.seo.description,
+  keywords: profile.seo.keywords,
   openGraph: {
-    title: "Aftab Dhalait | Portfolio",
-    description:
-      "Full Stack Developer & IoT Engineer building scalable web apps and embedded systems. Based in Pune, India.",
+    title: defaultTitle,
+    description: profile.seo.description,
     type: "website",
     url: "/"
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aftab Dhalait | Portfolio",
-    description:
-      "Full Stack Developer & IoT Engineer building scalable web apps and embedded systems. Based in Pune, India."
+    title: defaultTitle,
+    description: profile.seo.description
   }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const { firstName, lastName, email, resume, socials } = profile;
+
   return (
     <html
       lang="en"
@@ -69,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="font-sans antialiased">
         <Providers>
-          <Navbar />
+          <Navbar profile={{ firstName, lastName, email, resume, socials }} />
           <main className="mx-auto w-[min(1180px,92%)] pb-16 pt-6 md:pt-8">{children}</main>
           <Footer />
         </Providers>

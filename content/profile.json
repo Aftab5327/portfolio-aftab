@@ -1,0 +1,136 @@
+{
+  "name": "Aftab Dhalait",
+  "firstName": "Aftab",
+  "lastName": "Dhalait",
+  "title": "Full Stack Developer",
+  "roles": ["Full Stack Developer", "IoT Engineer", "AI Builder", "MERN Stack Developer"],
+  "headline": "Full Stack Developer. IoT Engineer. Business-Driven Technologist.",
+  "summary": [
+    "I'm Aftab Dhalait — a Software Developer who bridges hardware and software, web and IoT, engineering and business.",
+    "B.E. + CDAC. I build full-stack systems that solve real-world problems with precision and purpose."
+  ],
+  "heroIntro": "From crafting pixel-perfect interfaces to engineering embedded systems — I build software that lives in browsers, servers, and the real world. React frontends, scalable backend APIs, and IoT devices talking to the cloud, connected with precision and purpose.",
+  "recruiterNote": "Aftab bridges hardware & software, web & IoT. B.E. + CDAC. Open to Full Stack, IoT & AI roles.",
+  "quote": "Most developers live in one world - web or hardware. I chose to master both.",
+  "location": "Pune, India",
+  "email": "aftab.iot@gmail.com",
+  "phone": "+91 9370312566",
+  "avatar": "/aftab.png",
+  "resume": "/resume.pdf",
+  "githubUsername": "Aftab5327",
+  "socials": {
+    "github": "https://github.com/Aftab5327",
+    "linkedin": "https://www.linkedin.com/in/aftab-dhalait-33821226a/",
+    "twitter": ""
+  },
+  "seo": {
+    "description": "Software Developer specializing in Full Stack Development, IoT & Embedded Systems, and React & Backend Development. Based in Pune, India.",
+    "keywords": [
+      "Aftab Dhalait",
+      "Full Stack Developer",
+      "IoT Developer",
+      "React Developer",
+      "Next.js Portfolio",
+      "MERN Stack",
+      "Embedded Systems",
+      "Pune India"
+    ]
+  },
+  "stats": [
+    { "value": "2+", "label": "Years of Experience" },
+    { "value": "10+", "label": "Projects Built" },
+    { "value": "3", "label": "Specializations (Web · IoT · AI)" },
+    { "value": "2+", "label": "IoT Systems Deployed" }
+  ],
+  "interests": [
+    { "icon": "⚡", "text": "Integrating Hardware & Software" },
+    { "icon": "🌐", "text": "Exploring New Technologies" },
+    { "icon": "🧩", "text": "Problem Solving & System Design" },
+    { "icon": "🎨", "text": "Designing Frontend Interfaces" },
+    { "icon": "🔧", "text": "Building Full-Stack Applications" },
+    { "icon": "📊", "text": "Applying Data Science" },
+    { "icon": "🤖", "text": "AI-Powered Applications" }
+  ],
+  "education": [
+    {
+      "degree": "B.E. Electronics & Telecommunication",
+      "detail": "with Honors in Data Science",
+      "institution": "",
+      "short": "B.E. Electronics & Telecommunication · Data Science Honors"
+    },
+    {
+      "degree": "PG Diploma in Advanced Computing",
+      "detail": "",
+      "institution": "CDAC",
+      "short": "CDAC Advanced Computing"
+    }
+  ],
+  "experience": [],
+  "skills": [
+    {
+      "category": "Frontend Development",
+      "glyph": "</>",
+      "items": [
+        { "name": "React.js", "level": 90 },
+        { "name": "Next.js", "level": 80 },
+        { "name": "JavaScript", "level": 85 },
+        { "name": "TypeScript", "level": 80 },
+        { "name": "HTML5" },
+        { "name": "CSS3" },
+        { "name": "Tailwind CSS" }
+      ]
+    },
+    {
+      "category": "Backend Development",
+      "glyph": "{ }",
+      "items": [
+        { "name": "Node.js", "level": 85 },
+        { "name": "Express.js" },
+        { "name": "Python", "level": 80 },
+        { "name": "REST APIs" }
+      ]
+    },
+    {
+      "category": "Database",
+      "glyph": "⌁",
+      "items": [
+        { "name": "MongoDB", "level": 82 },
+        { "name": "MySQL", "level": 75 }
+      ]
+    },
+    {
+      "category": "IoT & Embedded Systems",
+      "glyph": "⚙",
+      "items": [
+        { "name": "Arduino", "level": 88 },
+        { "name": "ESP32", "level": 88 },
+        { "name": "MQTT Protocol", "level": 85 },
+        { "name": "Embedded C" },
+        { "name": "Sensor Integration" }
+      ]
+    },
+    {
+      "category": "AI / ML",
+      "glyph": "◈",
+      "items": [
+        { "name": "TensorFlow", "level": 75 },
+        { "name": "OpenCV", "level": 78 },
+        { "name": "CNN" },
+        { "name": "LLM Integration" }
+      ]
+    },
+    {
+      "category": "Tools & DevOps",
+      "glyph": "⌘",
+      "items": [
+        { "name": "Git & GitHub" },
+        { "name": "Docker" },
+        { "name": "Linux" },
+        { "name": "Postman" },
+        { "name": "VS Code" },
+        { "name": "Vercel" }
+      ]
+    }
+  ],
+  "certifications": []
+}

@@ -1,11 +1,13 @@
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { site } from "@/lib/site";
+import { getProfile } from "@/lib/data";
 
 const iconClass =
   "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-panel text-txtdim transition-all duration-300 hover:-translate-y-0.5 hover:border-teal hover:text-teal";
 
 export default function Footer() {
+  const site = getProfile();
+
   return (
     <footer className="mx-auto w-[min(1180px,92%)] pb-10">
       <div className="flex flex-col items-center gap-4 border-t border-line pt-6 sm:flex-row sm:justify-between">

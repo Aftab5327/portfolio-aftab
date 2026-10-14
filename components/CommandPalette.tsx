@@ -5,7 +5,8 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { FiCopy, FiDownload, FiGithub, FiHash, FiLinkedin, FiMoon, FiSearch, FiSun, FiTwitter } from "react-icons/fi";
-import { sections, site } from "@/lib/site";
+import { sections } from "@/lib/config";
+import type { Profile } from "@/lib/schema";
 
 type Command = {
   id: string;
@@ -47,7 +48,7 @@ function fuzzyScore(query: string, text: string): number | null {
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export default function CommandPalette() {
+export default function CommandPalette({ profile }: { profile: Pick<Profile, "email" | "resume" | "socials"> }) {
   const router = useRouter();
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
@@ -152,20 +153,20 @@ export default function CommandPalette() {
         keywords: "cv pdf",
         icon: <FiDownload />,
         run: () => {
-          window.open(site.resume, "_blank", "noopener");
+          window.open(profile.resume, "_blank", "noopener");
         }
       },
       {
         id: "copy-email",
         label: "Copy email address",
         group: "Actions",
-        keywords: `mail contact ${site.email}`,
+        keywords: `mail contact ${profile.email}`,
         icon: <FiCopy />,
         run: () => {
           navigator.clipboard
-            .writeText(site.email)
-            .then(() => setToast(`Copied ${site.email}`))
-            .catch(() => setToast(`Couldn't copy. Email: ${site.email}`));
+            .writeText(profile.email)
+            .then(() => setToast(`Copied ${profile.email}`))
+            .catch(() => setToast(`Couldn't copy. Email: ${profile.email}`));
         }
       },
       {
@@ -182,7 +183,7 @@ export default function CommandPalette() {
         group: "Links",
         keywords: "code repos source",
         icon: <FiGithub />,
-        run: openExternal(site.socials.github)
+        run: openExternal(profile.socials.github)
       },
       {
         id: "linkedin",
@@ -190,23 +191,23 @@ export default function CommandPalette() {
         group: "Links",
         keywords: "profile connect",
         icon: <FiLinkedin />,
-        run: openExternal(site.socials.linkedin)
+        run: openExternal(profile.socials.linkedin)
       }
     ];
 
-    if (site.socials.twitter) {
+    if (profile.socials.twitter) {
       list.push({
         id: "twitter",
         label: "Open X (Twitter)",
         group: "Links",
         keywords: "twitter x social",
         icon: <FiTwitter />,
-        run: openExternal(site.socials.twitter)
+        run: openExternal(profile.socials.twitter)
       });
     }
 
     return list;
-  }, [pathname, resolvedTheme, router, setTheme]);
+  }, [pathname, profile, resolvedTheme, router, setTheme]);
 
   const results = useMemo(() => {
     if (!query.trim()) return commands;

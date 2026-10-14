@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
-import { getSortedProjects } from "@/lib/projects";
+import type { Project } from "@/lib/schema";
 
-const projects = getSortedProjects();
+export type ProjectCard = Pick<Project, "slug" | "title" | "category" | "tagline" | "stack">;
 
-export default function ProjectsSection() {
+export default function ProjectsSection({ projects }: { projects: ProjectCard[] }) {
   return (
     <section className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16">
       <motion.div

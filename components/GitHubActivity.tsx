@@ -1,5 +1,5 @@
 import { FiGitBranch, FiStar } from "react-icons/fi";
-import { site } from "@/lib/site";
+import { getProfile } from "@/lib/data";
 
 type Repo = {
   id: number;
@@ -25,7 +25,7 @@ const LANGUAGE_COLORS: Record<string, string> = {
   "Jupyter Notebook": "#da5b0b"
 };
 
-async function getRecentRepos(): Promise<Repo[]> {
+async function getRecentRepos(username: string): Promise<Repo[]> {
   const headers: HeadersInit = {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28"
@@ -34,7 +34,7 @@ async function getRecentRepos(): Promise<Repo[]> {
 
   try {
     const response = await fetch(
-      `https://api.github.com/users/${site.githubUsername}/repos?sort=updated&per_page=30&type=owner`,
+      `https://api.github.com/users/${encodeURIComponent(username)}/repos?sort=updated&per_page=30&type=owner`,
       { headers, next: { revalidate: 3600 } }
     );
     if (!response.ok) return [];
@@ -51,7 +51,8 @@ async function getRecentRepos(): Promise<Repo[]> {
 const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
 export default async function GitHubActivity() {
-  const repos = await getRecentRepos();
+  const site = getProfile();
+  const repos = await getRecentRepos(site.githubUsername);
   if (repos.length === 0) return null;
 
   return (

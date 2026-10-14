@@ -11,16 +11,14 @@ type Message = {
   text: string;
 };
 
-const initialMessages: Message[] = [
-  {
-    id: "welcome",
-    role: "assistant",
-    text: "Ask about Aftab's skills, IoT work, project experience, or job availability."
-  }
-];
-
-export default function AIChatSection() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+export default function AIChatSection({ firstName }: { firstName: string }) {
+  const [messages, setMessages] = useState<Message[]>(() => [
+    {
+      id: "welcome",
+      role: "assistant",
+      text: `Ask about ${firstName}'s skills, IoT work, project experience, or job availability.`
+    }
+  ]);
   const [userMessage, setUserMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -97,7 +95,7 @@ export default function AIChatSection() {
         <p className="font-mono text-sm text-teal">{"// ai-chat"}</p>
         <h2 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">Ask My AI Assistant</h2>
         <p className="mt-3 text-[15px] text-txtdim">
-          A recruiter-friendly assistant trained on Aftab&apos;s web, IoT, and AI experience.
+          A recruiter-friendly assistant trained on {firstName}&apos;s web, IoT, and AI experience.
         </p>
       </div>
 
@@ -161,7 +159,7 @@ export default function AIChatSection() {
                 onChange={(event) => setUserMessage(event.target.value)}
                 maxLength={MAX_MESSAGE_LENGTH}
                 aria-label="Ask the AI assistant a question"
-                placeholder="Ask about Aftab's skills, projects, or availability..."
+                placeholder={`Ask about ${firstName}'s skills, projects, or availability...`}
                 className="min-h-12 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-txt outline-none transition-colors placeholder:text-txtfaint focus:border-teal focus:ring-2 focus:ring-teal/40"
               />
               <button

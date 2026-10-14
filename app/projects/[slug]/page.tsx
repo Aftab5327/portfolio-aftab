@@ -2,15 +2,19 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FiArrowLeft, FiArrowUpRight, FiGithub } from "react-icons/fi";
-import { getProject, projects } from "@/lib/projects";
+import { FiArrowLeft, FiArrowUpRight, FiGithub, FiStar } from "react-icons/fi";
+import Markdown from "@/components/Markdown";
+import { getProject, getProjects } from "@/lib/data";
+import { SECTION_KEYS } from "@/lib/schema";
 
 type Params = { params: { slug: string } };
 
 export const dynamicParams = false;
 
+const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
+
 export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
+  return getProjects().map((project) => ({ slug: project.slug }));
 }
 
 export function generateMetadata({ params }: Params): Metadata {
@@ -19,11 +23,11 @@ export function generateMetadata({ params }: Params): Metadata {
 
   return {
     title: project.title,
-    description: project.tagline,
+    description: project.tagline || undefined,
     alternates: { canonical: `/projects/${project.slug}` },
     openGraph: {
       title: project.title,
-      description: project.tagline,
+      description: project.tagline || undefined,
       type: "article",
       url: `/projects/${project.slug}`,
       ...(project.image ? { images: [{ url: project.image }] } : {})
@@ -31,7 +35,7 @@ export function generateMetadata({ params }: Params): Metadata {
     twitter: {
       card: "summary_large_image",
       title: project.title,
-      description: project.tagline
+      description: project.tagline || undefined
     }
   };
 }
@@ -40,11 +44,8 @@ export default function ProjectPage({ params }: Params) {
   const project = getProject(params.slug);
   if (!project) notFound();
 
-  const narrative = [
-    { label: "problem", body: project.problem },
-    { label: "solution", body: project.solution },
-    { label: "result", body: project.result }
-  ].filter((item) => item.body);
+  const sections = SECTION_KEYS.filter((key) => project.sections[key].trim());
+  const isRemoteImage = /^https?:\/\//i.test(project.image);
 
   return (
     <article className="rounded-card border border-line bg-panel px-6 py-10 shadow-soft sm:px-10 lg:px-14 lg:py-14">
@@ -57,9 +58,11 @@ export default function ProjectPage({ params }: Params) {
       </Link>
 
       <header className="mt-8">
-        <p className="font-mono text-sm text-teal">{project.category}</p>
+        {project.category ? <p className="font-mono text-sm text-teal">{project.category}</p> : null}
         <h1 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">{project.title}</h1>
-        <p className="mt-4 max-w-3xl text-[15px] leading-[1.75] text-txtdim">{project.tagline}</p>
+        {project.tagline ? (
+          <p className="mt-4 max-w-3xl text-[15px] leading-[1.75] text-txtdim">{project.tagline}</p>
+        ) : null}
 
         {project.repoUrl || project.liveUrl ? (
           <div className="mt-7 flex flex-wrap gap-3">
@@ -98,64 +101,89 @@ export default function ProjectPage({ params }: Params) {
             height={900}
             sizes="(min-width: 1180px) 1080px, 92vw"
             className="h-auto w-full"
+            unoptimized={isRemoteImage}
             priority
           />
         </div>
       ) : null}
 
-      <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_300px]">
-        <div className="space-y-8">
-          {narrative.map((item) => (
-            <section key={item.label}>
-              <h2 className="font-mono text-sm text-teal">{`// ${item.label}`}</h2>
-              <p className="mt-3 whitespace-pre-line text-[15px] leading-[1.75] text-txtdim">{item.body}</p>
+      <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-w-0 space-y-10">
+          {sections.map((key) => (
+            <section key={key}>
+              <h2 className="font-mono text-sm text-teal">{`// ${key}`}</h2>
+              <div className="mt-3">
+                <Markdown>{project.sections[key]}</Markdown>
+              </div>
             </section>
           ))}
 
-          <ListSection label="features" items={project.features} />
-          <ListSection label="challenges" items={project.challenges} />
-
-          {narrative.length === 0 && project.features.length === 0 && project.challenges.length === 0 ? (
+          {sections.length === 0 ? (
             <p className="rounded-xl border border-line bg-panel2 p-5 text-sm text-txtdim">
               A full write-up for this project is coming soon.
             </p>
           ) : null}
         </div>
 
-        <aside className="h-fit rounded-xl border border-line bg-panel2 p-5">
-          <h2 className="font-mono text-sm text-teal">{"// stack"}</h2>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {project.stack.map((tag) => (
-              <li
-                key={tag}
-                className="rounded-md border border-line bg-panel px-2.5 py-1 font-mono text-[11px] text-txtdim"
-              >
-                {tag}
-              </li>
-            ))}
-          </ul>
+        <aside className="h-fit space-y-6 rounded-xl border border-line bg-panel2 p-5">
+          {project.stack.length ? (
+            <div>
+              <h2 className="font-mono text-sm text-teal">{"// stack"}</h2>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {project.stack.map((tag) => (
+                  <li
+                    key={tag}
+                    className="rounded-md border border-line bg-panel px-2.5 py-1 font-mono text-[11px] text-txtdim"
+                  >
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {project.languages.length ? (
+            <div>
+              <h2 className="font-mono text-sm text-teal">{"// languages"}</h2>
+              <div className="mt-4 flex h-2 overflow-hidden rounded-full bg-bg2" aria-hidden>
+                {project.languages.map((language, index) => (
+                  <span
+                    key={language.name}
+                    className="h-full"
+                    style={{
+                      width: `${language.percent}%`,
+                      backgroundColor: "var(--teal)",
+                      opacity: Math.max(1 - index * 0.2, 0.25)
+                    }}
+                  />
+                ))}
+              </div>
+              <ul className="mt-3 space-y-1 font-mono text-[11px] text-txtdim">
+                {project.languages.slice(0, 5).map((language) => (
+                  <li key={language.name} className="flex justify-between gap-3">
+                    <span>{language.name}</span>
+                    <span>{language.percent}%</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {project.source === "github" ? (
+            <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-txtdim">
+              <span className="inline-flex items-center gap-1" aria-label={`${project.stars} stars`}>
+                <FiStar aria-hidden />
+                {project.stars}
+              </span>
+              {project.pushedAt ? (
+                <span>
+                  Updated <time dateTime={project.pushedAt}>{dateFormat.format(new Date(project.pushedAt))}</time>
+                </span>
+              ) : null}
+            </div>
+          ) : null}
         </aside>
       </div>
     </article>
-  );
-}
-
-function ListSection({ label, items }: { label: string; items: string[] }) {
-  if (items.length === 0) return null;
-
-  return (
-    <section>
-      <h2 className="font-mono text-sm text-teal">{`// ${label}`}</h2>
-      <ul className="mt-3 space-y-2">
-        {items.map((item) => (
-          <li key={item} className="flex gap-3 text-[15px] leading-[1.75] text-txtdim">
-            <span aria-hidden className="text-teal">
-              ▹
-            </span>
-            {item}
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }

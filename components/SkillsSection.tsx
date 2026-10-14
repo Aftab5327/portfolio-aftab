@@ -2,52 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import type { Profile } from "@/lib/schema";
 
-const skillGroups = [
-  {
-    title: "Frontend Development",
-    glyph: "</>",
-    skills: ["React.js", "Next.js", "JavaScript", "TypeScript", "HTML5", "CSS3", "Tailwind CSS"]
-  },
-  {
-    title: "Backend Development",
-    glyph: "{ }",
-    skills: ["Node.js", "Express.js", "Python", "REST APIs"]
-  },
-  {
-    title: "Database",
-    glyph: "⌁",
-    skills: ["MongoDB", "MySQL"]
-  },
-  {
-    title: "IoT & Embedded Systems",
-    glyph: "⚙",
-    skills: ["Arduino", "ESP32", "MQTT Protocol", "Embedded C", "Sensor Integration"]
-  },
-  {
-    title: "Tools & DevOps",
-    glyph: "⌘",
-    skills: ["Git & GitHub", "Docker", "Linux", "Postman", "VS Code", "Vercel"]
-  }
-];
-
-const skillPercentages: Record<string, number> = {
-  "React.js": 90,
-  "Next.js": 80,
-  JavaScript: 85,
-  TypeScript: 80,
-  "Node.js": 85,
-  Python: 80,
-  MongoDB: 82,
-  MySQL: 75,
-  Arduino: 88,
-  ESP32: 88,
-  "MQTT Protocol": 85,
-  TensorFlow: 75,
-  OpenCV: 78
-};
-
-export default function SkillsSection() {
+export default function SkillsSection({ skills }: { skills: Profile["skills"] }) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [barsVisible, setBarsVisible] = useState(false);
 
@@ -85,9 +42,9 @@ export default function SkillsSection() {
       </motion.div>
 
       <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {skillGroups.map((group, index) => (
+        {skills.map((group, index) => (
           <motion.article
-            key={group.title}
+            key={group.category}
             initial={{ opacity: 0, y: 22 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -96,17 +53,17 @@ export default function SkillsSection() {
           >
             <h3 className="flex items-center gap-2 font-mono text-base font-semibold text-txt">
               <span className="text-teal">{group.glyph}</span>
-              {group.title}
+              {group.category}
             </h3>
 
             <div className="mt-5 grid gap-3.5">
-              {group.skills.map((skill) => {
-                const pct = skillPercentages[skill];
+              {group.items.map((skill) => {
+                const pct = skill.level;
                 return (
-                  <div key={skill}>
+                  <div key={skill.name}>
                     <div className="flex items-center justify-between gap-3">
                       <span className="rounded-md border border-line bg-panel px-2.5 py-1 font-mono text-[11px] text-txtdim">
-                        {skill}
+                        {skill.name}
                       </span>
                       {pct ? <span className="font-mono text-[11px] text-teal">{pct}%</span> : null}
                     </div>

@@ -1,0 +1,54 @@
+name: Sync portfolio
+
+on:
+  schedule:
+    - cron: "17 */6 * * *" # every 6 hours (off the hour to avoid GitHub's busy :00 slot)
+  workflow_dispatch: # "Run workflow" button in the Actions tab
+  repository_dispatch:
+    types: [portfolio-sync] # lets other repos trigger a sync later
+
+permissions:
+  contents: write
+
+# Never run two syncs at once; a queued run waits instead of being cancelled.
+concurrency:
+  group: portfolio-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync projects from GitHub
+        run: npm run sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit and push changes
+        run: |
+          if [ -z "$(git status --porcelain -- data public/projects)" ]; then
+            echo "No portfolio changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- data public/projects
+          git commit -m "chore(data): sync portfolio from GitHub"
+          # Rebase in case main moved while the sync was running.
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
