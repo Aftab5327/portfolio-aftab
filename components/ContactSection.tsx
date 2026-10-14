@@ -6,6 +6,11 @@ import emailjs from "@emailjs/browser";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FiArrowRight, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import { site } from "@/lib/site";
+
+const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ?? "";
+const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ?? "";
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY ?? "";
 
 type FormValues = {
   fullName: string;
@@ -52,20 +57,25 @@ export default function ContactSection() {
 
     if (Object.keys(validationErrors).length > 0) return;
 
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+      setStatus({ type: "error", message: `Contact form is unavailable. Please email ${site.email} directly.` });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      // Recipient address is configured in the EmailJS template, not here.
       await emailjs.send(
-        "YOUR_SERVICE_ID",
-        "YOUR_TEMPLATE_ID",
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
         {
           from_name: values.fullName,
           from_email: values.email,
           subject: values.subject,
-          message: values.message,
-          to_email: "dhalaitaftab2252001@gmail.com"
+          message: values.message
         },
-        "YOUR_PUBLIC_KEY"
+        EMAILJS_PUBLIC_KEY
       );
 
       setStatus({ type: "success", message: "✅ Message sent successfully!" });
@@ -86,7 +96,7 @@ export default function ContactSection() {
       transition={{ duration: 0.65, ease: "easeOut" }}
       className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16"
     >
-      <p className="font-mono text-sm text-teal">// contact</p>
+      <p className="font-mono text-sm text-teal">{"// contact"}</p>
       <h2 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">
         Let&apos;s Start a Conversation
       </h2>
@@ -94,14 +104,8 @@ export default function ContactSection() {
 
       <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-line bg-panel2 p-5 sm:p-6">
-          {/* EmailJS Setup:
-              1. Go to https://emailjs.com and create free account
-              2. Add Email Service and connect Gmail
-              3. Create Email Template with variables:
-                 {{from_name}}, {{from_email}}, {{subject}}, {{message}}
-              4. Replace:
-                 YOUR_SERVICE_ID, YOUR_TEMPLATE_ID, YOUR_PUBLIC_KEY
-          */}
+          {/* EmailJS: template uses {{from_name}}, {{from_email}}, {{subject}}, {{message}}.
+              IDs come from NEXT_PUBLIC_EMAILJS_* env vars (see .env.example). */}
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <Field
               label="full_name"
@@ -133,7 +137,7 @@ export default function ContactSection() {
 
             <div>
               <label htmlFor="message" className="mb-1.5 block font-mono text-xs text-txtdim">
-                // message
+                {"// message"}
               </label>
               <textarea
                 id="message"
@@ -178,20 +182,18 @@ export default function ContactSection() {
             <p className="mt-2 text-[15px] text-txtdim">Here&apos;s how you can reach me</p>
           </div>
 
-          <ContactCard icon={<FiMail />} label="email" value="aftab.iot@gmail.com" />
-          <ContactCard icon={<FiPhone />} label="mobile" value="+91 9370312566" />
-          <ContactCard icon={<FiMapPin />} label="location" value="Pune, India" />
+          <ContactCard icon={<FiMail />} label="email" value={site.email} />
+          <ContactCard icon={<FiPhone />} label="mobile" value={site.phone} />
+          <ContactCard icon={<FiMapPin />} label="location" value={site.location} />
 
           <div className="rounded-2xl border border-line bg-panel2 p-5 sm:p-6">
-            <p className="font-mono text-xs text-txtdim">// connect</p>
+            <p className="font-mono text-xs text-txtdim">{"// connect"}</p>
             <div className="mt-3 flex items-center gap-2">
-              <SocialIcon href="https://github.com/Aftab5327" ariaLabel="GitHub" icon={<FaGithub />} />
-              <SocialIcon
-                href="https://www.linkedin.com/in/aftab-dhalait-33821226a/"
-                ariaLabel="LinkedIn"
-                icon={<FaLinkedinIn />}
-              />
-              <SocialIcon href="https://twitter.com/yourusername" ariaLabel="Twitter" icon={<FaXTwitter />} />
+              <SocialIcon href={site.socials.github} ariaLabel="GitHub" icon={<FaGithub />} />
+              <SocialIcon href={site.socials.linkedin} ariaLabel="LinkedIn" icon={<FaLinkedinIn />} />
+              {site.socials.twitter ? (
+                <SocialIcon href={site.socials.twitter} ariaLabel="X (Twitter)" icon={<FaXTwitter />} />
+              ) : null}
             </div>
           </div>
         </div>
@@ -214,7 +216,7 @@ function Field({ label, name, type, placeholder, value, error, onChange }: Field
   return (
     <div>
       <label htmlFor={name} className="mb-1.5 block font-mono text-xs text-txtdim">
-        // {label}
+        {`// ${label}`}
       </label>
       <input
         id={name}
@@ -245,7 +247,7 @@ function ContactCard({ icon, label, value }: ContactCardProps) {
           {icon}
         </div>
         <div>
-          <p className="font-mono text-xs text-txtdim">// {label}</p>
+          <p className="font-mono text-xs text-txtdim">{`// ${label}`}</p>
           <p className="mt-1 text-base font-medium text-txt">{value}</p>
         </div>
       </div>

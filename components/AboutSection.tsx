@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
+import { site } from "@/lib/site";
 
 const activities = [
   { icon: "⚡", text: "Integrating Hardware & Software" },
@@ -38,7 +38,7 @@ export default function AboutSection() {
       transition={{ duration: 0.7, ease: "easeOut" }}
       className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16"
     >
-      <p className="font-mono text-sm text-teal">// about</p>
+      <p className="font-mono text-sm text-teal">{"// about"}</p>
       <h2 className="fluid-heading mt-3 max-w-3xl font-display font-bold tracking-tight text-txt">
         Full Stack Developer. IoT Engineer. Business-Driven Technologist.
       </h2>
@@ -130,12 +130,14 @@ export default function AboutSection() {
             >
               Hire Me
             </button>
-            <Link
-              href="/resume.pdf"
+            <a
+              href={site.resume}
+              target="_blank"
+              rel="noopener"
               className="inline-flex min-h-12 items-center rounded-xl border border-line bg-panel px-6 text-sm font-medium text-txt transition duration-200 hover:-translate-y-0.5 hover:border-teal hover:text-teal"
             >
               Download Resume
-            </Link>
+            </a>
           </div>
         </motion.div>
       </div>

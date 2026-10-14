@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { FiArrowRight, FiMail } from "react-icons/fi";
+import { site } from "@/lib/site";
 
 const ROLES = [
   "Full Stack Developer",
@@ -28,7 +28,7 @@ const TECH_BADGES = [
 ];
 
 const CODE_RAIN = `const dev = {
-  name: "Aftab Dhalait",
+  name: "${site.name}",
   stack: ["React", "Next.js", "Node"],
   iot: ["Arduino", "ESP32", "MQTT"],
   build(idea) {
@@ -108,7 +108,7 @@ export default function HomeSection() {
               <span className="h-3 w-3 rounded-full bg-[#28c840]" />
             </div>
             <span className="font-mono text-sm font-semibold text-txt">
-              <span className="text-teal">&lt;A/&gt;</span> Aftab Dhalait
+              <span className="text-teal">&lt;A/&gt;</span> {site.name}
             </span>
           </div>
 
@@ -129,7 +129,7 @@ export default function HomeSection() {
 
           <div className="flex items-center gap-3">
             <a
-              href="https://www.linkedin.com/in/aftab-dhalait-33821226a/"
+              href={site.socials.linkedin}
               target="_blank"
               rel="noreferrer"
               className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal sm:inline"
@@ -137,7 +137,7 @@ export default function HomeSection() {
               LinkedIn
             </a>
             <a
-              href="https://github.com/Aftab5327"
+              href={site.socials.github}
               target="_blank"
               rel="noreferrer"
               className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal sm:inline"
@@ -145,8 +145,8 @@ export default function HomeSection() {
               GitHub
             </a>
             <a
-              href="mailto:aftab.iot@gmail.com"
-              aria-label="Email Aftab"
+              href={`mailto:${site.email}`}
+              aria-label={`Email ${site.firstName}`}
               className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-teal text-bg transition-transform hover:-translate-y-0.5"
             >
               <FiMail className="h-4 w-4" />
@@ -175,14 +175,14 @@ export default function HomeSection() {
                 Hello, I&apos;m
               </span>
               <span className="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 font-mono text-[11px] text-teal">
-                // open to opportunities
+                {"// open to opportunities"}
               </span>
             </div>
 
             <h1 className="fluid-display mt-5 font-display font-extrabold tracking-tight text-txt">
-              I&apos;m <span className="text-teal">Aftab</span>,
+              I&apos;m <span className="text-teal">{site.firstName}</span>,
               <br />
-              Full Stack Developer
+              {site.title}
             </h1>
 
             <p className="mt-4 min-h-[1.6rem] font-mono text-sm text-txtdim sm:text-base">
@@ -198,13 +198,15 @@ export default function HomeSection() {
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-5">
-              <Link
-                href="/resume.pdf"
+              <a
+                href={site.resume}
+                target="_blank"
+                rel="noopener"
                 className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-teal bg-teal/5 px-6 text-sm font-semibold text-teal transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal/15"
               >
                 View my CV
                 <FiArrowRight className="transition-transform group-hover:translate-x-1" />
-              </Link>
+              </a>
               <button
                 type="button"
                 onClick={() => scrollToSection("contact")}
@@ -226,7 +228,7 @@ export default function HomeSection() {
               <Image
                 className="avatar"
                 src="/aftab.png"
-                alt="Aftab Dhalait"
+                alt={site.name}
                 width={300}
                 height={300}
                 priority

@@ -80,7 +80,7 @@ export default function SkillsSection() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <p className="font-mono text-sm text-teal">// skills</p>
+        <p className="font-mono text-sm text-teal">{"// skills"}</p>
         <h2 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">What I Work With</h2>
       </motion.div>
 

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FiMenu, FiX, FiMail } from "react-icons/fi";
-import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import ThemeToggle from "@/components/ThemeToggle";
+import { site } from "@/lib/site";
 
 const links = [
   { label: "Home", href: "#home", id: "home" },
@@ -76,7 +76,7 @@ export default function Navbar() {
           onClick={handleNavClick}
           className="logo font-mono text-sm font-semibold tracking-tight text-txt transition-colors"
         >
-          {"<A/>"} Aftab <span className="text-teal">Dhalait</span>
+          {"<A/>"} {site.firstName} <span className="text-teal">{site.lastName}</span>
         </a>
 
         <ul className="hidden items-center gap-7 md:flex">
@@ -97,7 +97,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <a
-            href="https://www.linkedin.com/in/aftab-dhalait-33821226a/"
+            href={site.socials.linkedin}
             target="_blank"
             rel="noreferrer"
             aria-label="LinkedIn"
@@ -106,7 +106,7 @@ export default function Navbar() {
             LinkedIn
           </a>
           <a
-            href="https://github.com/Aftab5327"
+            href={site.socials.github}
             target="_blank"
             rel="noreferrer"
             aria-label="GitHub"
@@ -115,8 +115,8 @@ export default function Navbar() {
             GitHub
           </a>
           <a
-            href="mailto:aftab.iot@gmail.com"
-            aria-label="Email Aftab"
+            href={`mailto:${site.email}`}
+            aria-label={`Email ${site.firstName}`}
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-teal text-bg transition-transform duration-200 hover:-translate-y-0.5"
           >
             <FiMail className="h-4 w-4" />
@@ -140,7 +140,7 @@ export default function Navbar() {
         <div className="fixed inset-0 z-50 flex min-h-screen flex-col bg-bg px-6 py-6 md:hidden">
           <div className="flex items-center justify-between">
             <span className="logo font-mono text-sm font-semibold text-txt">
-              {"<A/>"} Aftab <span className="text-teal">Dhalait</span>
+              {"<A/>"} {site.firstName} <span className="text-teal">{site.lastName}</span>
             </span>
             <button
               type="button"
@@ -168,18 +168,13 @@ export default function Navbar() {
             ))}
           </ul>
           <div className="flex items-center gap-4 font-mono text-[13px] text-txtdim">
-            <a href="https://github.com/Aftab5327" target="_blank" rel="noreferrer" className="hover:text-teal">
+            <a href={site.socials.github} target="_blank" rel="noreferrer" className="hover:text-teal">
               GitHub
             </a>
-            <a
-              href="https://www.linkedin.com/in/aftab-dhalait-33821226a/"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-teal"
-            >
+            <a href={site.socials.linkedin} target="_blank" rel="noreferrer" className="hover:text-teal">
               LinkedIn
             </a>
-            <a href="mailto:aftab.iot@gmail.com" className="hover:text-teal">
+            <a href={`mailto:${site.email}`} className="hover:text-teal">
               Email
             </a>
           </div>

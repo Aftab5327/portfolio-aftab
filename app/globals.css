@@ -87,20 +87,6 @@ body {
   border-radius: 18px;
 }
 
-/* ── Scroll reveal ── */
-.reveal-up {
-  opacity: 0;
-  transform: translateY(28px);
-  transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.reveal-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 /* ── Skill bars ── */
 .skill-bar-fill {
   transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);

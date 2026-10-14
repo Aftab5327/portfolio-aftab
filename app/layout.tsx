@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Providers from "@/app/providers";
+import { siteUrl } from "@/lib/site";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -14,20 +15,20 @@ const display = Bricolage_Grotesque({
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600"],
   variable: "--font-mono",
   display: "swap"
 });
 
 const body = Sora({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   variable: "--font-body",
   display: "swap"
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://aftabdhalait.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Aftab Dhalait | Portfolio",
     template: "%s | Aftab Dhalait"
@@ -49,7 +50,7 @@ export const metadata: Metadata = {
     description:
       "Full Stack Developer & IoT Engineer building scalable web apps and embedded systems. Based in Pune, India.",
     type: "website",
-    url: "https://aftabdhalait.vercel.app"
+    url: "/"
   },
   twitter: {
     card: "summary_large_image",
@@ -63,16 +64,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`dark ${display.variable} ${mono.variable} ${body.variable}`}
+      className={`${display.variable} ${mono.variable} ${body.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var key='aftab-portfolio-theme';var saved=localStorage.getItem(key);var theme=saved==='light'?'light':'dark';var root=document.documentElement;if(theme==='dark'){root.classList.add('dark');root.classList.remove('light');root.style.colorScheme='dark';}else{root.classList.add('light');root.classList.remove('dark');root.style.colorScheme='light';}}catch(e){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}})();`
-          }}
-        />
-      </head>
       <body className="font-sans antialiased">
         <Providers>
           <Navbar />

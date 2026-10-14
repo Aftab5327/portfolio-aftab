@@ -87,7 +87,7 @@ export default function ProjectsSection() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <p className="font-mono text-sm text-teal">// projects</p>
+        <p className="font-mono text-sm text-teal">{"// projects"}</p>
         <h2 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">Things I Have Built</h2>
       </motion.div>
 

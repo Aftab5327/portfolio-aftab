@@ -4,12 +4,10 @@ import SkillsSection from "@/components/SkillsSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import AIChatSection from "@/components/AIChatSection";
 import ContactSection from "@/components/ContactSection";
-import RevealObserver from "@/components/RevealObserver";
 
 export default function HomePage() {
   return (
     <div className="space-y-10 md:space-y-14">
-      <RevealObserver />
       <section id="home">
         <HomeSection />
       </section>
