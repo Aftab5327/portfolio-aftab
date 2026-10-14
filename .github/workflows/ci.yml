@@ -37,6 +37,12 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Assistant retrieval eval (recall@5 ≥ 0.85)
+        run: npm run eval:rag
+
+      - name: Assistant tool-call validation
+        run: npm run test:chat
+
       - name: Type check
         run: npx tsc --noEmit
 

@@ -406,6 +406,12 @@ async function main() {
   } else {
     console.log(`\n  Warnings: none`);
   }
+
+  // Rebuild the assistant's knowledge index from the fresh data. Imported lazily so
+  // lib/data reads data/projects.json *after* it was written above.
+  const { writeKnowledgeIndex } = await import("./lib/knowledge-index");
+  const knowledge = await writeKnowledgeIndex();
+  console.log(`  Knowledge index: ${knowledge.chunks} chunks, data/knowledge-index.json ${knowledge.changed ? "written" : "unchanged"}`);
   console.log("");
 }
 

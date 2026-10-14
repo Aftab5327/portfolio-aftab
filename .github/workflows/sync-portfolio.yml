@@ -41,6 +41,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          # data/ includes projects.json and the assistant's knowledge-index.json.
           if [ -z "$(git status --porcelain -- data public/projects)" ]; then
             echo "No portfolio changes."
             exit 0

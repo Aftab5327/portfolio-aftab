@@ -121,7 +121,7 @@ export default function ProjectPage({ params }: Params) {
       <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 space-y-10">
           {sections.map((key) => (
-            <section key={key}>
+            <section key={key} id={key} className="scroll-mt-24">
               <h2 className="font-mono text-sm text-teal">{`// ${key}`}</h2>
               <div className="mt-3">
                 <Markdown>{project.sections[key]}</Markdown>

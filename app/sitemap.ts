@@ -18,6 +18,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8
     },
+    {
+      url: `${siteUrl}/ai-assistant`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.5
+    },
     ...getProjects().map((project) => ({
       url: `${siteUrl}/projects/${project.slug}`,
       lastModified: project.pushedAt ? new Date(project.pushedAt) : lastModified,

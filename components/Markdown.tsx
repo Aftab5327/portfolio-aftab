@@ -78,9 +78,16 @@ const components: Components = {
   }
 };
 
-export default function Markdown({ children }: { children: string }) {
+/** Full documents (e.g. /ai-assistant) keep their own h2/h3 hierarchy under the page's h1. */
+const documentComponents: Components = {
+  ...components,
+  h2: ({ children }) => <h2 className="mt-10 font-display text-2xl font-bold text-txt">{children}</h2>,
+  h3: ({ children }) => <h3 className="mt-6 font-display text-lg font-bold text-txt">{children}</h3>
+};
+
+export default function Markdown({ children, variant = "section" }: { children: string; variant?: "section" | "document" }) {
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml components={components}>
+    <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml components={variant === "document" ? documentComponents : components}>
       {children}
     </ReactMarkdown>
   );

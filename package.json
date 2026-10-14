@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "tsx scripts/build-knowledge.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -11,13 +12,17 @@
     "draft": "tsx scripts/draft-case-studies.ts",
     "approve": "tsx scripts/approve-case-study.ts",
     "screenshots": "tsx scripts/screenshot-projects.ts",
-    "check:resume": "tsx scripts/check-resume.ts"
+    "check:resume": "tsx scripts/check-resume.ts",
+    "knowledge": "tsx scripts/build-knowledge.ts",
+    "eval:rag": "tsx scripts/eval-retrieval.ts",
+    "test:chat": "tsx scripts/test-chat-tools.ts"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@react-pdf/renderer": "^4.9.0",
     "framer-motion": "^11.11.10",
     "mermaid": "^11.17.2",
+    "minisearch": "^7.2.0",
     "next": "14.2.16",
     "next-themes": "^0.4.6",
     "react": "^18.3.1",

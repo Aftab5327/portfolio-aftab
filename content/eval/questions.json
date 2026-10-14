@@ -1,0 +1,35 @@
+{
+  "$comment": "Retrieval eval for the AI assistant (npm run eval:rag). Each `expect` entry is a chunk id (\"skills:database\"), a chunk-id prefix ending in \"*\" or a project slug; all must appear in the top 5 results. `history` holds earlier user turns for follow-up questions. Update this file when you add projects or change profile sections.",
+  "minRecall": 0.85,
+  "questions": [
+    { "question": "Who is Aftab?", "expect": ["profile:about"] },
+    { "question": "How can I contact Aftab?", "expect": ["profile:contact"] },
+    { "question": "Where is he based?", "expect": ["profile:contact"] },
+    { "question": "Is he open to new job opportunities?", "expect": ["profile:contact"] },
+    { "question": "How many years of experience does he have?", "expect": ["profile:stats"] },
+    { "question": "What is his education background?", "expect": ["profile:education"] },
+    { "question": "Can I download his resume or CV?", "expect": ["resume"] },
+    { "question": "Does he know React and TypeScript?", "expect": ["skills:frontend-development"] },
+    { "question": "Which databases has he worked with?", "expect": ["skills:database"] },
+    { "question": "Any experience with Arduino or ESP32?", "expect": ["skills:iot-embedded-systems"] },
+    { "question": "What AI or machine learning skills does he have?", "expect": ["skills:ai-ml"] },
+    { "question": "What DevOps tools does he use?", "expect": ["skills:tools-devops"] },
+    { "question": "Tell me about InfraSense 360", "expect": ["infrasense-360"] },
+    { "question": "What IoT projects has he built?", "expect": ["cloud-weather-monitoring", "infrasense-360"] },
+    { "question": "Which project uses Supabase?", "expect": ["smart-bookmark-app"] },
+    { "question": "Has he built anything for visually impaired people?", "expect": ["smart-cap-visually-impaired"] },
+    { "question": "Has he worked with large language models?", "expect": ["llm-monitoring-system"] },
+    { "question": "Show me his Python logistics simulation", "expect": ["fastbox-delivery-simulation"] },
+    { "question": "What does the e-commerce website do?", "expect": ["e-commerce-website"] },
+    {
+      "history": ["Tell me about the weather monitoring project"],
+      "question": "What stack did it use?",
+      "expect": ["cloud-weather-monitoring"]
+    },
+    {
+      "history": ["What is the Product Catalog?"],
+      "question": "Which database does it use?",
+      "expect": ["product-catalog"]
+    }
+  ]
+}

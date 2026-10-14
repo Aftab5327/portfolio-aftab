@@ -7,6 +7,9 @@ export const RESUME_PATH = "/resume.pdf";
 export const RESUME_PAGE_PATH = "/resume";
 export const RESUME_JSON_PATH = "/resume.json";
 
+/** Page rendering docs/ai-assistant.md ("How this assistant works"). */
+export const AI_DOCS_PATH = "/ai-assistant";
+
 /** Groq model used by the chat assistant and the case-study draft script. */
 export const GROQ_MODEL = "llama-3.1-8b-instant";
 
