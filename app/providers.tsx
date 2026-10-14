@@ -1,5 +1,6 @@
 "use client";
 
+import { MotionConfig } from "framer-motion";
 import { ThemeProvider } from "next-themes";
 
 type ProvidersProps = {
@@ -14,7 +15,7 @@ export default function Providers({ children }: ProvidersProps) {
       enableSystem={false}
       storageKey="aftab-portfolio-theme"
     >
-      {children}
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
     </ThemeProvider>
   );
 }

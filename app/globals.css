@@ -15,7 +15,8 @@ html.dark {
   --green: #4ade80;
   --txt: #e6efe9;
   --txt-dim: #8aa399;
-  --txt-faint: #42554d;
+  --txt-faint: #718a7f;
+  --danger: #f87171;
   --code: #22332c;
   color-scheme: dark;
 }
@@ -27,12 +28,13 @@ html.light {
   --panel: #ffffff;
   --panel-2: #f4f7f5;
   --line: #d4ddd8;
-  --teal: #0f9d8e;
+  --teal: #0a7166;
   --teal-dim: #0c8678;
   --green: #16a34a;
   --txt: #0e1512;
   --txt-dim: #4a5a52;
-  --txt-faint: #9aa9a2;
+  --txt-faint: #56655e;
+  --danger: #b91c1c;
   --code: #c9d6cf;
   color-scheme: light;
 }
@@ -43,6 +45,12 @@ html.light {
 
 html {
   scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {

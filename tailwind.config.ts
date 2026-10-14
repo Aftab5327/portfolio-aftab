@@ -21,6 +21,7 @@ const config: Config = {
         txtdim: "var(--txt-dim)",
         txtfaint: "var(--txt-faint)",
         code: "var(--code)",
+        danger: "var(--danger)",
         // legacy alias kept so any stray usage still resolves
         accent: "var(--teal)"
       },

@@ -1,24 +1,37 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { FiMenu, FiX, FiMail } from "react-icons/fi";
 import ThemeToggle from "@/components/ThemeToggle";
-import { site } from "@/lib/site";
+import CommandPalette from "@/components/CommandPalette";
+import { sections, site } from "@/lib/site";
 
-const links = [
-  { label: "Home", href: "#home", id: "home" },
-  { label: "About", href: "#about", id: "about" },
-  { label: "Skills", href: "#skills", id: "skills" },
-  { label: "Projects", href: "#projects", id: "projects" },
-  { label: "AI Chat", href: "#ai-chat", id: "ai-chat" },
-  { label: "Contact", href: "#contact", id: "contact" }
-];
+// Root-relative so the links also work from /projects/[slug].
+const links = sections.map((section) => ({ ...section, href: `/#${section.id}` }));
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [activeSection, setActiveSection] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -28,12 +41,14 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const sectionIds = links.map((link) => link.id);
-    const sections = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter((section): section is HTMLElement => Boolean(section));
+    const elements = links
+      .map((link) => document.getElementById(link.id))
+      .filter((element): element is HTMLElement => Boolean(element));
 
-    if (!sections.length) return;
+    if (!elements.length) {
+      setActiveSection("");
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -52,10 +67,10 @@ export default function Navbar() {
       }
     );
 
-    sections.forEach((section) => observer.observe(section));
+    elements.forEach((element) => observer.observe(element));
 
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   const handleNavClick = () => setMenuOpen(false);
 
@@ -72,7 +87,7 @@ export default function Navbar() {
     >
       <nav className="mx-auto flex w-[min(1180px,92%)] items-center justify-between py-4">
         <a
-          href="#home"
+          href="/#home"
           onClick={handleNavClick}
           className="logo font-mono text-sm font-semibold tracking-tight text-txt transition-colors"
         >
@@ -122,6 +137,7 @@ export default function Navbar() {
             <FiMail className="h-4 w-4" />
           </a>
 
+          <CommandPalette />
           <ThemeToggle />
 
           <button

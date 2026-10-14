@@ -2,30 +2,33 @@ import HomeSection from "@/components/HomeSection";
 import AboutSection from "@/components/AboutSection";
 import SkillsSection from "@/components/SkillsSection";
 import ProjectsSection from "@/components/ProjectsSection";
+import GitHubActivity from "@/components/GitHubActivity";
 import AIChatSection from "@/components/AIChatSection";
 import ContactSection from "@/components/ContactSection";
 
 export default function HomePage() {
   return (
     <div className="space-y-10 md:space-y-14">
-      <section id="home">
+      <div id="home" className="scroll-mt-24">
         <HomeSection />
-      </section>
-      <section id="about">
+      </div>
+      <div id="about" className="scroll-mt-24">
         <AboutSection />
-      </section>
-      <section id="skills">
+      </div>
+      <div id="skills" className="scroll-mt-24">
         <SkillsSection />
-      </section>
-      <section id="projects">
+      </div>
+      <div id="projects" className="scroll-mt-24">
         <ProjectsSection />
-      </section>
-      <section id="ai-chat">
+      </div>
+      {/* Renders its own wrapper (id="github") and nothing at all if the GitHub API fails. */}
+      <GitHubActivity />
+      <div id="ai-chat" className="scroll-mt-24">
         <AIChatSection />
-      </section>
-      <section id="contact">
+      </div>
+      <div id="contact" className="scroll-mt-24">
         <ContactSection />
-      </section>
+      </div>
     </div>
   );
 }

@@ -137,7 +137,8 @@ export default function ContactSection() {
 
             <div>
               <label htmlFor="message" className="mb-1.5 block font-mono text-xs text-txtdim">
-                {"// message"}
+                <span aria-hidden="true">{"// "}</span>
+                message
               </label>
               <textarea
                 id="message"
@@ -145,15 +146,17 @@ export default function ContactSection() {
                 value={values.message}
                 onChange={(event) => setValues((prev) => ({ ...prev, message: event.target.value }))}
                 className={`w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-none transition-colors placeholder:text-txtfaint focus:ring-2 focus:ring-teal/40 ${
-                  errors.message ? "border-red-500" : "border-line focus:border-teal"
+                  errors.message ? "border-danger" : "border-line focus:border-teal"
                 }`}
                 placeholder="Write your message..."
               />
-              {errors.message ? <p className="mt-1 text-xs text-red-400">{errors.message}</p> : null}
+              {errors.message ? <p className="mt-1 text-xs text-danger">{errors.message}</p> : null}
             </div>
 
             {status ? (
-              <p className={`text-sm ${status.type === "success" ? "text-teal" : "text-red-400"}`}>{status.message}</p>
+              <p role="status" className={`text-sm ${status.type === "success" ? "text-teal" : "text-danger"}`}>
+                {status.message}
+              </p>
             ) : null}
 
             <button
@@ -216,7 +219,8 @@ function Field({ label, name, type, placeholder, value, error, onChange }: Field
   return (
     <div>
       <label htmlFor={name} className="mb-1.5 block font-mono text-xs text-txtdim">
-        {`// ${label}`}
+        <span aria-hidden="true">{"// "}</span>
+        {label}
       </label>
       <input
         id={name}
@@ -224,11 +228,11 @@ function Field({ label, name, type, placeholder, value, error, onChange }: Field
         value={value}
         onChange={(event) => onChange(event.target.value)}
         className={`min-h-12 w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-none transition-colors placeholder:text-txtfaint focus:ring-2 focus:ring-teal/40 ${
-          error ? "border-red-500" : "border-line focus:border-teal"
+          error ? "border-danger" : "border-line focus:border-teal"
         }`}
         placeholder={placeholder}
       />
-      {error ? <p className="mt-1 text-xs text-red-400">{error}</p> : null}
+      {error ? <p className="mt-1 text-xs text-danger">{error}</p> : null}
     </div>
   );
 }
@@ -247,7 +251,10 @@ function ContactCard({ icon, label, value }: ContactCardProps) {
           {icon}
         </div>
         <div>
-          <p className="font-mono text-xs text-txtdim">{`// ${label}`}</p>
+          <p className="font-mono text-xs text-txtdim">
+            <span aria-hidden="true">{"// "}</span>
+            {label}
+          </p>
           <p className="mt-1 text-base font-medium text-txt">{value}</p>
         </div>
       </div>
