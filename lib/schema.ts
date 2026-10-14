@@ -142,11 +142,27 @@ const projectContentShape = {
   image: imageRef
 };
 
-export const manualProjectSchema = z.object(projectContentShape).strict();
+export const manualProjectSchema = z
+  .object({
+    ...projectContentShape,
+    /** Capture a screenshot of liveUrl even if `image` is set (the screenshot then wins). */
+    autoScreenshot: z.boolean().optional()
+  })
+  .strict();
+
+/**
+ * Where a project's case-study content came from, highest priority first:
+ * the repo's PORTFOLIO.md, an approved content/case-studies/<slug>.md,
+ * the content/manual-projects.json entry, or bare repo metadata.
+ */
+export const CASE_STUDY_SOURCES = ["portfolio-md", "case-study", "manual", "metadata"] as const;
+export type CaseStudySource = (typeof CASE_STUDY_SOURCES)[number];
 
 export const projectSchema = z
   .object({
     ...projectContentShape,
+    autoScreenshot: z.boolean(),
+    caseStudySource: z.enum(CASE_STUDY_SOURCES),
     stars: z.number().int().nonnegative(),
     /** Primary language reported by GitHub. */
     language: z.string(),
@@ -188,8 +204,26 @@ export const portfolioFrontmatterSchema = z.object({
   featured: z.boolean().optional(),
   order: z.number().optional(),
   liveUrl: optionalUrl.optional(),
-  image: z.string().optional()
+  image: z.string().optional(),
+  autoScreenshot: z.boolean().optional()
 });
+
+/** data/screenshots.json, written by scripts/screenshot-projects.ts. Keyed by project slug. */
+export const screenshotEntrySchema = z
+  .object({
+    /** Site path of the WebP ("/projects/auto/<slug>.webp"), "" if never captured. */
+    path: z.union([z.literal(""), z.string().regex(/^\/projects\/auto\/[a-z0-9-]+\.webp$/)]),
+    /** ISO time the stored image was captured, "" if never captured. */
+    capturedAt: z.string(),
+    status: z.enum(["ok", "failed"]),
+    /** Last failure message, when status is "failed". */
+    error: z.string().optional()
+  })
+  .strict();
+
+export const screenshotsFileSchema = z.record(slug, screenshotEntrySchema);
+
+export type ScreenshotEntry = z.infer<typeof screenshotEntrySchema>;
 
 export const FRONTMATTER_KEYS = Object.keys(portfolioFrontmatterSchema.shape);
 

@@ -9,10 +9,27 @@
  */
 import profileJson from "@/content/profile.json";
 import projectsJson from "@/data/projects.json";
-import { formatZodError, profileSchema, projectsFileSchema, type Profile, type Project } from "@/lib/schema";
+import screenshotsJson from "@/data/screenshots.json";
+import {
+  formatZodError,
+  profileSchema,
+  projectsFileSchema,
+  screenshotsFileSchema,
+  type Profile,
+  type Project
+} from "@/lib/schema";
+
+/** A project with its display image resolved (see resolveImage). */
+export type ResolvedProject = Project & {
+  /** Image to show; "" means render the generated placeholder card. */
+  displayImage: string;
+  imageSource: "explicit" | "auto" | "placeholder";
+  /** ISO time the auto screenshot was captured (only when imageSource is "auto"). */
+  screenshotCapturedAt: string;
+};
 
 let profileCache: Profile | undefined;
-let projectsCache: Project[] | undefined;
+let projectsCache: ResolvedProject[] | undefined;
 
 export function getProfile(): Profile {
   if (!profileCache) {
@@ -23,18 +40,41 @@ export function getProfile(): Profile {
   return profileCache;
 }
 
+/**
+ * Explicit image wins, then the auto screenshot, then the placeholder card.
+ * `autoScreenshot: true` in the project's frontmatter prefers the screenshot.
+ */
+function resolveImage(project: Project, screenshots: ReturnType<typeof screenshotsFileSchema.parse>) {
+  const shot = screenshots[project.slug];
+  const auto = shot?.path ? { displayImage: shot.path, imageSource: "auto" as const, screenshotCapturedAt: shot.capturedAt } : null;
+  const explicit = project.image
+    ? { displayImage: project.image, imageSource: "explicit" as const, screenshotCapturedAt: "" }
+    : null;
+
+  return (project.autoScreenshot ? auto ?? explicit : explicit ?? auto) ?? {
+    displayImage: "",
+    imageSource: "placeholder" as const,
+    screenshotCapturedAt: ""
+  };
+}
+
 /** Already sorted by the sync script: featured, then order, then most recently pushed. */
-export function getProjects(): Project[] {
+export function getProjects(): ResolvedProject[] {
   if (!projectsCache) {
-    const result = projectsFileSchema.safeParse(projectsJson);
-    if (!result.success) {
-      throw new Error(`${formatZodError(result.error, "data/projects.json")}\nRe-run \`npm run sync\` to regenerate it.`);
+    const projects = projectsFileSchema.safeParse(projectsJson);
+    if (!projects.success) {
+      throw new Error(`${formatZodError(projects.error, "data/projects.json")}\nRe-run \`npm run sync\` to regenerate it.`);
     }
-    projectsCache = result.data.projects;
+    const screenshots = screenshotsFileSchema.safeParse(screenshotsJson);
+    if (!screenshots.success) {
+      throw new Error(`${formatZodError(screenshots.error, "data/screenshots.json")}\nRe-run \`npm run screenshots\` to regenerate it.`);
+    }
+
+    projectsCache = projects.data.projects.map((project) => ({ ...project, ...resolveImage(project, screenshots.data) }));
   }
   return projectsCache;
 }
 
-export function getProject(slug: string): Project | undefined {
+export function getProject(slug: string): ResolvedProject | undefined {
   return getProjects().find((project) => project.slug === slug);
 }

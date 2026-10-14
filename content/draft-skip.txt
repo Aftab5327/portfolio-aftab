@@ -1,0 +1,2 @@
+# Slugs that `npm run draft` should never draft, one per line.
+# Add a slug here if you closed its AI-draft PR and don't want it regenerated.

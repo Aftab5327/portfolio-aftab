@@ -1,15 +1,22 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FiArrowLeft, FiArrowUpRight, FiGithub, FiStar } from "react-icons/fi";
 import Markdown from "@/components/Markdown";
+import ProjectImage from "@/components/ProjectImage";
 import { getProject, getProjects } from "@/lib/data";
-import { SECTION_KEYS } from "@/lib/schema";
+import { SECTION_KEYS, type CaseStudySource } from "@/lib/schema";
 
 type Params = { params: { slug: string } };
 
 export const dynamicParams = false;
+
+const CONTENT_LABELS: Record<CaseStudySource, string> = {
+  "portfolio-md": "PORTFOLIO.md",
+  "case-study": "AI draft (reviewed)",
+  manual: "manual",
+  metadata: "repo metadata"
+};
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
@@ -30,7 +37,7 @@ export function generateMetadata({ params }: Params): Metadata {
       description: project.tagline || undefined,
       type: "article",
       url: `/projects/${project.slug}`,
-      ...(project.image ? { images: [{ url: project.image }] } : {})
+      ...(project.displayImage ? { images: [{ url: project.displayImage, width: 1600, height: 900 }] } : {})
     },
     twitter: {
       card: "summary_large_image",
@@ -45,7 +52,6 @@ export default function ProjectPage({ params }: Params) {
   if (!project) notFound();
 
   const sections = SECTION_KEYS.filter((key) => project.sections[key].trim());
-  const isRemoteImage = /^https?:\/\//i.test(project.image);
 
   return (
     <article className="rounded-card border border-line bg-panel px-6 py-10 shadow-soft sm:px-10 lg:px-14 lg:py-14">
@@ -92,20 +98,25 @@ export default function ProjectPage({ params }: Params) {
         ) : null}
       </header>
 
-      {project.image ? (
-        <div className="mt-10 overflow-hidden rounded-2xl border border-line bg-panel2">
-          <Image
-            src={project.image}
-            alt={`${project.title} screenshot`}
-            width={1600}
-            height={900}
-            sizes="(min-width: 1180px) 1080px, 92vw"
-            className="h-auto w-full"
-            unoptimized={isRemoteImage}
-            priority
-          />
-        </div>
-      ) : null}
+      <figure className="mt-10">
+        <ProjectImage
+          src={project.displayImage}
+          title={project.title}
+          category={project.category}
+          sizes="(min-width: 1180px) 1040px, 88vw"
+          priority
+          className="rounded-2xl border border-line"
+        />
+        <figcaption className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-txtdim">
+          <span>Content: {CONTENT_LABELS[project.caseStudySource]}</span>
+          {project.imageSource === "auto" && project.screenshotCapturedAt ? (
+            <span>
+              Screenshot captured{" "}
+              <time dateTime={project.screenshotCapturedAt}>{dateFormat.format(new Date(project.screenshotCapturedAt))}</time>
+            </span>
+          ) : null}
+        </figcaption>
+      </figure>
 
       <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 space-y-10">

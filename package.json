@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sync": "tsx scripts/sync-projects.ts"
+    "sync": "tsx scripts/sync-projects.ts",
+    "draft": "tsx scripts/draft-case-studies.ts",
+    "approve": "tsx scripts/approve-case-study.ts",
+    "screenshots": "tsx scripts/screenshot-projects.ts"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -24,13 +27,17 @@
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
+    "@types/pixelmatch": "^5.2.6",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.16",
     "gray-matter": "^4.0.3",
+    "pixelmatch": "^5.3.0",
+    "playwright": "^1.64.0",
     "postcss": "^8.4.47",
+    "sharp": "^0.35.5",
     "tailwindcss": "^3.4.14",
     "tsx": "^4.23.15",
     "typescript": "^5.6.3"

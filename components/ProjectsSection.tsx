@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
-import type { Project } from "@/lib/schema";
+import ProjectImage from "@/components/ProjectImage";
+import type { ResolvedProject } from "@/lib/data";
 
-export type ProjectCard = Pick<Project, "slug" | "title" | "category" | "tagline" | "stack">;
+export type ProjectCard = Pick<ResolvedProject, "slug" | "title" | "category" | "tagline" | "stack" | "displayImage">;
 
 export default function ProjectsSection({ projects }: { projects: ProjectCard[] }) {
   return (
@@ -28,7 +29,7 @@ export default function ProjectsSection({ projects }: { projects: ProjectCard[] 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.45, delay: index * 0.06, ease: "easeOut" }}
-            className="group min-h-[360px] overflow-hidden rounded-xl border border-line bg-panel2 transition-all duration-200 hover:-translate-y-1.5 hover:border-teal/60 hover:shadow-glow has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal"
+            className="group overflow-hidden rounded-xl border border-line bg-panel2 transition-all duration-200 hover:-translate-y-1.5 hover:border-teal/60 hover:shadow-glow has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal"
           >
             <Link href={`/projects/${project.slug}`} className="flex h-full flex-col focus-visible:outline-none">
               {/* IDE window top bar */}
@@ -40,6 +41,14 @@ export default function ProjectsSection({ projects }: { projects: ProjectCard[] 
                 </div>
                 <span className="font-mono text-xs text-txtfaint">{(index + 1).toString().padStart(2, "0")}</span>
               </div>
+
+              <ProjectImage
+                src={project.displayImage}
+                title={project.title}
+                category={project.category}
+                sizes="(min-width: 1180px) 340px, (min-width: 1024px) 30vw, (min-width: 768px) 45vw, 92vw"
+                className="border-b border-line"
+              />
 
               <div className="flex flex-1 flex-col p-5">
                 <span className="font-mono text-[11px] text-teal">{project.category}</span>

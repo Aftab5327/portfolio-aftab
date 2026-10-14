@@ -1,0 +1,87 @@
+name: Draft case studies
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Sync portfolio"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: draft-case-studies
+  cancel-in-progress: false
+
+env:
+  DRAFT_BRANCH: ai/case-study-drafts
+
+jobs:
+  draft:
+    # After a sync, only run if the sync succeeded.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Drafts waiting in an open PR aren't on main yet. Restore them so the draft
+      # script skips those repos instead of regenerating (and re-billing) them.
+      - name: Restore drafts from the open draft PR
+        run: |
+          if git fetch --depth=1 origin "$DRAFT_BRANCH" 2>/dev/null; then
+            git checkout FETCH_HEAD -- content/drafts 2>/dev/null || true
+            git reset --quiet content/drafts
+            echo "Restored drafts: $(ls content/drafts | grep '\.md$' | grep -v '^README.md$' | tr '\n' ' ')"
+          else
+            echo "No open draft branch."
+          fi
+
+      - name: Draft case studies with Groq
+        id: draft
+        run: npm run draft
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Open or update the review PR
+        if: steps.draft.outputs.count != '0'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: ${{ env.DRAFT_BRANCH }}
+          base: ${{ github.event.repository.default_branch }}
+          add-paths: content/drafts/*.md
+          commit-message: "docs(case-studies): AI drafts for ${{ steps.draft.outputs.all_slugs }}"
+          title: "AI case-study drafts: ${{ steps.draft.outputs.all_slugs }}"
+          delete-branch: true
+          body: |
+            The **Draft case studies** workflow wrote these case studies with Groq from each repo's README, file tree, dependencies and commit history.
+
+            **New in this run:** ${{ steps.draft.outputs.slugs }}
+            **All drafts in this PR:** ${{ steps.draft.outputs.all_slugs }}
+
+            The model was told to use only facts from the repo and to write `TODO:` for anything it couldn't find, such as metrics, users and outcomes. **Treat every sentence as unverified.**
+
+            ### Review checklist (per draft)
+            - [ ] Read `content/drafts/<slug>.md` and check every statement against the repo
+            - [ ] Replace every `TODO:` line with real details, or delete it
+            - [ ] Check the numbers: the draft must not contain metrics you can't back up
+            - [ ] Check the mermaid diagram in **Architecture** (paste it into https://mermaid.live to preview)
+            - [ ] Optionally set `featured`, `order`, `liveUrl` or `image` in the frontmatter
+            - [ ] Move it to `content/case-studies/`: check out this branch and run `npm run approve <slug>` (refuses while TODOs remain), or move the file by hand
+            - [ ] Merge this PR. The next **Sync portfolio** run publishes the approved case studies
+
+            Don't want a draft? Delete its file from this branch and add the slug to `content/draft-skip.txt` so it isn't regenerated.

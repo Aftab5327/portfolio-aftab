@@ -10,12 +10,13 @@ import { getProfile, getProjects } from "@/lib/data";
 export default function HomePage() {
   const profile = getProfile();
   // Client components get only the fields they render, keeping the RSC payload small.
-  const projectCards = getProjects().map(({ slug, title, category, tagline, stack }) => ({
+  const projectCards = getProjects().map(({ slug, title, category, tagline, stack, displayImage }) => ({
     slug,
     title,
     category,
     tagline,
-    stack
+    stack,
+    displayImage
   }));
 
   return (

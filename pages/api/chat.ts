@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { GROQ_MODEL } from '@/lib/config'
 import { getProfile, getProjects } from '@/lib/data'
 
 const MAX_MESSAGE_LENGTH = 500
@@ -126,7 +127,7 @@ export default async function handler(
           'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
         },
         body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
+          model: GROQ_MODEL,
           max_tokens: 300,
           messages: [
             { role: 'system', content: (systemPrompt ??= buildSystemPrompt()) },

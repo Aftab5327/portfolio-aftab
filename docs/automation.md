@@ -1,127 +1,184 @@
 # Portfolio automation
 
-The site's content comes from two data files. Components never hard-code profile
-or project content.
+The site's content comes from data files. Components never hard-code profile or
+project content.
 
 | File | Edited by | Contains |
 |---|---|---|
-| `content/profile.json` | You, by hand | Name, title, summary, socials, education, experience, skills, certifications, stats |
-| `content/manual-projects.json` | You, by hand | Projects that don't have a `PORTFOLIO.md` in their repo yet |
-| `data/projects.json` | **Generated. Never edit.** | Every project shown on the site |
+| `content/profile.json` | You | Name, title, summary, socials, education, experience, skills, certifications, stats |
+| `content/manual-projects.json` | You | Projects without a `PORTFOLIO.md` or case study yet |
+| `content/case-studies/<slug>.md` | You (approved AI drafts) | Case studies for repos that don't have their own `PORTFOLIO.md` |
+| `content/drafts/<slug>.md` | AI (`npm run draft`) | Unreviewed drafts. **Never published.** |
+| `content/draft-skip.txt` | You | Slugs the draft script should never draft |
+| `data/projects.json` | **Generated** (`npm run sync`) | Every project shown on the site |
+| `data/screenshots.json` + `public/projects/auto/` | **Generated** (`npm run screenshots`) | Automatic screenshots of live sites |
 
-Both JSON files are validated with zod (`lib/schema.ts`). Invalid data **fails
-`next build`** with a message naming the field, so a typo can't reach production.
+All JSON is validated with zod (`lib/schema.ts`). Invalid data **fails `next build`**
+with a message naming the field.
 
-## How it fits together
+## Pipeline
 
 ```
-your project repos ──┐
- (topic: portfolio,  │   npm run sync          data/projects.json ──► next build ──► Vercel
-  PORTFOLIO.md)      ├──► scripts/sync-projects.ts ──►  public/projects/*.png
-content/manual-      │      (validates output)
- projects.json ──────┘
+project repos (topic "portfolio") ─┐
+content/case-studies/*.md ─────────┼─► npm run sync ─► data/projects.json ─┐
+content/manual-projects.json ──────┘   (every 6 h)                         │
+                                                                           ├─► next build ─► Vercel
+project liveUrls ─► npm run screenshots ─► data/screenshots.json ──────────┘
+                    (weekly)                public/projects/auto/*.webp
+
+after each sync: npm run draft ─► content/drafts/*.md ─► PR for you to review
+                 (Groq)           npm run approve <slug> ─► content/case-studies/
 ```
 
-1. **`npm run sync`** (`scripts/sync-projects.ts`):
-   - lists your public repos (username = `githubUsername` in `content/profile.json`);
-   - keeps repos with the **`portfolio`** topic, skipping forks and archived repos;
-   - reads `PORTFOLIO.md` from each repo's default branch, or builds a minimal
-     entry from the repo name, description, language, topics and website if there isn't one;
-   - adds GitHub metadata: repo URL, stars, primary language, language breakdown,
-     last push date, and the repo "Website" as a fallback live URL;
-   - downloads a repo-relative `image` to `public/projects/<slug>.<ext>`;
-   - merges in `content/manual-projects.json` (a synced repo with the same slug wins);
-   - sorts by featured → `order` → most recently pushed;
-   - writes `data/projects.json` only if something changed, then prints a summary.
-2. **`.github/workflows/sync-portfolio.yml`** runs the sync every 6 hours (and on
-   demand). If `data/` or `public/projects/` changed, it commits
-   `chore(data): sync portfolio from GitHub` and pushes to `main`.
-3. That push triggers the normal **Vercel deployment**.
+| Workflow | When | What it does |
+|---|---|---|
+| **Sync portfolio** (`sync-portfolio.yml`) | Every 6 h, manual, `repository_dispatch: portfolio-sync` | `npm run sync`; commits `data/` and `public/projects/` to `main` |
+| **Draft case studies** (`draft-case-studies.yml`) | After each successful sync, manual | `npm run draft`; opens or updates a PR with new drafts |
+| **Refresh screenshots** (`screenshots.yml`) | Sundays, manual | `npm run screenshots`; commits `public/projects/auto/` and `data/screenshots.json` |
 
-Other things that update automatically from the same data: the home page project
-cards, `/projects/<slug>` case-study pages, `sitemap.xml`, and the AI chat
-assistant's knowledge of your projects.
+The sync and screenshot workflows share a concurrency group, so they never push to
+`main` at the same time. Each push to `main` triggers the normal Vercel deployment.
+
+## Where a case study comes from
+
+For each project, the **first available** source provides the case-study content:
+
+1. `PORTFOLIO.md` in the project repo → shown as *Content: PORTFOLIO.md*
+2. `content/case-studies/<slug>.md` → *Content: AI draft (reviewed)*
+3. The `content/manual-projects.json` entry → *Content: manual*
+4. Repo metadata only (name, description, language, topics, website) → *Content: repo metadata*
+
+The source is recorded as `caseStudySource` in `data/projects.json` and shown on the
+case-study page. Frontmatter fields missing from the chosen source fall back through
+the lower layers. For example, a case study without a `tagline` uses the manual entry's
+tagline, and then the repo description. The six Markdown sections always come from
+a single source.
+
+GitHub metadata (repo link, stars, languages, last push) is added for every project
+whose repo has the `portfolio` topic, whatever the content source.
+
+A project exists if its repo has the `portfolio` topic **or** it has a manual entry.
+A case-study file with neither is ignored, with a warning.
 
 ## Add a project
 
-1. Copy [`templates/PORTFOLIO.md`](../templates/PORTFOLIO.md) to the **root** of the project repo and fill it in.
-2. On the repo's GitHub page, click the ⚙ next to **About** and add the topic **`portfolio`**.
-3. Wait for the next scheduled sync, or [trigger one manually](#trigger-a-sync-manually).
+**Option A: write it yourself.** Copy [`templates/PORTFOLIO.md`](../templates/PORTFOLIO.md)
+to the repo root, fill it in, and add the `portfolio` topic to the repo (⚙ next to
+**About** on the repo page).
 
-The project's slug (its URL, `/projects/<slug>`) is the **repo name in lowercase**,
-e.g. `FastBox-Delivery-Simulation` → `/projects/fastbox-delivery-simulation`.
+**Option B: let AI draft it.** Just add the `portfolio` topic. After the next sync, the
+**Draft case studies** workflow opens a PR titled *AI case-study drafts: …*. Then:
 
-If the project is already in `content/manual-projects.json` under the same slug, the
-synced version replaces it automatically. Delete the manual entry afterwards to keep
-things tidy. If the slugs differ you'll see the project twice until you delete the
-manual entry.
+1. Check out the PR branch and open `content/drafts/<slug>.md`.
+2. Check every statement against the repo. The model was told to use only facts from
+   the README, file tree, dependency files and commit messages, and to write `TODO:`
+   for anything unknown (metrics, users, outcomes). Drafts that contain numbers not
+   found in that context are rejected automatically, but still verify everything.
+3. Replace every `TODO:` line. Optionally set `featured`, `order`, `liveUrl`, `image`.
+4. Run `npm run approve <slug>`. It refuses while any `TODO:` remains
+   (`npm run approve <slug> -- --force` overrides), strips the AI header, and moves
+   the file to `content/case-studies/`.
+5. Commit and merge the PR. The next sync publishes it.
 
-### PORTFOLIO.md format
+Don't want a draft for a repo? Add its slug to `content/draft-skip.txt`.
 
-Frontmatter (all optional; missing fields fall back to GitHub metadata):
+The slug (URL `/projects/<slug>`) is the **repo name in lowercase**, e.g.
+`FastBox-Delivery-Simulation` → `fastbox-delivery-simulation`.
+
+### PORTFOLIO.md / case-study format
+
+Frontmatter (all optional):
 
 | Field | Type | Fallback |
 |---|---|---|
-| `title` | string | Repo name, title-cased |
-| `tagline` | string | Repo description |
-| `category` | string | Primary language |
-| `stack` | list | Primary language + topics |
-| `featured` | `true` / `false` | `false` |
-| `order` | number (lower = first) | none |
-| `liveUrl` | https URL | Repo "Website" field |
-| `image` | repo-relative path (`docs/shot.png`) or https URL | none |
+| `title` | string | Manual entry → repo name, title-cased |
+| `tagline` | string | Manual entry → repo description |
+| `category` | string | Manual entry → primary language |
+| `stack` | list | Manual entry → primary language + topics |
+| `featured` | `true` / `false` | Manual entry → `false` |
+| `order` | number (lower = first) | Manual entry → none |
+| `liveUrl` | https URL | Manual entry → repo "Website" field |
+| `image` | repo-relative path, `/projects/…` site path, or https URL | Manual entry → auto screenshot → placeholder |
+| `autoScreenshot` | `true` / `false` | `false`; `true` captures `liveUrl` and prefers the screenshot over `image` |
 
-Body sections, each starting with a level-2 heading: `## Problem`, `## Solution`,
-`## Result`, `## Features`, `## Challenges`, `## Architecture`. Any you leave out are
-hidden on the page.
+Body sections: `## Problem`, `## Solution`, `## Result`, `## Features`,
+`## Challenges`, `## Architecture`. Missing ones are hidden. Markdown is GitHub-flavoured,
+raw HTML is stripped, and ` ```mermaid ` blocks render as diagrams. Relative links and
+images are rewritten to the file on GitHub. Repo-relative `image` files (`.png`, `.jpg`,
+`.jpeg`, `.webp`, `.gif`, `.avif`, max 5 MB) are downloaded to `public/projects/<slug>.<ext>`.
 
-- Markdown is GitHub-flavoured: tables, task lists and strikethrough all work. **Raw HTML is
-  stripped.**
-- A ` ```mermaid ` code block (typically in Architecture) renders as a diagram in
-  the browser.
-- Relative links and images (`docs/SETUP.md`, `![](img/x.png)`) are rewritten to
-  point at the file on GitHub.
-- Images: `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.avif`, max 5 MB. 1600×900 works well.
+## Project images
 
-Problems (unknown fields, bad values, unknown headings, missing images) show up as
-**warnings** in the sync summary. They never break the sync; the invalid part is
-skipped.
+Each project card and case-study page shows, in order of preference:
 
-## Trigger a sync manually
+1. **Explicit `image`** from the chosen source (unless `autoScreenshot: true`)
+2. **Automatic screenshot** of `liveUrl`, from `public/projects/auto/<slug>.webp`
+3. **Placeholder card**: the project title on the themed grid background
 
-- **From GitHub:** repo → **Actions** → **Sync portfolio** → **Run workflow**.
-- **Locally:** `npm run sync`, then commit `data/` and `public/projects/` yourself.
-  Set `GITHUB_TOKEN` first if you hit the 60 requests/hour anonymous limit:
-  ```powershell
-  $env:GITHUB_TOKEN = "<token>"; npm run sync      # PowerShell
-  ```
-  ```bash
-  GITHUB_TOKEN=<token> npm run sync                # bash
-  ```
-- **From another repo or a script** (e.g. on push to a project repo), send a
-  `repository_dispatch` event with type `portfolio-sync`:
-  ```bash
-  curl -X POST \
-    -H "Authorization: Bearer <token with repo access to portfolio-aftab>" \
-    -H "Accept: application/vnd.github+json" \
-    https://api.github.com/repos/Aftab5327/portfolio-aftab/dispatches \
-    -d '{"event_type":"portfolio-sync"}'
-  ```
+`npm run screenshots` captures every project that has a `liveUrl` and either no explicit
+`image` or `autoScreenshot: true`:
 
-## Edit your profile
+- Chromium at 1600×900, waits for `load` plus a short settle delay (30 s timeout). No
+  logins, and no cookie banners dismissed.
+- Saved as WebP (quality 80).
+- **No churn:** an existing screenshot is replaced only if more than 2% of pixels
+  changed (pixelmatch, colour tolerance 0.2). Otherwise the file and its `capturedAt`
+  stay the same.
+- A failed capture keeps the previous screenshot and records `"status": "failed"` with
+  the error in `data/screenshots.json`.
+- Projects that no longer qualify have their screenshot removed.
 
-Edit `content/profile.json` and push. `npm run build` (and CI) will fail with a
-clear message if a field is missing or malformed. Empty `experience` and
-`certifications` arrays simply hide those blocks on the About section.
+Locally you need Chromium once: `npx playwright install chromium`.
+Options: `npm run screenshots -- <slug>` (only that project), `-- --force` (replace even
+if nearly identical).
+
+## Run things manually
+
+| Task | GitHub | Locally |
+|---|---|---|
+| Sync | Actions → **Sync portfolio** → Run workflow | `npm run sync` |
+| Draft | Actions → **Draft case studies** → Run workflow | `npm run draft` (or `npm run draft -- <slug>`), needs `GROQ_API_KEY` |
+| Approve | (local only) | `npm run approve <slug>` |
+| Screenshots | Actions → **Refresh screenshots** → Run workflow | `npm run screenshots` |
+
+Set environment variables for local runs, e.g. in PowerShell:
+`$env:GITHUB_TOKEN = "<token>"; $env:GROQ_API_KEY = "<key>"; npm run draft`.
+`GITHUB_TOKEN` is optional (raises GitHub's limit from 60 to 5000 requests/hour).
+
+Trigger a sync from another repo or a script:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer <token with repo access to portfolio-aftab>" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/Aftab5327/portfolio-aftab/dispatches \
+  -d '{"event_type":"portfolio-sync"}'
+```
+
+## Repository settings these workflows need
+
+- **Secret `GROQ_API_KEY`**: Settings → Secrets and variables → Actions → *New
+  repository secret*. Used by **Draft case studies**.
+- **Settings → Actions → General → Workflow permissions**: *Read and write
+  permissions*, and tick **Allow GitHub Actions to create and approve pull requests**
+  (needed to open the draft PR).
+- If `main` is branch-protected, allow `github-actions[bot]` to push, or the sync and
+  screenshot commits will be rejected.
 
 ## Troubleshooting
 
 | Symptom | Cause / fix |
 |---|---|
-| `Sync failed: GitHub API rate limit exceeded` locally | Set `GITHUB_TOKEN` (any fine-grained token, no permissions needed). |
-| Project missing after sync | Check that the repo is public, not a fork or archived, and has the `portfolio` topic. |
-| A project appears twice | A manual entry with a different slug; delete it from `content/manual-projects.json`. |
-| Build fails with `Invalid data in content/profile.json` | Fix the field named in the error. |
-| Build fails with `Invalid data in data/projects.json` | Don't hand-edit it; run `npm run sync` to regenerate. |
-| Sync workflow ran but site didn't update | Open the Vercel dashboard and look for a deployment of the `chore(data)` commit. If Vercel skipped or blocked it because the author is `github-actions[bot]`, change the `git config user.email` in the workflow to your GitHub noreply address, or trigger a Vercel Deploy Hook from the workflow. |
-| CI didn't run on the sync commit | Expected: GitHub doesn't start workflows from pushes made with the built-in `GITHUB_TOKEN`. The sync script validates the data before writing it, and Vercel's build validates it again. |
+| `GitHub API rate limit exceeded` locally | Set `GITHUB_TOKEN` (any fine-grained token, no permissions needed). |
+| Project missing after sync | The repo must be public, not a fork or archived, with the `portfolio` topic, or the project needs a manual entry. |
+| A project appears twice | A manual entry with a different slug than the repo name. Rename the slug or delete the entry. |
+| Draft workflow: `GROQ_API_KEY is not set` | Add the repository secret (see above). |
+| Draft PR not created: "GitHub Actions is not permitted to create pull requests" | Enable that option in Workflow permissions. |
+| A repo keeps getting re-drafted | Close the PR and add its slug to `content/draft-skip.txt`. |
+| `Draft ... still invalid after retry` | The model ignored the format or invented numbers twice. Re-run later, or write the case study yourself. |
+| `npm run approve` refuses | Replace the listed `TODO:` lines, or use `-- --force`. |
+| Screenshot `status: "failed"` | The site was down, slow (>30 s) or returned an HTTP error. The previous screenshot is kept. |
+| Screenshot shows a cookie or login wall | Set an explicit `image`; auto screenshots don't interact with the page. |
+| Build fails with `Invalid data in …` | Fix the named field. For generated files, re-run the script instead of editing them. |
+| Bot commit didn't deploy | Check Vercel for the `chore(...)` commit. If Vercel blocks commits by `github-actions[bot]`, set the workflow's `git config user.email` to your GitHub noreply address, or call a Vercel Deploy Hook. |
+| CI didn't run on a bot commit or draft PR | Expected: GitHub doesn't start workflows from events created with the built-in `GITHUB_TOKEN`. The data is validated by the scripts and again by Vercel's build. |
