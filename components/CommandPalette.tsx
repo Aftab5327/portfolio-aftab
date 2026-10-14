@@ -4,8 +4,8 @@ import { KeyboardEvent as ReactKeyboardEvent, ReactNode, useCallback, useEffect,
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { FiCopy, FiDownload, FiGithub, FiHash, FiLinkedin, FiMoon, FiSearch, FiSun, FiTwitter } from "react-icons/fi";
-import { sections } from "@/lib/config";
+import { FiCopy, FiDownload, FiFileText, FiGithub, FiHash, FiLinkedin, FiMoon, FiSearch, FiSun, FiTwitter } from "react-icons/fi";
+import { RESUME_PAGE_PATH, RESUME_PATH, sections } from "@/lib/config";
 import type { Profile } from "@/lib/schema";
 
 type Command = {
@@ -48,7 +48,7 @@ function fuzzyScore(query: string, text: string): number | null {
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export default function CommandPalette({ profile }: { profile: Pick<Profile, "email" | "resume" | "socials"> }) {
+export default function CommandPalette({ profile }: { profile: Pick<Profile, "email" | "socials"> }) {
   const router = useRouter();
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
@@ -153,8 +153,16 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
         keywords: "cv pdf",
         icon: <FiDownload />,
         run: () => {
-          window.open(profile.resume, "_blank", "noopener");
+          window.open(RESUME_PATH, "_blank", "noopener");
         }
+      },
+      {
+        id: "resume-page",
+        label: "View resume (web page)",
+        group: "Navigate",
+        keywords: "cv html print",
+        icon: <FiFileText />,
+        run: () => router.push(RESUME_PAGE_PATH)
       },
       {
         id: "copy-email",

@@ -16,7 +16,11 @@
   "email": "aftab.iot@gmail.com",
   "phone": "+91 9370312566",
   "avatar": "/aftab.png",
-  "resume": "/resume.pdf",
+  "resume": {
+    "showPhone": false,
+    "projectLimit": 4,
+    "extraSections": []
+  },
   "githubUsername": "Aftab5327",
   "socials": {
     "github": "https://github.com/Aftab5327",

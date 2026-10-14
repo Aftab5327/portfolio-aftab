@@ -9,7 +9,7 @@ export default function Footer() {
   const site = getProfile();
 
   return (
-    <footer className="mx-auto w-[min(1180px,92%)] pb-10">
+    <footer className="mx-auto w-[min(1180px,92%)] pb-10 print:hidden">
       <div className="flex flex-col items-center gap-4 border-t border-line pt-6 sm:flex-row sm:justify-between">
         <p className="font-mono text-xs text-txtdim">
           <span className="text-teal">{"</>"}</span> Designed &amp; Developed by {site.name}

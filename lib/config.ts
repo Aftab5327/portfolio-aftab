@@ -2,6 +2,11 @@
 
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/+$/, "");
 
+/** Generated resume routes (see app/resume.pdf, app/resume, app/resume.json). */
+export const RESUME_PATH = "/resume.pdf";
+export const RESUME_PAGE_PATH = "/resume";
+export const RESUME_JSON_PATH = "/resume.json";
+
 /** Groq model used by the chat assistant and the case-study draft script. */
 export const GROQ_MODEL = "llama-3.1-8b-instant";
 

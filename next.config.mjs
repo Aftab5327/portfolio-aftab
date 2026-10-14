@@ -8,6 +8,10 @@ const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    // Load react-pdf from node_modules at runtime instead of bundling it (it relies on Node APIs and its own React reconciler).
+    serverComponentsExternalPackages: ["@react-pdf/renderer"]
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   }

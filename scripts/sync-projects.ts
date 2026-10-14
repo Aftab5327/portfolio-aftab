@@ -146,6 +146,7 @@ function normalize(project: Project): Project {
     liveUrl: project.liveUrl,
     image: project.image,
     autoScreenshot: project.autoScreenshot,
+    resumeBullet: project.resumeBullet,
     caseStudySource: project.caseStudySource,
     stars: project.stars,
     language: project.language,
@@ -157,13 +158,14 @@ function normalize(project: Project): Project {
 }
 
 /** Content fields that each source layer can provide. */
-type Layer = Partial<Pick<Project, "title" | "tagline" | "category" | "stack" | "featured" | "order" | "liveUrl" | "image" | "autoScreenshot">>;
+type Layer = Partial<Pick<Project, "title" | "tagline" | "resumeBullet" | "category" | "stack" | "featured" | "order" | "liveUrl" | "image" | "autoScreenshot">>;
 
 /** Later layers win; empty strings/arrays and undefined never override. */
 function mergeLayers(...layers: Layer[]): Required<Layer> {
   const merged: Required<Layer> = {
     title: "",
     tagline: "",
+    resumeBullet: "",
     category: "",
     stack: [],
     featured: false,
@@ -189,9 +191,10 @@ const layerFromRepo = (repo: GitHubRepo, topics: string[]): Layer => ({
   liveUrl: normalizeHomepage(repo.homepage)
 });
 
-const layerFromManual = ({ title, tagline, category, stack, featured, order, liveUrl, image, autoScreenshot }: ManualProject): Layer => ({
+const layerFromManual = ({ title, tagline, resumeBullet, category, stack, featured, order, liveUrl, image, autoScreenshot }: ManualProject): Layer => ({
   title,
   tagline,
+  resumeBullet,
   category,
   stack,
   featured,
@@ -235,6 +238,7 @@ async function buildProject({ slug, repo, portfolioMd, caseStudy, manual }: Sour
     slug,
     title: fields.title || humanize(slug),
     tagline: fields.tagline,
+    resumeBullet: fields.resumeBullet,
     category: fields.category,
     stack: fields.stack,
     featured: fields.featured,

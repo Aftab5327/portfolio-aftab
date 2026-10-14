@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { RESUME_PATH } from "@/lib/config";
 import type { Profile } from "@/lib/schema";
 
 export type AboutProfile = Pick<
@@ -15,7 +16,6 @@ export type AboutProfile = Pick<
   | "experience"
   | "certifications"
   | "stats"
-  | "resume"
 >;
 
 const educationLine = (item: AboutProfile["education"][number]) =>
@@ -197,7 +197,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
               Hire Me
             </button>
             <a
-              href={profile.resume}
+              href={RESUME_PATH}
               target="_blank"
               rel="noopener"
               className="inline-flex min-h-12 items-center rounded-xl border border-line bg-panel px-6 text-sm font-medium text-txt transition duration-200 hover:-translate-y-0.5 hover:border-teal hover:text-teal"

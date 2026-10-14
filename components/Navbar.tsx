@@ -12,7 +12,7 @@ import type { Profile } from "@/lib/schema";
 // Root-relative so the links also work from /projects/[slug].
 const links = sections.map((section) => ({ ...section, href: `/#${section.id}` }));
 
-export type NavProfile = Pick<Profile, "firstName" | "lastName" | "email" | "resume" | "socials">;
+export type NavProfile = Pick<Profile, "firstName" | "lastName" | "email" | "socials">;
 
 export default function Navbar({ profile }: { profile: NavProfile }) {
   const pathname = usePathname();
@@ -82,7 +82,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: "easeOut" }}
-      className={`sticky top-0 z-40 w-full transition-colors duration-300 ${
+      className={`sticky top-0 z-40 w-full transition-colors duration-300 print:hidden ${
         scrolled
           ? "border-b border-line bg-bg/80 backdrop-blur-xl"
           : "border-b border-transparent bg-transparent"

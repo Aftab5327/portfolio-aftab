@@ -135,6 +135,42 @@ body {
   }
 }
 
+/* ── Print: Ctrl+P gives a clean black-on-white page (used by /resume) ── */
+@page {
+  size: A4;
+  margin: 14mm 16mm;
+}
+
+@media print {
+  :root,
+  html.dark,
+  html.light {
+    --bg: #ffffff;
+    --bg-2: #ffffff;
+    --panel: #ffffff;
+    --panel-2: #ffffff;
+    --line: #c8d0cc;
+    --teal: #0a5a52;
+    --txt: #000000;
+    --txt-dim: #1f2924;
+    --txt-faint: #4a5a52;
+    color-scheme: light;
+  }
+
+  body {
+    background: #ffffff !important;
+  }
+
+  main {
+    width: auto !important;
+    padding: 0 !important;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
+
 /* Accessible focus ring across interactive elements */
 a:focus-visible,
 button:focus-visible,

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { GROQ_MODEL } from '@/lib/config'
+import { GROQ_MODEL, RESUME_PAGE_PATH, RESUME_PATH, siteUrl } from '@/lib/config'
 import { getProfile, getProjects } from '@/lib/data'
 
 const MAX_MESSAGE_LENGTH = 500
@@ -39,6 +39,8 @@ function isRateLimited(ip: string): boolean {
 // knows about newly synced projects without code changes.
 function buildSystemPrompt(): string {
   const profile = getProfile()
+  // Absolute links when the public site URL is configured, otherwise site-relative paths.
+  const resumeUrl = (path: string) => (/\/\/(localhost|127\.0\.0\.1)/.test(siteUrl) ? path : `${siteUrl}${path}`)
   const bullets = (items: string[]) => items.map((item) => `- ${item}`).join('\n')
 
   const education = profile.education.map((item) =>
@@ -83,7 +85,12 @@ Skills:
 ${bullets(skills)}
 
 Projects:
-${bullets(projects)}`
+${bullets(projects)}
+
+Resume (generated from this portfolio, always up to date):
+- PDF: ${resumeUrl(RESUME_PATH)}
+- Web version: ${resumeUrl(RESUME_PAGE_PATH)}
+When asked for the resume or CV, share both links.`
 }
 
 let systemPrompt: string | undefined

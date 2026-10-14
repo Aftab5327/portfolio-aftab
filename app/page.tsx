@@ -31,7 +31,6 @@ export default function HomePage() {
             heroIntro: profile.heroIntro,
             email: profile.email,
             socials: profile.socials,
-            resume: profile.resume,
             avatar: profile.avatar
           }}
         />
@@ -48,8 +47,7 @@ export default function HomePage() {
             education: profile.education,
             experience: profile.experience,
             certifications: profile.certifications,
-            stats: profile.stats,
-            resume: profile.resume
+            stats: profile.stats
           }}
         />
       </div>

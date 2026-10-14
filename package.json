@@ -10,10 +10,12 @@
     "sync": "tsx scripts/sync-projects.ts",
     "draft": "tsx scripts/draft-case-studies.ts",
     "approve": "tsx scripts/approve-case-study.ts",
-    "screenshots": "tsx scripts/screenshot-projects.ts"
+    "screenshots": "tsx scripts/screenshot-projects.ts",
+    "check:resume": "tsx scripts/check-resume.ts"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@react-pdf/renderer": "^4.9.0",
     "framer-motion": "^11.11.10",
     "mermaid": "^11.17.2",
     "next": "14.2.16",
@@ -34,6 +36,7 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.16",
     "gray-matter": "^4.0.3",
+    "pdf-lib": "^1.17.1",
     "pixelmatch": "^5.3.0",
     "playwright": "^1.64.0",
     "postcss": "^8.4.47",

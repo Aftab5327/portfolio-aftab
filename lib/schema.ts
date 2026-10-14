@@ -23,9 +23,24 @@ const educationSchema = z
     detail: z.string(),
     institution: z.string(),
     /** Compact label used for the chips under the About heading. */
-    short: nonEmpty
+    short: nonEmpty,
+    /** Graduation year or range shown on the resume, e.g. "2023" or "2019 – 2023". */
+    year: z.string().optional()
   })
   .strict();
+
+/** Resume-only settings (the resume itself is generated from the rest of the profile). */
+const resumeSettingsSchema = z
+  .object({
+    /** Print the phone number on the PDF/JSON resume. */
+    showPhone: z.boolean().default(false),
+    /** How many projects (featured first) the resume lists. */
+    projectLimit: z.number().int().min(1).max(8).default(4),
+    /** Extra resume sections, e.g. { "title": "Achievements", "items": ["..."] }. */
+    extraSections: z.array(z.object({ title: nonEmpty, items: z.array(nonEmpty).min(1) }).strict()).default([])
+  })
+  .strict()
+  .default({});
 
 const experienceSchema = z
   .object({
@@ -85,7 +100,7 @@ export const profileSchema = z
     email: z.string().email(),
     phone: z.string(),
     avatar: z.string().regex(/^\/|^https?:\/\//, "must be a /path or http(s) URL"),
-    resume: nonEmpty,
+    resume: resumeSettingsSchema,
     githubUsername: z.string().regex(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/, "invalid GitHub username"),
     socials: z
       .object({
@@ -146,7 +161,9 @@ export const manualProjectSchema = z
   .object({
     ...projectContentShape,
     /** Capture a screenshot of liveUrl even if `image` is set (the screenshot then wins). */
-    autoScreenshot: z.boolean().optional()
+    autoScreenshot: z.boolean().optional(),
+    /** One short impact line shown under the project on the resume. */
+    resumeBullet: z.string().optional()
   })
   .strict();
 
@@ -162,6 +179,8 @@ export const projectSchema = z
   .object({
     ...projectContentShape,
     autoScreenshot: z.boolean(),
+    /** One short impact line for the resume ("" = none). */
+    resumeBullet: z.string(),
     caseStudySource: z.enum(CASE_STUDY_SOURCES),
     stars: z.number().int().nonnegative(),
     /** Primary language reported by GitHub. */
@@ -205,7 +224,8 @@ export const portfolioFrontmatterSchema = z.object({
   order: z.number().optional(),
   liveUrl: optionalUrl.optional(),
   image: z.string().optional(),
-  autoScreenshot: z.boolean().optional()
+  autoScreenshot: z.boolean().optional(),
+  resumeBullet: z.string().optional()
 });
 
 /** data/screenshots.json, written by scripts/screenshot-projects.ts. Keyed by project slug. */

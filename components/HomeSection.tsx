@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { FiArrowRight, FiMail } from "react-icons/fi";
+import { RESUME_PATH } from "@/lib/config";
 import type { Profile } from "@/lib/schema";
 
 export type HeroProfile = Pick<
   Profile,
-  "name" | "firstName" | "title" | "roles" | "heroIntro" | "email" | "socials" | "resume" | "avatar"
+  "name" | "firstName" | "title" | "roles" | "heroIntro" | "email" | "socials" | "avatar"
 >;
 
 const TYPE_SPEED = 70;
@@ -196,7 +197,7 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
 
             <div className="mt-9 flex flex-wrap items-center gap-5">
               <a
-                href={profile.resume}
+                href={RESUME_PATH}
                 target="_blank"
                 rel="noopener"
                 className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-teal bg-teal/5 px-6 text-sm font-semibold text-teal transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal/15"

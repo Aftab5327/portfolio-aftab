@@ -42,3 +42,6 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Check generated resume (valid PDF, < 300 KB, ≤ 2 pages)
+        run: npm run check:resume

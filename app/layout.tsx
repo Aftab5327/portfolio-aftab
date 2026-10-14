@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { firstName, lastName, email, resume, socials } = profile;
+  const { firstName, lastName, email, socials } = profile;
 
   return (
     <html
@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="font-sans antialiased">
         <Providers>
-          <Navbar profile={{ firstName, lastName, email, resume, socials }} />
+          <Navbar profile={{ firstName, lastName, email, socials }} />
           <main className="mx-auto w-[min(1180px,92%)] pb-16 pt-6 md:pt-8">{children}</main>
           <Footer />
         </Providers>

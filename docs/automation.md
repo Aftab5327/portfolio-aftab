@@ -132,6 +132,56 @@ Locally you need Chromium once: `npx playwright install chromium`.
 Options: `npm run screenshots -- <slug>` (only that project), `-- --force` (replace even
 if nearly identical).
 
+## Resume
+
+The resume is generated from the same data as the website, so it always matches it.
+`public/resume.pdf` no longer exists.
+
+| URL | What | Built by |
+|---|---|---|
+| `/resume.pdf` | ATS-friendly PDF: A4, single column, real selectable text, standard headings, clickable links, Inter font (bundled in `assets/fonts/`) | `app/resume.pdf/route.ts` + `lib/resume-pdf.tsx` |
+| `/resume` | Web version styled like the site, with print CSS (Ctrl+P gives a clean page) and Download PDF / View JSON / Print buttons | `app/resume/page.tsx` |
+| `/resume.json` | [JSON Resume](https://jsonresume.org/schema) (`basics`, `work`, `education`, `skills`, `projects`, `certificates`) | `app/resume.json/route.ts` |
+
+All three are `force-static`: generated **at build time on every deploy** from
+`lib/resume.ts → buildResume()`, which reads `getProfile()` + `getProjects()`.
+
+**What goes in**, in this order. Empty sections are left out entirely:
+
+| Section | Source |
+|---|---|
+| Header | `name`, `title`, `email`, `location`, `phone` (only if `resume.showPhone`), site URL, `socials` |
+| Summary | `summary` paragraphs |
+| Experience | `experience[]` (role, company, location, start, end, summary, highlights) |
+| Projects | First `resume.projectLimit` projects (default 4), sorted like the site: featured → `order` → latest push. Title, tagline, `resumeBullet`, stack, and link (live demo → repo → case-study page) |
+| Skills | `skills[]` groups |
+| Education | `education[]` (degree, detail, institution, `year`) |
+| Certifications | `certifications[]` |
+| Extra sections | `resume.extraSections[]`, e.g. `{ "title": "Achievements", "items": ["…"] }` |
+
+Resume settings in `content/profile.json`:
+
+```json
+"resume": {
+  "showPhone": false,
+  "projectLimit": 4,
+  "extraSections": []
+}
+```
+
+Per project, add a one-line impact statement with `resumeBullet` in `PORTFOLIO.md`
+frontmatter, a case study, or `content/manual-projects.json`.
+
+Dates: write experience `start`/`end` as `2024-01` or `Jan 2024` (and `Present`) so they
+convert cleanly to ISO dates in `/resume.json`.
+
+**Set `NEXT_PUBLIC_SITE_URL` in Vercel.** Without it the resume leaves out the portfolio
+link, the footer URL and the case-study links (it never prints `localhost`).
+
+**CI guard:** after `npm run build`, CI runs `npm run check:resume`, which fails if
+`/resume.pdf` wasn't generated, isn't a valid PDF, is 300 KB or more, or is longer than
+2 pages. If it fails on length, lower `resume.projectLimit` or tighten the summary.
+
 ## Run things manually
 
 | Task | GitHub | Locally |

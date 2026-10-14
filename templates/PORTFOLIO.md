@@ -11,6 +11,8 @@ featured: true          # featured projects are listed first
 order: 1                # lower numbers come first (within featured / non-featured)
 liveUrl: https://infrasense-demo.example.com   # falls back to the repo's "Website" field
 image: docs/screenshot.png                      # repo-relative path (downloaded at sync) or a full https:// URL
+# autoScreenshot: true                          # capture liveUrl and prefer it over `image`
+resumeBullet: Cut abnormal-usage detection from ~2 weeks to under 5 minutes across a 6-floor pilot building.   # one impact line for the resume
 ---
 
 ## Problem
