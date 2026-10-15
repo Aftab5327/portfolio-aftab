@@ -4,6 +4,7 @@ import { KeyboardEvent as ReactKeyboardEvent, ReactNode, useCallback, useEffect,
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useClientValue, useHydrated } from "@/lib/use-client-value";
 import {
   FiActivity,
   FiBookOpen,
@@ -67,11 +68,11 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
 
-  const [mounted, setMounted] = useState(false);
-  const [isMac, setIsMac] = useState(false);
+  const mounted = useHydrated();
+  const isMac = useClientValue(() => /Mac|iPhone|iPad/.test(navigator.userAgent), false);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [rawActiveIndex, setActiveIndex] = useState(0);
   const [toast, setToast] = useState("");
 
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -82,11 +83,6 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
   const baseId = useId();
   const listboxId = `${baseId}-listbox`;
   const optionId = (index: number) => `${baseId}-option-${index}`;
-
-  useEffect(() => {
-    setMounted(true);
-    setIsMac(/Mac|iPhone|iPad/.test(navigator.userAgent));
-  }, []);
 
   const openPalette = useCallback(() => {
     restoreFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -270,11 +266,10 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
       .map((item) => item.command);
   }, [commands, query]);
 
-  // Keep the active option within range and visible.
-  useEffect(() => {
-    setActiveIndex((index) => Math.min(index, Math.max(results.length - 1, 0)));
-  }, [results.length]);
+  // Keep the active option within range (derived during render instead of corrected in an effect).
+  const activeIndex = Math.min(rawActiveIndex, Math.max(results.length - 1, 0));
 
+  // ...and visible.
   useEffect(() => {
     if (!open) return;
     listRef.current?.querySelector<HTMLElement>(`[data-index="${activeIndex}"]`)?.scrollIntoView({ block: "nearest" });
@@ -293,11 +288,11 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
         break;
       case "ArrowDown":
         event.preventDefault();
-        if (results.length) setActiveIndex((index) => (index + 1) % results.length);
+        if (results.length) setActiveIndex((activeIndex + 1) % results.length);
         break;
       case "ArrowUp":
         event.preventDefault();
-        if (results.length) setActiveIndex((index) => (index - 1 + results.length) % results.length);
+        if (results.length) setActiveIndex((activeIndex - 1 + results.length) % results.length);
         break;
       case "Home":
         event.preventDefault();
@@ -351,7 +346,7 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
       {mounted && open
         ? createPortal(
             <div
-              className="fixed inset-0 z-[60] flex items-start justify-center bg-black/60 px-4 pt-[12vh] backdrop-blur-sm"
+              className="fixed inset-0 z-60 flex items-start justify-center bg-black/60 px-4 pt-[12vh] backdrop-blur-xs"
               onMouseDown={(event) => {
                 if (event.target === event.currentTarget) closePalette();
               }}
@@ -392,7 +387,7 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
                     placeholder="Type a command or search…"
                     spellCheck={false}
                     autoComplete="off"
-                    className="min-h-14 flex-1 bg-transparent font-mono text-sm text-txt outline-none placeholder:text-txtfaint focus-visible:outline-none"
+                    className="min-h-14 flex-1 bg-transparent font-mono text-sm text-txt outline-hidden placeholder:text-txtfaint focus-visible:outline-hidden"
                   />
                 </div>
 
@@ -451,7 +446,7 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
       {/* Live region stays mounted so screen readers announce changes to it. */}
       {mounted
         ? createPortal(
-            <div role="status" aria-live="polite" className="pointer-events-none fixed bottom-6 left-1/2 z-[70] -translate-x-1/2">
+            <div role="status" aria-live="polite" className="pointer-events-none fixed bottom-6 left-1/2 z-70 -translate-x-1/2">
               {toast ? (
                 <p className="rounded-lg border border-line bg-panel px-4 py-2.5 font-mono text-sm text-txt shadow-card">
                   {toast}

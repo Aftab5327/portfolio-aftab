@@ -38,7 +38,7 @@ const components: Components = {
     <a
       href={href}
       {...(isExternal(href) ? { target: "_blank", rel: "noreferrer" } : {})}
-      className="text-teal underline decoration-teal/40 underline-offset-2 hover:decoration-teal"
+      className="text-teal underline underline-offset-2 hover:decoration-teal"
     >
       {children}
     </a>

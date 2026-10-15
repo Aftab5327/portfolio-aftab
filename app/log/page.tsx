@@ -45,7 +45,7 @@ export default function BuildLogPage() {
             <li key={post.slug}>
               <Link
                 href={`/log/${post.slug}`}
-                className="block rounded-xl border border-line bg-panel2 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-teal/60"
+                className="block rounded-xl border border-line bg-panel2 p-5 transition-all duration-200 hover:-translate-y-0.5"
               >
                 <p className="font-mono text-[11px] text-txtdim">
                   <time dateTime={post.weekStart}>{formatDay(post.weekStart)}</time> – <time dateTime={post.weekEnd}>{formatDay(post.weekEnd)}</time> ·{" "}

@@ -137,7 +137,7 @@ export default async function StatsPage() {
                 </thead>
                 <tbody>
                   {uptime.sites.map((site) => (
-                    <tr key={site.id} className="border-b border-line/60 last:border-0">
+                    <tr key={site.id} className="border-b last:border-0">
                       <td className="py-2.5 pr-4">
                         {site.url ? (
                           <a href={site.url} target="_blank" rel="noreferrer" className="text-txt hover:text-teal">

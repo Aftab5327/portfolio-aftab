@@ -7,7 +7,7 @@ import ProjectImage from "@/components/ProjectImage";
 import { getProject, getProjects } from "@/lib/data";
 import { SECTION_KEYS, type CaseStudySource } from "@/lib/schema";
 
-type Params = { params: { slug: string } };
+type Params = { params: Promise<{ slug: string }> };
 
 export const dynamicParams = false;
 
@@ -24,7 +24,8 @@ export function generateStaticParams() {
   return getProjects().map((project) => ({ slug: project.slug }));
 }
 
-export function generateMetadata({ params }: Params): Metadata {
+export async function generateMetadata(props: Params): Promise<Metadata> {
+  const params = await props.params;
   const project = getProject(params.slug);
   if (!project) return {};
 
@@ -47,7 +48,8 @@ export function generateMetadata({ params }: Params): Metadata {
   };
 }
 
-export default function ProjectPage({ params }: Params) {
+export default async function ProjectPage(props: Params) {
+  const params = await props.params;
   const project = getProject(params.slug);
   if (!project) notFound();
 

@@ -5,7 +5,7 @@ import { FiArrowLeft, FiCpu, FiGitCommit } from "react-icons/fi";
 import Markdown from "@/components/Markdown";
 import { getBuildLogPost, getBuildLogPosts, plainText } from "@/lib/build-log";
 
-type Params = { params: { slug: string } };
+type Params = { params: Promise<{ slug: string }> };
 
 export const dynamicParams = false;
 
@@ -16,7 +16,8 @@ export function generateStaticParams() {
   return getBuildLogPosts().map((post) => ({ slug: post.slug }));
 }
 
-export function generateMetadata({ params }: Params): Metadata {
+export async function generateMetadata(props: Params): Promise<Metadata> {
+  const params = await props.params;
   const post = getBuildLogPost(params.slug);
   if (!post) return {};
   const description = plainText(post.body).replace(/\n/g, " ").slice(0, 160);
@@ -28,7 +29,8 @@ export function generateMetadata({ params }: Params): Metadata {
   };
 }
 
-export default function BuildLogPostPage({ params }: Params) {
+export default async function BuildLogPostPage(props: Params) {
+  const params = await props.params;
   const post = getBuildLogPost(params.slug);
   if (!post) notFound();
 
@@ -46,7 +48,7 @@ export default function BuildLogPostPage({ params }: Params) {
         <h1 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">{post.title}</h1>
         <div className="mt-4 flex flex-wrap items-center gap-3 font-mono text-xs text-txtdim">
           {post.aiGenerated ? (
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-teal/40 bg-teal/10 px-2.5 py-1 text-teal">
+            <span className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-teal">
               <FiCpu aria-hidden />
               AI summary of real commits
             </span>

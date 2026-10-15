@@ -3,7 +3,8 @@
  * - Credentials not configured → 404, as if the admin area didn't exist.
  * - Missing or wrong credentials → 401 with a Basic challenge.
  * - Every admin response carries X-Robots-Tag: noindex.
- * Runs on the Edge runtime, so the constant-time comparison uses Web Crypto.
+ * Next 16 "proxy" (formerly middleware); runs on the Node.js runtime. The comparison
+ * uses Web Crypto, which is available in both Node and Edge.
  */
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -35,7 +36,7 @@ function parseBasic(header: string | null): { user: string; password: string } |
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const expectedUser = process.env.ADMIN_USER?.trim();
   const expectedPassword = process.env.ADMIN_PASSWORD?.trim();
 

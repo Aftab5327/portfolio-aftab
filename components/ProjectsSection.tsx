@@ -29,9 +29,9 @@ export default function ProjectsSection({ projects }: { projects: ProjectCard[] 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.45, delay: index * 0.06, ease: "easeOut" }}
-            className="group overflow-hidden rounded-xl border border-line bg-panel2 transition-all duration-200 hover:-translate-y-1.5 hover:border-teal/60 hover:shadow-glow has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal"
+            className="group overflow-hidden rounded-xl border border-line bg-panel2 transition-all duration-200 hover:shadow-glow has-focus-visible:ring-2 has-focus-visible:ring-teal"
           >
-            <Link href={`/projects/${project.slug}`} className="flex h-full flex-col focus-visible:outline-none">
+            <Link href={`/projects/${project.slug}`} className="flex h-full flex-col focus-visible:outline-hidden">
               {/* IDE window top bar */}
               <div className="flex items-center justify-between border-b border-line bg-panel px-4 py-2.5">
                 <div className="flex items-center gap-1.5" aria-hidden>

@@ -15,7 +15,7 @@ export default function Footer() {
           <span className="text-teal">{"</>"}</span> Designed &amp; Developed by {site.name}
         </p>
 
-        <p className="order-last font-mono text-xs text-txtfaint sm:order-none">{"// copyright (c) 2026"}</p>
+        <p className="order-last font-mono text-xs text-txtfaint sm:order-0">{"// copyright (c) 2026"}</p>
 
         <div className="flex items-center gap-2">
           <a href={site.socials.github} target="_blank" rel="noreferrer" aria-label="GitHub" className={iconClass}>

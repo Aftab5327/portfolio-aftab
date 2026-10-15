@@ -78,7 +78,7 @@ function historyFor(messages: Message[]): { role: Message["role"]; content: stri
 
 function ActionChip({ action }: { action: ChatAction }) {
   const className =
-    "inline-flex items-center gap-1.5 rounded-lg border border-teal/40 bg-teal/10 px-3 py-1.5 font-mono text-xs text-teal transition-colors hover:bg-teal/20";
+    "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-xs text-teal transition-colors";
   if (!action.external) {
     return (
       <Link href={action.href} className={className}>
@@ -281,7 +281,7 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
 
             {messages.map((message) =>
               message.role === "user" ? (
-                <div key={message.id} className="ml-auto max-w-[92%] rounded-xl border border-teal/30 bg-teal/10 px-4 py-3 text-sm text-txt">
+                <div key={message.id} className="ml-auto max-w-[92%] rounded-xl border px-4 py-3 text-sm text-txt">
                   <p className="mb-1 font-mono text-[11px] text-teal">{"> you"}</p>
                   <p className="whitespace-pre-wrap">{message.content}</p>
                 </div>
@@ -361,13 +361,13 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
                 maxLength={MAX_MESSAGE_LENGTH}
                 aria-label={`Ask the AI assistant about ${firstName}`}
                 placeholder={`Ask about ${firstName}'s skills, projects, or availability...`}
-                className="min-h-12 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-txt outline-none transition-colors placeholder:text-txtfaint focus:border-teal focus:ring-2 focus:ring-teal/40"
+                className="min-h-12 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:border-teal focus:ring-2"
               />
               {streaming ? (
                 <button
                   type="button"
                   onClick={stop}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-teal px-6 text-sm font-semibold text-teal transition hover:bg-teal/10"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-teal px-6 text-sm font-semibold text-teal transition"
                 >
                   <FiSquare aria-hidden />
                   Stop

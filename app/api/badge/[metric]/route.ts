@@ -39,7 +39,8 @@ async function build(metric: Metric): Promise<Badge> {
   }
 }
 
-export async function GET(_request: Request, { params }: { params: { metric: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ metric: string }> }) {
+  const params = await props.params;
   if (!METRICS.includes(params.metric as Metric)) {
     return new Response(JSON.stringify({ error: "Unknown metric" }), { status: 404, headers: { "Content-Type": "application/json" } });
   }

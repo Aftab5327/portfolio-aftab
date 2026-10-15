@@ -24,7 +24,7 @@ export default function Mermaid({ chart }: { chart: string }) {
           startOnLoad: false,
           securityLevel: "strict",
           theme: resolvedTheme === "light" ? "neutral" : "dark",
-          fontFamily: "var(--font-mono), ui-monospace, monospace"
+          fontFamily: "var(--font-jetbrains), ui-monospace, monospace"
         });
         await mermaid.parse(chart);
         const { svg: rendered } = await mermaid.render(`mermaid-${baseId}-${Date.now()}`, chart);

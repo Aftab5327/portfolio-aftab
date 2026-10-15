@@ -46,16 +46,19 @@ export type BuildLogPost = z.infer<typeof buildLogFrontmatterSchema> & { slug: s
 
 /** All posts, newest first. Invalid files fail the build with a readable error. */
 export function getBuildLogPosts(dir = BUILD_LOG_DIR): BuildLogPost[] {
+  // Posts are only read at build time (every consumer is prerendered), so Turbopack
+  // needn't trace these `dir`-relative reads into the server bundle.
+  const root = path.join(/*turbopackIgnore: true*/ dir);
   let files: string[];
   try {
-    files = readdirSync(dir).filter((file) => file.endsWith(".md") && POST_SLUG.test(file.slice(0, -3)));
+    files = readdirSync(root).filter((file) => file.endsWith(".md") && POST_SLUG.test(file.slice(0, -3)));
   } catch {
     return [];
   }
 
   return files
     .map((file) => {
-      const raw = readFileSync(path.join(dir, file), "utf8").replace(/^﻿/, "");
+      const raw = readFileSync(path.join(/*turbopackIgnore: true*/ root, file), "utf8").replace(/^﻿/, "");
       const parsed = matter(raw, {});
       const result = buildLogFrontmatterSchema.safeParse(parsed.data);
       if (!result.success) {

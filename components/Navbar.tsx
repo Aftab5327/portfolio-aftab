@@ -49,10 +49,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
       .map((link) => document.getElementById(link.id))
       .filter((element): element is HTMLElement => Boolean(element));
 
-    if (!elements.length) {
-      setActiveSection("");
-      return;
-    }
+    if (!elements.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -76,6 +73,9 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
     return () => observer.disconnect();
   }, [pathname]);
 
+  // The home-page sections only exist on "/"; elsewhere no link is highlighted.
+  const highlighted = pathname === "/" ? activeSection : "";
+
   const handleNavClick = () => setMenuOpen(false);
 
   return (
@@ -85,11 +85,12 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
       transition={{ duration: 0.7, ease: "easeOut" }}
       className={`sticky top-0 z-40 w-full transition-colors duration-300 print:hidden ${
         scrolled
-          ? "border-b border-line bg-bg/80 backdrop-blur-xl"
+          ? "border-b border-line backdrop-blur-xl"
           : "border-b border-transparent bg-transparent"
       }`}
     >
       <nav className="mx-auto flex w-[min(1180px,92%)] items-center justify-between py-4">
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- full navigation + hash scroll, kept identical to Next 14 */}
         <a
           href="/#home"
           onClick={handleNavClick}
@@ -105,7 +106,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
                 href={link.href}
                 onClick={handleNavClick}
                 className={`font-mono text-[13px] transition-colors duration-200 hover:text-teal ${
-                  activeSection === link.id ? "text-teal" : "text-txtdim"
+                  highlighted === link.id ? "text-teal" : "text-txtdim"
                 }`}
               >
                 {link.label}
@@ -189,7 +190,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
                   href={link.href}
                   onClick={handleNavClick}
                   className={`flex min-h-12 w-full items-center rounded-xl border border-line px-5 font-mono text-lg transition-colors ${
-                    activeSection === link.id ? "bg-panel text-teal" : "text-txtdim"
+                    highlighted === link.id ? "bg-panel text-teal" : "text-txtdim"
                   }`}
                 >
                   <span className="mr-3 text-txtfaint">{`0${links.indexOf(link) + 1}`}</span>

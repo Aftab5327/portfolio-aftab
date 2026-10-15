@@ -10,14 +10,16 @@ import { getProfile } from "@/lib/data";
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
   weight: ["700", "800"],
-  variable: "--font-display",
+  // Not --font-display: Tailwind 4 emits its theme tokens (--font-display/--font-mono) as CSS
+  // variables on :root, which would collide with next/font's variables and form a cycle.
+  variable: "--font-bricolage",
   display: "swap"
 });
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "600"],
-  variable: "--font-mono",
+  variable: "--font-jetbrains",
   display: "swap"
 });
 
@@ -59,6 +61,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       className={`${display.variable} ${mono.variable} ${body.variable}`}
+      // Next 16 no longer resets our global `scroll-behavior: smooth` during route changes;
+      // this attribute keeps the Next 14 behaviour (instant jump to top on navigation).
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body className="font-sans antialiased">
