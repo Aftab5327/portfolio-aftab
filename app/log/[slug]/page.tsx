@@ -35,7 +35,7 @@ export default async function BuildLogPostPage(props: Params) {
   if (!post) notFound();
 
   return (
-    <article className="mx-auto max-w-3xl rounded-card border border-line bg-panel px-6 py-10 shadow-soft sm:px-10 lg:py-14">
+    <article className="mx-auto max-w-3xl rounded-card border border-line bg-panel bg-grid px-6 py-10 shadow-soft sm:px-10 lg:py-14">
       <Link href="/log" className="inline-flex items-center gap-2 font-mono text-sm text-txtdim transition-colors hover:text-teal">
         <FiArrowLeft aria-hidden />
         cd ../log
@@ -48,7 +48,7 @@ export default async function BuildLogPostPage(props: Params) {
         <h1 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">{post.title}</h1>
         <div className="mt-4 flex flex-wrap items-center gap-3 font-mono text-xs text-txtdim">
           {post.aiGenerated ? (
-            <span className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-teal">
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-teal/40 bg-teal/10 px-2.5 py-1 text-teal">
               <FiCpu aria-hidden />
               AI summary of real commits
             </span>

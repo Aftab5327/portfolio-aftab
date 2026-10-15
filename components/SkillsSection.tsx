@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { syntaxRole } from "@/lib/categories";
 import type { Profile } from "@/lib/schema";
+import { ROLE_TEXT, SyntaxChip } from "@/components/SyntaxChip";
 
 export default function SkillsSection({ skills }: { skills: Profile["skills"] }) {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -29,7 +31,7 @@ export default function SkillsSection({ skills }: { skills: Profile["skills"] })
   return (
     <section
       ref={sectionRef}
-      className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16"
+      className="rounded-card border border-line bg-panel bg-grid px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -49,10 +51,10 @@ export default function SkillsSection({ skills }: { skills: Profile["skills"] })
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
-            className="rounded-2xl border border-line bg-panel2 p-5 transition-all duration-200"
+            className="rounded-2xl border border-line bg-panel2 p-5 transition-all duration-200 hover:border-teal/50"
           >
             <h3 className="flex items-center gap-2 font-mono text-base font-semibold text-txt">
-              <span className="text-teal">{group.glyph}</span>
+              <span className={ROLE_TEXT[syntaxRole(group.category)]}>{group.glyph}</span>
               {group.category}
             </h3>
 
@@ -62,9 +64,7 @@ export default function SkillsSection({ skills }: { skills: Profile["skills"] })
                 return (
                   <div key={skill.name}>
                     <div className="flex items-center justify-between gap-3">
-                      <span className="rounded-md border border-line bg-panel px-2.5 py-1 font-mono text-[11px] text-txtdim">
-                        {skill.name}
-                      </span>
+                      <SyntaxChip label={skill.name} />
                       {pct ? <span className="font-mono text-[11px] text-teal">{pct}%</span> : null}
                     </div>
                     {pct ? (

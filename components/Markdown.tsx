@@ -38,7 +38,7 @@ const components: Components = {
     <a
       href={href}
       {...(isExternal(href) ? { target: "_blank", rel: "noreferrer" } : {})}
-      className="text-teal underline underline-offset-2 hover:decoration-teal"
+      className="text-teal underline decoration-teal/40 underline-offset-2 hover:decoration-teal"
     >
       {children}
     </a>
@@ -56,13 +56,13 @@ const components: Components = {
       <table className="w-full border-collapse text-left text-sm text-txtdim">{children}</table>
     </div>
   ),
-  th: ({ children }) => <th className="border-b border-line bg-panel2 px-3 py-2 font-mono text-xs text-txt">{children}</th>,
+  th: ({ children }) => <th className="border-b border-line bg-bg2 px-3 py-2 font-mono text-xs text-txt">{children}</th>,
   td: ({ children }) => <td className="border-b border-line px-3 py-2 align-top">{children}</td>,
   code: ({ children, className }) =>
     className ? (
       <code className={className}>{children}</code>
     ) : (
-      <code className="rounded-md border border-line bg-panel2 px-1.5 py-0.5 font-mono text-[13px] text-txt">{children}</code>
+      <code className="rounded-md border border-line bg-bg2 px-1.5 py-0.5 font-mono text-[13px] text-syn-string">{children}</code>
     ),
   pre: ({ node, children }) => {
     const code = node?.children?.[0] as unknown as HastNode | undefined;
@@ -71,7 +71,7 @@ const components: Components = {
       return <Mermaid chart={textOf(code).trim()} />;
     }
     return (
-      <pre className="mt-4 overflow-x-auto rounded-xl border border-line bg-panel2 p-4 font-mono text-[13px] leading-relaxed text-txt">
+      <pre className="mt-4 overflow-x-auto rounded-xl border border-line border-l-2 border-l-teal bg-bg2 p-4 font-mono text-[13px] leading-relaxed text-txt">
         {children}
       </pre>
     );

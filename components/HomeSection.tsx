@@ -98,14 +98,14 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
         {codeRain(profile.name)}
       </pre>
 
-      <section className="relative z-10 overflow-hidden rounded-card border border-line bg-panel shadow-card">
+      <section className="relative z-10 overflow-hidden rounded-card border border-line bg-panel bg-grid shadow-card">
         {/* ── Card top bar (browser / IDE chrome) ── */}
         <div className="flex items-center justify-between gap-4 border-b border-line bg-panel2 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="hidden items-center gap-1.5 sm:flex" aria-hidden>
-              <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-              <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-              <span className="h-3 w-3 rounded-full bg-[#28c840]" />
+              <span className="h-3 w-3 rounded-full bg-danger" />
+              <span className="h-3 w-3 rounded-full bg-warning" />
+              <span className="h-3 w-3 rounded-full bg-success" />
             </div>
             <span className="font-mono text-sm font-semibold text-txt">
               <span className="text-teal">&lt;A/&gt;</span> {profile.name}
@@ -147,7 +147,7 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
             <a
               href={`mailto:${profile.email}`}
               aria-label={`Email ${profile.firstName}`}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-teal text-bg transition-transform hover:-translate-y-0.5"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-teal text-bg glow-hover hover:-translate-y-0.5"
             >
               <FiMail className="h-4 w-4" />
             </a>
@@ -168,13 +168,10 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
           <div className="relative z-10">
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-2 font-mono text-sm text-txtdim">
-                <span className="relative inline-flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-pulseDot rounded-full bg-green" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green" />
-                </span>
+                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-green" />
                 Hello, I&apos;m
               </span>
-              <span className="rounded-full border px-3 py-1 font-mono text-[11px] text-teal">
+              <span className="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 font-mono text-[11px] text-teal">
                 {"// open to opportunities"}
               </span>
             </div>
@@ -200,7 +197,7 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
                 href={RESUME_PATH}
                 target="_blank"
                 rel="noopener"
-                className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-teal px-6 text-sm font-semibold text-teal transition-all duration-200 hover:-translate-y-0.5"
+                className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-teal bg-teal/5 px-6 text-sm font-semibold text-teal glow-hover hover:-translate-y-0.5 hover:bg-teal/15"
               >
                 View my CV
                 <FiArrowRight className="transition-transform group-hover:translate-x-1" />
@@ -208,7 +205,7 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
               <button
                 type="button"
                 onClick={() => scrollToSection("contact")}
-                className="text-sm font-medium text-txt underline decoration-2 underline-offset-4 transition-colors hover:text-teal"
+                className="text-sm font-medium text-txt underline decoration-teal/60 decoration-2 underline-offset-4 transition-colors hover:text-teal"
               >
                 Get in touch
               </button>
@@ -220,7 +217,7 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
             <div className="relative aspect-square w-full">
               {/* dark disc backdrop */}
               <div className="absolute inset-[8%] rounded-full bg-panel2 ring-1 ring-line" />
-              <div className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle_at_50%_30%,rgba(45,212,191,0.18),transparent_60%)]" />
+              <div className="absolute inset-[8%] rounded-full bg-avatar-halo" />
 
               {/* 3D avatar cut-out — sits larger than the disc and spills over the top */}
               <Image

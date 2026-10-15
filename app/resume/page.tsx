@@ -35,18 +35,18 @@ export default function ResumePage() {
         <a
           href={RESUME_PATH}
           download={resume.meta.fileName}
-          className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-teal px-5 text-sm font-semibold text-bg transition hover:brightness-110"
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-teal px-5 text-sm font-semibold text-bg glow-hover"
         >
           <FiDownload aria-hidden />
           Download PDF
         </a>
         <a
           href={RESUME_JSON_PATH}
-          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line bg-panel2 px-5 text-sm font-medium text-txt transition hover:border-teal hover:text-teal"
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line-strong bg-panel2 px-5 text-sm font-medium text-txt transition hover:border-teal hover:text-teal"
         >
           {"{ }"} View JSON
         </a>
-        <PrintButton className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line bg-panel2 px-5 text-sm font-medium text-txt transition hover:border-teal hover:text-teal">
+        <PrintButton className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line-strong bg-panel2 px-5 text-sm font-medium text-txt transition hover:border-teal hover:text-teal">
           <FiPrinter aria-hidden />
           Print
         </PrintButton>

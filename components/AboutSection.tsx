@@ -32,7 +32,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, ease: "easeOut" }}
-      className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16"
+      className="rounded-card border border-line bg-panel bg-grid px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16"
     >
       <p className="font-mono text-sm text-teal">{"// about"}</p>
       <h2 className="fluid-heading mt-3 max-w-3xl font-display font-bold tracking-tight text-txt">{profile.headline}</h2>
@@ -61,7 +61,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
           ))}
 
           {profile.recruiterNote ? (
-            <div className="mt-6 rounded-xl border p-4 text-sm leading-relaxed text-txt">
+            <div className="mt-6 rounded-xl border border-teal/30 bg-teal/10 p-4 text-sm leading-relaxed text-txt">
               <span className="font-mono font-semibold text-teal">{"// for recruiters:"}</span> {profile.recruiterNote}
             </div>
           ) : null}
@@ -74,7 +74,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
                   <div key={item.text} className="flex items-center gap-3 text-sm text-txtdim">
                     <span
                       aria-hidden
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-line"
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-teal/10"
                     >
                       {item.icon}
                     </span>
@@ -108,7 +108,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
               <ol className="relative mt-5 space-y-6 before:absolute before:bottom-1 before:left-[5px] before:top-1 before:w-px before:bg-line before:content-['']">
                 {profile.experience.map((item) => (
                   <li key={`${item.company}-${item.role}-${item.start}`} className="relative pl-7">
-                    <span className="absolute left-0 top-1.5 inline-flex h-2.5 w-2.5 rounded-full border border-teal" />
+                    <span className="absolute left-0 top-1.5 inline-flex h-2.5 w-2.5 rounded-full border border-teal bg-teal/30" />
                     <p className="text-sm font-semibold text-txt">
                       {item.role} <span className="font-normal text-txtdim">@ {item.company}</span>
                     </p>
@@ -143,7 +143,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
                 <div className="absolute bottom-1 left-[5px] top-1 mb-0 w-px bg-line" />
                 {profile.education.map((item) => (
                   <div key={item.short} className="relative pl-7">
-                    <span className="absolute left-0 top-1.5 inline-flex h-2.5 w-2.5 rounded-full border border-teal" />
+                    <span className="absolute left-0 top-1.5 inline-flex h-2.5 w-2.5 rounded-full border border-teal bg-teal/30" />
                     <p className="text-sm leading-relaxed text-txtdim">{educationLine(item)}</p>
                   </div>
                 ))}
@@ -181,7 +181,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
               <div className="mt-4 grid grid-cols-2 gap-3">
                 {profile.stats.map((item) => (
                   <div key={item.label} className="rounded-lg border border-line bg-panel p-4">
-                    <p className="font-display text-3xl font-bold leading-none text-teal">{item.value}</p>
+                    <p className="font-mono text-3xl font-bold leading-none text-teal">{item.value}</p>
                     <p className="mt-2 text-xs leading-relaxed text-txtdim">{item.label}</p>
                   </div>
                 ))}
@@ -193,7 +193,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
             <button
               type="button"
               onClick={() => scrollToSection("contact")}
-              className="inline-flex min-h-12 items-center rounded-xl bg-teal px-6 text-sm font-semibold text-bg transition duration-200 hover:-translate-y-0.5 hover:brightness-110"
+              className="inline-flex min-h-12 items-center rounded-xl bg-teal px-6 text-sm font-semibold text-bg glow-hover duration-200 hover:-translate-y-0.5"
             >
               Hire Me
             </button>
@@ -201,7 +201,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
               href={RESUME_PATH}
               target="_blank"
               rel="noopener"
-              className="inline-flex min-h-12 items-center rounded-xl border border-line bg-panel px-6 text-sm font-medium text-txt transition duration-200 hover:-translate-y-0.5 hover:border-teal hover:text-teal"
+              className="inline-flex min-h-12 items-center rounded-xl border border-line-strong bg-panel px-6 text-sm font-medium text-txt transition duration-200 hover:-translate-y-0.5 hover:border-teal hover:text-teal"
             >
               Download Resume
             </a>

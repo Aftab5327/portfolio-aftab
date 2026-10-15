@@ -3,7 +3,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { getProfile } from "@/lib/data";
 
 const iconClass =
-  "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-panel text-txtdim transition-all duration-300 hover:-translate-y-0.5 hover:border-teal hover:text-teal";
+  "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line-strong bg-panel text-txtdim transition-all duration-300 hover:-translate-y-0.5 hover:border-teal hover:text-teal";
 
 export default function Footer() {
   const site = getProfile();

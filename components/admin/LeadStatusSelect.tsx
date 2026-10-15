@@ -37,7 +37,7 @@ export default function LeadStatusSelect({ id, status, label }: { id: string; st
         value={value}
         disabled={state === "saving"}
         onChange={(event) => void change(event.target.value as LeadStatus)}
-        className="rounded-md border border-line bg-panel px-2 py-1 font-mono text-xs text-txt focus:border-teal"
+        className="rounded-md border border-line-strong bg-panel px-2 py-1 font-mono text-xs text-txt focus:border-teal"
       >
         {STATUSES.map((option) => (
           <option key={option} value={option}>

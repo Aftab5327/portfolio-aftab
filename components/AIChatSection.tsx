@@ -78,7 +78,7 @@ function historyFor(messages: Message[]): { role: Message["role"]; content: stri
 
 function ActionChip({ action }: { action: ChatAction }) {
   const className =
-    "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-xs text-teal transition-colors";
+    "inline-flex items-center gap-1.5 rounded-lg border border-teal/40 bg-teal/10 px-3 py-1.5 font-mono text-xs text-teal transition-colors hover:bg-teal/20";
   if (!action.external) {
     return (
       <Link href={action.href} className={className}>
@@ -219,7 +219,7 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
   };
 
   return (
-    <section className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16">
+    <section className="rounded-card border border-line bg-panel bg-grid px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16">
       <div>
         <p className="font-mono text-sm text-teal">{"// ai-chat"}</p>
         <h2 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">Ask My AI Assistant</h2>
@@ -230,9 +230,9 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
 
       <div className="mt-10 overflow-hidden rounded-2xl border border-line bg-panel2">
         <div className="flex items-center gap-2 border-b border-line bg-panel px-4 py-2.5">
-          <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-          <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-          <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+          <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-danger" />
+          <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-warning" />
+          <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-success" />
           <span aria-hidden className="ml-2 font-mono text-xs text-txtfaint">
             assistant.sh
           </span>
@@ -270,7 +270,7 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
                       key={suggestion}
                       type="button"
                       onClick={() => send(suggestion)}
-                      className="rounded-md border border-line bg-panel px-3 py-1.5 text-left font-mono text-xs text-txtdim transition-colors hover:border-teal hover:text-teal"
+                      className="rounded-md border border-line-strong bg-panel px-3 py-1.5 text-left font-mono text-xs text-txtdim transition-colors hover:border-teal hover:text-teal"
                     >
                       {suggestion}
                     </button>
@@ -281,7 +281,7 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
 
             {messages.map((message) =>
               message.role === "user" ? (
-                <div key={message.id} className="ml-auto max-w-[92%] rounded-xl border px-4 py-3 text-sm text-txt">
+                <div key={message.id} className="ml-auto max-w-[92%] rounded-xl border border-teal/30 bg-teal/10 px-4 py-3 text-sm text-txt">
                   <p className="mb-1 font-mono text-[11px] text-teal">{"> you"}</p>
                   <p className="whitespace-pre-wrap">{message.content}</p>
                 </div>
@@ -315,7 +315,7 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
                         type="button"
                         onClick={() => retry(message.id)}
                         disabled={streaming}
-                        className="inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1 font-mono text-xs text-txt transition-colors hover:border-teal hover:text-teal disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-2.5 py-1 font-mono text-xs text-txt transition-colors hover:border-teal hover:text-teal disabled:opacity-50"
                       >
                         <FiRotateCcw aria-hidden />
                         Retry
@@ -361,13 +361,13 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
                 maxLength={MAX_MESSAGE_LENGTH}
                 aria-label={`Ask the AI assistant about ${firstName}`}
                 placeholder={`Ask about ${firstName}'s skills, projects, or availability...`}
-                className="min-h-12 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:border-teal focus:ring-2"
+                className="min-h-12 flex-1 rounded-xl border border-line-strong bg-panel px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:border-teal focus:ring-2 focus:ring-teal/40"
               />
               {streaming ? (
                 <button
                   type="button"
                   onClick={stop}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-teal px-6 text-sm font-semibold text-teal transition"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-teal px-6 text-sm font-semibold text-teal transition hover:bg-teal/10"
                 >
                   <FiSquare aria-hidden />
                   Stop
@@ -376,7 +376,7 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
                 <button
                   type="submit"
                   disabled={!input.trim()}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-teal px-6 text-sm font-semibold text-bg transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-teal px-6 text-sm font-semibold text-bg glow-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <FiSend aria-hidden />
                   Send

@@ -141,7 +141,7 @@ export default function ContactSection({ profile }: { profile: ContactProfile })
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.65, ease: "easeOut" }}
-      className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16"
+      className="rounded-card border border-line bg-panel bg-grid px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16"
     >
       {TURNSTILE_SITE_KEY ? (
         <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="lazyOnload" onLoad={renderTurnstile} />
@@ -185,8 +185,8 @@ export default function ContactSection({ profile }: { profile: ContactProfile })
                   aria-invalid={Boolean(errors.message)}
                   aria-describedby={errors.message ? "contact-message-error" : "contact-message-count"}
                   onChange={(event) => update("message")(event.target.value)}
-                  className={`w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:ring-2 ${
-                    errors.message ? "border-danger" : "border-line focus:border-teal"
+                  className={`w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:ring-2 focus:ring-teal/40 ${
+                    errors.message ? "border-danger" : "border-line-strong focus:border-teal"
                   }`}
                   placeholder="Write your message..."
                 />
@@ -225,11 +225,11 @@ export default function ContactSection({ profile }: { profile: ContactProfile })
                 type="submit"
                 disabled={submitting}
                 aria-busy={submitting}
-                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-teal px-5 text-sm font-semibold text-bg transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-teal px-5 text-sm font-semibold text-bg glow-hover disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {submitting ? (
                   <>
-                    <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-t-bg" />
+                    <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-bg/30 border-t-bg" />
                     Sending...
                   </>
                 ) : (
@@ -297,8 +297,8 @@ function Field({ label, id, value, error, type = "text", autoComplete, placehold
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
         onChange={(event) => onChange(event.target.value)}
-        className={`min-h-12 w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:ring-2 ${
-          error ? "border-danger" : "border-line focus:border-teal"
+        className={`min-h-12 w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:ring-2 focus:ring-teal/40 ${
+          error ? "border-danger" : "border-line-strong focus:border-teal"
         }`}
         placeholder={placeholder}
       />
@@ -315,7 +315,7 @@ function ContactCard({ icon, label, value }: { icon: ReactNode; label: string; v
   return (
     <div className="rounded-2xl border border-line bg-panel2 p-5 sm:p-6">
       <div className="flex items-center gap-4">
-        <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border text-teal">{icon}</div>
+        <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-teal/30 bg-teal/10 text-teal">{icon}</div>
         <div>
           <p className="font-mono text-xs text-txtdim">
             <span aria-hidden="true">{"// "}</span>
@@ -335,7 +335,7 @@ function SocialIcon({ href, ariaLabel, icon }: { href: string; ariaLabel: string
       target="_blank"
       rel="noreferrer"
       aria-label={ariaLabel}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-xl border text-teal transition hover:-translate-y-0.5"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-teal/40 bg-teal/10 text-teal transition hover:-translate-y-0.5 hover:bg-teal/20"
     >
       {icon}
     </a>

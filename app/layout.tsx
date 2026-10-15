@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, JetBrains_Mono, Sora } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import Providers from "@/app/providers";
 import { siteUrl } from "@/lib/config";
 import { getProfile } from "@/lib/data";
+import { THEME_COLOR } from "@/lib/theme";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -52,6 +53,13 @@ export const metadata: Metadata = {
     title: defaultTitle,
     description: profile.seo.description
   }
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLOR.dark },
+    { media: "(prefers-color-scheme: light)", color: THEME_COLOR.light }
+  ]
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

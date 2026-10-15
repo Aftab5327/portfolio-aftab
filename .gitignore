@@ -27,3 +27,8 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Redesign review screenshots (docs/redesign/README.md is committed)
+docs/redesign/before/
+docs/redesign/after/
+docs/redesign/pairs/

@@ -1,4 +1,5 @@
 import { FiGitBranch, FiStar } from "react-icons/fi";
+import { roleColor, syntaxRole } from "@/lib/categories";
 import { getProfile } from "@/lib/data";
 
 type Repo = {
@@ -10,19 +11,6 @@ type Repo = {
   stargazers_count: number;
   updated_at: string;
   fork: boolean;
-};
-
-// A few common GitHub linguist colours; anything else falls back to teal.
-const LANGUAGE_COLORS: Record<string, string> = {
-  JavaScript: "#f1e05a",
-  TypeScript: "#3178c6",
-  Python: "#3572a5",
-  HTML: "#e34c26",
-  CSS: "#563d7c",
-  "C++": "#f34b7d",
-  C: "#555555",
-  Java: "#b07219",
-  "Jupyter Notebook": "#da5b0b"
 };
 
 async function getRecentRepos(username: string): Promise<Repo[]> {
@@ -57,7 +45,7 @@ export default async function GitHubActivity() {
 
   return (
     <div id="github" className="scroll-mt-24">
-      <section className="rounded-card border border-line bg-panel px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16">
+      <section className="rounded-card border border-line bg-panel bg-grid px-6 py-12 shadow-soft sm:px-10 lg:px-14 lg:py-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="font-mono text-sm text-teal">{"// github"}</p>
@@ -80,7 +68,7 @@ export default async function GitHubActivity() {
                 href={repo.html_url}
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-full flex-col rounded-xl border border-line bg-panel2 p-5 transition-all duration-200 hover:-translate-y-1"
+                className="flex h-full flex-col rounded-xl border border-line-strong bg-panel2 p-5 transition-all duration-200 hover:-translate-y-1 hover:border-teal/60"
               >
                 <span className="flex items-center gap-2 font-mono text-sm font-semibold text-txt">
                   <FiGitBranch aria-hidden className="shrink-0 text-teal" />
@@ -97,7 +85,7 @@ export default async function GitHubActivity() {
                       <span
                         aria-hidden
                         className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: LANGUAGE_COLORS[repo.language] ?? "var(--teal)" }}
+                        style={{ backgroundColor: roleColor(syntaxRole(repo.language)) }}
                       />
                       {repo.language}
                     </span>

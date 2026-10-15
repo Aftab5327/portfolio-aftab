@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useClientValue, useHydrated } from "@/lib/use-client-value";
+import { ROLE_TEXT } from "@/components/SyntaxChip";
 import {
   FiActivity,
   FiBookOpen,
@@ -60,6 +61,9 @@ function fuzzyScore(query: string, text: string): number | null {
 
   return score;
 }
+
+// Command groups wear the same syntax colours as categories elsewhere on the site.
+const GROUP_COLOR: Record<string, string> = { Navigate: ROLE_TEXT.function, Actions: ROLE_TEXT.keyword, Links: ROLE_TEXT.string };
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -337,7 +341,7 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
         aria-haspopup="dialog"
         aria-keyshortcuts="Control+K Meta+K"
         aria-label="Open command palette"
-        className="hidden h-9 items-center gap-2 rounded-lg border border-line bg-panel px-2.5 font-mono text-[12px] text-txtdim transition-colors hover:border-teal hover:text-teal lg:inline-flex"
+        className="hidden h-9 items-center gap-2 rounded-lg border border-line-strong bg-panel px-2.5 font-mono text-[12px] text-txtdim transition-colors hover:border-teal hover:text-teal lg:inline-flex"
       >
         <FiSearch aria-hidden className="h-3.5 w-3.5" />
         <kbd className="font-mono">{shortcut}</kbd>
@@ -360,9 +364,9 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
                 className="w-full max-w-[640px] overflow-hidden rounded-2xl border border-line bg-panel shadow-card"
               >
                 <div className="flex items-center gap-2 border-b border-line bg-panel2 px-4 py-2.5" aria-hidden>
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-danger" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-warning" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-success" />
                   <span className="ml-2 font-mono text-xs text-txtfaint">command-palette.sh</span>
                 </div>
 
@@ -417,7 +421,7 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
                           {command.icon}
                         </span>
                         <span className="flex-1">{command.label}</span>
-                        <span className="font-mono text-[11px] text-txtfaint">{command.group}</span>
+                        <span className={`font-mono text-[11px] ${GROUP_COLOR[command.group] ?? "text-txtfaint"}`}>{command.group}</span>
                       </li>
                     );
                   })}

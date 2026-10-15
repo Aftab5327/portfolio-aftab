@@ -21,7 +21,7 @@ export default function BuildLogPage() {
   const { firstName } = getProfile();
 
   return (
-    <section className="mx-auto max-w-3xl rounded-card border border-line bg-panel px-6 py-10 shadow-soft sm:px-10 lg:py-14">
+    <section className="mx-auto max-w-3xl rounded-card border border-line bg-panel bg-grid px-6 py-10 shadow-soft sm:px-10 lg:py-14">
       <p className="font-mono text-sm text-teal">{"// build-log"}</p>
       <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <h1 className="fluid-heading font-display font-bold tracking-tight text-txt">Build log</h1>
@@ -45,7 +45,7 @@ export default function BuildLogPage() {
             <li key={post.slug}>
               <Link
                 href={`/log/${post.slug}`}
-                className="block rounded-xl border border-line bg-panel2 p-5 transition-all duration-200 hover:-translate-y-0.5"
+                className="block rounded-xl border border-line-strong bg-panel2 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-teal/60"
               >
                 <p className="font-mono text-[11px] text-txtdim">
                   <time dateTime={post.weekStart}>{formatDay(post.weekStart)}</time> – <time dateTime={post.weekEnd}>{formatDay(post.weekEnd)}</time> ·{" "}

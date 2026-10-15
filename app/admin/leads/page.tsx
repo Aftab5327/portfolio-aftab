@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 const dateTime = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
 
 const STATUS_STYLES: Record<LeadStatus, string> = {
-  new: "text-teal",
+  new: "border-teal/50 bg-teal/10 text-teal",
   replied: "border-line bg-panel text-txtdim",
   archived: "border-line bg-panel text-txtfaint"
 };
@@ -45,7 +45,7 @@ export default async function LeadsPage(props: { searchParams: Promise<{ status?
             key={status ?? "all"}
             href={status ? `?status=${status}` : "?"}
             aria-current={filter === status ? "page" : undefined}
-            className={`rounded-md border px-3 py-1.5 ${filter === status ? "border-teal text-teal" : "border-line text-txtdim hover:text-teal"}`}
+            className={`rounded-md border px-3 py-1.5 ${filter === status ? "border-teal text-teal" : "border-line-strong text-txtdim hover:text-teal"}`}
           >
             {status ?? "all"} ({status ? counts[status] ?? 0 : leads?.length ?? 0})
           </a>

@@ -85,7 +85,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
       transition={{ duration: 0.7, ease: "easeOut" }}
       className={`sticky top-0 z-40 w-full transition-colors duration-300 print:hidden ${
         scrolled
-          ? "border-b border-line backdrop-blur-xl"
+          ? "border-b border-line bg-bg/80 backdrop-blur-xl"
           : "border-b border-transparent bg-transparent"
       }`}
     >
@@ -106,7 +106,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
                 href={link.href}
                 onClick={handleNavClick}
                 className={`font-mono text-[13px] transition-colors duration-200 hover:text-teal ${
-                  highlighted === link.id ? "text-teal" : "text-txtdim"
+                  highlighted === link.id ? "text-teal text-glow" : "text-txtdim"
                 }`}
               >
                 {link.label}
@@ -118,7 +118,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
               href={STATS_PATH}
               aria-current={pathname === STATS_PATH ? "page" : undefined}
               className={`font-mono text-[13px] transition-colors duration-200 hover:text-teal ${
-                pathname === STATS_PATH ? "text-teal" : "text-txtdim"
+                pathname === STATS_PATH ? "text-teal text-glow" : "text-txtdim"
               }`}
             >
               Stats
@@ -148,7 +148,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
           <a
             href={`mailto:${profile.email}`}
             aria-label={`Email ${profile.firstName}`}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-teal text-bg transition-transform duration-200 hover:-translate-y-0.5"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-teal text-bg glow-hover hover:-translate-y-0.5"
           >
             <FiMail className="h-4 w-4" />
           </a>
@@ -161,7 +161,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-txt transition-colors hover:border-teal hover:text-teal md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line-strong text-txt transition-colors hover:border-teal hover:text-teal md:hidden"
           >
             {menuOpen ? <FiX className="h-5 w-5" /> : <FiMenu className="h-5 w-5" />}
           </button>
@@ -178,7 +178,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
               type="button"
               aria-label="Close menu"
               onClick={() => setMenuOpen(false)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line text-txt"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line-strong text-txt"
             >
               <FiX className="h-5 w-5" />
             </button>
@@ -189,8 +189,8 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
                 <a
                   href={link.href}
                   onClick={handleNavClick}
-                  className={`flex min-h-12 w-full items-center rounded-xl border border-line px-5 font-mono text-lg transition-colors ${
-                    highlighted === link.id ? "bg-panel text-teal" : "text-txtdim"
+                  className={`flex min-h-12 w-full items-center rounded-xl border border-line-strong px-5 font-mono text-lg transition-colors ${
+                    highlighted === link.id ? "bg-panel text-teal text-glow" : "text-txtdim"
                   }`}
                 >
                   <span className="mr-3 text-txtfaint">{`0${links.indexOf(link) + 1}`}</span>
@@ -202,7 +202,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
               <Link
                 href={STATS_PATH}
                 onClick={handleNavClick}
-                className="flex min-h-12 w-full items-center rounded-xl border border-line px-5 font-mono text-lg text-txtdim transition-colors"
+                className="flex min-h-12 w-full items-center rounded-xl border border-line-strong px-5 font-mono text-lg text-txtdim transition-colors"
               >
                 <span className="mr-3 text-txtfaint">{`0${links.length + 1}`}</span>
                 Stats

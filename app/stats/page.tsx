@@ -5,6 +5,7 @@ import ScoreRing from "@/components/stats/ScoreRing";
 import Sparkline from "@/components/stats/Sparkline";
 import knowledgeIndex from "@/data/knowledge-index.json";
 import { getChatAnalytics } from "@/lib/analytics";
+import { roleColor, syntaxRole } from "@/lib/categories";
 import { AUTOMATION_DOCS_PATH, BUILD_TIME, LOG_PATH } from "@/lib/config";
 import { getGitHubStats, getProfile, getProjects } from "@/lib/data";
 import { SCORE_KEYS, getLighthouseHistory, type ScoreKey } from "@/lib/lighthouse";
@@ -49,7 +50,7 @@ function Card({ id, title, note, children, className = "" }: { id: string; title
 function Metric({ value, label, compact = false }: { value: string | number; label: string; compact?: boolean }) {
   return (
     <div className="rounded-xl border border-line bg-panel p-4">
-      <p className={compact ? "font-mono text-sm font-semibold leading-snug text-txt" : "font-display text-2xl font-bold leading-none text-txt"}>
+      <p className={compact ? "font-mono text-sm font-semibold leading-snug text-txt" : "font-mono text-2xl font-bold leading-none text-txt"}>
         {value}
       </p>
       <p className="mt-2 font-mono text-[11px] text-txtdim">{label}</p>
@@ -76,7 +77,7 @@ export default async function StatsPage() {
 
   return (
     <div className="space-y-8">
-      <header className="rounded-card border border-line bg-panel px-6 py-10 shadow-soft sm:px-10 lg:px-14">
+      <header className="rounded-card border border-line bg-panel bg-grid px-6 py-10 shadow-soft sm:px-10 lg:px-14">
         <p className="font-mono text-sm text-teal">{"// stats"}</p>
         <h1 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">Engineering dashboard</h1>
         <p className="mt-4 max-w-2xl text-[15px] leading-[1.75] text-txtdim">
@@ -104,15 +105,15 @@ export default async function StatsPage() {
             {github.languages.length ? (
               <div className="mt-6">
                 <h3 className="font-mono text-xs text-txtdim">Top languages (bytes across non-fork repos)</h3>
-                <div className="mt-3 flex h-2.5 overflow-hidden rounded-full bg-bg2" aria-hidden>
+                <div className="mt-3 flex h-2.5 gap-px overflow-hidden rounded-full bg-bg2" aria-hidden>
                   {github.languages.map((language) => (
-                    <span key={language.name} style={{ width: `${language.percent}%`, backgroundColor: language.color }} />
+                    <span key={language.name} style={{ width: `${language.percent}%`, backgroundColor: roleColor(syntaxRole(language.name)) }} />
                   ))}
                 </div>
                 <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 font-mono text-[11px] text-txtdim">
                   {github.languages.map((language) => (
                     <li key={language.name} className="inline-flex items-center gap-1.5">
-                      <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: language.color }} />
+                      <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: roleColor(syntaxRole(language.name)) }} />
                       {language.name} {language.percent}%
                     </li>
                   ))}
@@ -137,7 +138,7 @@ export default async function StatsPage() {
                 </thead>
                 <tbody>
                   {uptime.sites.map((site) => (
-                    <tr key={site.id} className="border-b last:border-0">
+                    <tr key={site.id} className="border-b border-line/60 last:border-0">
                       <td className="py-2.5 pr-4">
                         {site.url ? (
                           <a href={site.url} target="_blank" rel="noreferrer" className="text-txt hover:text-teal">
@@ -149,7 +150,14 @@ export default async function StatsPage() {
                       </td>
                       <td className="py-2.5 pr-4">
                         <span className={`inline-flex items-center gap-2 font-mono text-xs ${site.up ? "text-green" : "text-danger"}`}>
-                          <span aria-hidden className={`h-2 w-2 rounded-full ${site.up ? "bg-green" : "bg-danger"}`} />
+                          {site.up ? (
+                            <span aria-hidden className="relative inline-flex h-2 w-2">
+                              <span className="absolute inline-flex h-full w-full animate-pulseDot rounded-full bg-green" />
+                              <span className="live-dot relative inline-flex h-2 w-2 rounded-full bg-green" />
+                            </span>
+                          ) : (
+                            <span aria-hidden className="h-2 w-2 rounded-full bg-danger" />
+                          )}
                           {site.up ? "Up" : "Down"} ({site.lastStatus || site.lastError || "no response"})
                         </span>
                       </td>

@@ -11,8 +11,8 @@
 @custom-variant hover (&:hover);
 
 @theme {
-  /* v3 defaults for a bare `ring-*` width utility (v4 uses currentcolor). */
-  --default-ring-color: rgb(59 130 246 / 0.5);
+  /* A bare `ring-*` width utility (focus rings) uses the accent. */
+  --default-ring-color: color-mix(in srgb, var(--teal) 45%, transparent);
 
   /* v3 line-heights for the named text sizes. v4 uses unitless ratios, which children with
      their own size (e.g. inline <code class="text-[13px]">) inherit as a ratio rather than
@@ -26,20 +26,33 @@
   --text-3xl--line-height: 2.25rem;
   --text-4xl--line-height: 2.5rem;
 
+  /* Colour utilities all resolve to the theme tokens defined below (no hex in components).
+     "teal" is the historical name of the single accent; it now holds the electric cyan. */
   --color-bg: var(--bg);
   --color-bg2: var(--bg-2);
   --color-panel: var(--panel);
   --color-panel2: var(--panel-2);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-teal: var(--teal);
   --color-tealdim: var(--teal-dim);
+  --color-accent: var(--teal);
+  --color-accent2: var(--accent-2);
   --color-green: var(--green);
+  --color-success: var(--green);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
   --color-txt: var(--txt);
   --color-txtdim: var(--txt-dim);
   --color-txtfaint: var(--txt-faint);
   --color-code: var(--code);
-  --color-danger: var(--danger);
-  --color-accent: var(--teal);
+
+  /* Editor-theme syntax palette, used for categories/tags (see lib/categories.ts). */
+  --color-syn-keyword: var(--syn-keyword);
+  --color-syn-string: var(--syn-string);
+  --color-syn-function: var(--syn-function);
+  --color-syn-number: var(--syn-number);
+  --color-syn-type: var(--syn-type);
 
   /* next/font variables are set on <html> in app/layout.tsx. */
   --font-display: var(--font-bricolage), system-ui, sans-serif;
@@ -50,17 +63,23 @@
 
   --shadow-soft: 0 20px 40px -20px rgba(0, 0, 0, 0.75);
   --shadow-card: 0 40px 90px -30px rgba(0, 0, 0, 0.85);
-  --shadow-glow:
-    0 0 0 1px var(--teal), 0 18px 50px -18px rgba(45, 212, 191, 0.35);
+  /* Accent glow: reserved for focus rings, primary-button hover, the active nav item
+     and live status dots (see the "Glow" rules below). */
+  --shadow-glow: 0 0 0 1px var(--teal), var(--glow);
 
   --animate-float: float 6s ease-in-out infinite;
   --animate-pulseDot: pulseDot 2s ease-in-out infinite;
   --animate-blink: blink 1.1s step-end infinite;
 
-  --background-image-hero-grid: radial-gradient(
-    circle at 1px 1px,
-    rgba(45, 212, 191, 0.1) 1px,
-    transparent 0
+  /* 1px blueprint grid at very low opacity (paired with bg-size-[32px_32px] via the bg-grid utility). */
+  --background-image-grid:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  /* Neutral (non-accent) light behind the hero avatar. */
+  --background-image-avatar-halo: radial-gradient(
+    circle at 50% 30%,
+    var(--halo),
+    transparent 60%
   );
 
   @keyframes float {
@@ -75,10 +94,10 @@
   @keyframes pulseDot {
     0%,
     100% {
-      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--green) 55%, transparent);
     }
     70% {
-      box-shadow: 0 0 0 8px rgba(74, 222, 128, 0);
+      box-shadow: 0 0 0 6px color-mix(in srgb, var(--green) 0%, transparent);
     }
   }
   @keyframes blink {
@@ -90,6 +109,29 @@
       opacity: 0;
     }
   }
+}
+
+/* Blueprint grid behind hero and section surfaces; layers under the element's own background colour. */
+@utility bg-grid {
+  background-image: var(--background-image-grid);
+  background-size: 32px 32px;
+}
+
+/* Glow: primary buttons on hover (focus rings, the active nav item and live dots are below). */
+@utility glow-hover {
+  transition-property: box-shadow, transform, color, background-color, border-color;
+  transition-duration: 200ms;
+  &:hover {
+    box-shadow: var(--glow);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition-duration: 0s;
+  }
+}
+
+/* Glow: the active navigation item. */
+@utility text-glow {
+  text-shadow: 0 0 14px var(--glow-color);
 }
 
 /*
@@ -126,40 +168,66 @@
    so they cascade against utilities by specificity then source order, exactly like the
    unlayered v3 output. Unlayered, v4 would let every rule here beat every utility. */
 @layer utilities {
-  /* ── Design tokens (dark "code-editor / IDE" theme is the canonical look) ── */
+  /* ── Design tokens: "engineering terminal" (dark IDE / monitoring console is the default) ──
+     Contrast for every text/surface pair is listed in docs/redesign/README.md. */
   :root,
   html.dark {
-    --bg: #0a0f0d;
-    --bg-2: #0e1512;
-    --panel: #111a16;
-    --panel-2: #0c1310;
-    --line: #1d2a24;
-    --teal: #2dd4bf;
-    --teal-dim: #1aa896;
-    --green: #4ade80;
-    --txt: #e6efe9;
-    --txt-dim: #8aa399;
-    --txt-faint: #718a7f;
+    --bg: #0a0e14;
+    --bg-2: #0d1219; /* recessed: terminals, code, tracks */
+    --panel: #111823;
+    --panel-2: #16202d; /* panel-raised */
+    --line: #1e2a3a; /* decorative dividers */
+    --line-strong: #5e6b7a; /* interactive borders, ≥3:1 on every surface */
+    --txt: #e6edf3;
+    --txt-dim: #9aa7b5; /* text-muted */
+    --txt-faint: #7c8894; /* darkest grey with ≥4.5:1 on bg, bg-2, panel and panel-raised */
+    --teal: #22d3ee; /* the one electric accent */
+    --teal-dim: #0891b2;
+    --accent-2: #a78bfa;
+    --green: #4ade80; /* success */
+    --warning: #fbbf24;
     --danger: #f87171;
-    --code: #22332c;
+    --syn-keyword: #c792ea;
+    --syn-string: #c3e88d;
+    --syn-function: #82aaff;
+    --syn-number: #f78c6c;
+    --syn-type: #ffcb6b;
+    --code: #1c2734; /* decorative hero code-rain */
+    --grid-line: rgb(130 170 255 / 0.045);
+    --halo: rgb(230 237 243 / 0.06);
+    --glow-color: rgb(34 211 238 / 0.45);
+    --glow: 0 0 18px -2px var(--glow-color);
     color-scheme: dark;
   }
 
-  /* Light variant keeps the toggle meaningful without breaking the IDE feel */
+  /* Light IDE: off-white canvas, white panels, ink text; accent and syntax colours darkened
+     until each passes 4.5:1 on every surface and on its own tinted chip. */
   html.light {
-    --bg: #eef2f0;
-    --bg-2: #e6ebe8;
+    --bg: #f7f9fb;
+    --bg-2: #eef2f6;
     --panel: #ffffff;
-    --panel-2: #f4f7f5;
-    --line: #d4ddd8;
-    --teal: #0a7166;
-    --teal-dim: #0c8678;
-    --green: #16a34a;
-    --txt: #0e1512;
-    --txt-dim: #4a5a52;
-    --txt-faint: #56655e;
+    --panel-2: #f3f6f9;
+    --line: #d9e0e8;
+    --line-strong: #818c9b;
+    --txt: #0f172a;
+    --txt-dim: #475467;
+    --txt-faint: #646f7f;
+    --teal: #0d6a83;
+    --teal-dim: #0891b2;
+    --accent-2: #6d28d9;
+    --green: #127136;
+    --warning: #8f5206;
     --danger: #b91c1c;
-    --code: #c9d6cf;
+    --syn-keyword: #7637e1;
+    --syn-string: #396e0b;
+    --syn-function: #1d4ed8;
+    --syn-number: #ad3a0b;
+    --syn-type: #825b00;
+    --code: #d5dde6;
+    --grid-line: rgb(15 23 42 / 0.035);
+    --halo: rgb(15 23 42 / 0.05);
+    --glow-color: rgb(13 106 131 / 0.35);
+    --glow: 0 0 16px -2px var(--glow-color);
     color-scheme: light;
   }
 
@@ -169,6 +237,30 @@
 
   html {
     scroll-behavior: smooth;
+    caret-color: var(--teal);
+    scrollbar-color: var(--line-strong) var(--bg);
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--teal) 30%, transparent);
+    color: var(--txt);
+  }
+
+  /* WebKit/Blink scrollbars (Firefox uses scrollbar-color above). */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border: 2px solid var(--bg);
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--teal);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -183,12 +275,10 @@
     color: var(--txt);
     font-family: var(--font-body), system-ui, sans-serif;
     min-height: 100vh;
-    /* ambient radial teal glows: top-right + mid-left on near-black */
-    background:
-      radial-gradient(60% 50% at 88% -5%, rgba(45, 212, 191, 0.14), transparent 60%),
-      radial-gradient(48% 52% at -8% 42%, rgba(45, 212, 191, 0.1), transparent 55%),
-      var(--bg);
-    background-attachment: fixed;
+    /* near-black canvas with the faint blueprint grid (no ambient accent glow) */
+    background-color: var(--bg);
+    background-image: var(--background-image-grid);
+    background-size: 32px 32px;
     transition: background 300ms ease, color 300ms ease;
   }
 
@@ -273,6 +363,19 @@
       --txt: #000000;
       --txt-dim: #1f2924;
       --txt-faint: #4a5a52;
+      /* redesign tokens print as ink too, so print stays black-on-white */
+      --line-strong: #c8d0cc;
+      --accent-2: #1f2924;
+      --warning: #1f2924;
+      --syn-keyword: #1f2924;
+      --syn-string: #1f2924;
+      --syn-function: #1f2924;
+      --syn-number: #1f2924;
+      --syn-type: #1f2924;
+      --grid-line: transparent;
+      --halo: transparent;
+      --glow-color: transparent;
+      --glow: none;
       color-scheme: light;
     }
 
@@ -290,13 +393,20 @@
     }
   }
 
-  /* Accessible focus ring across interactive elements */
+  /* Accessible focus ring across interactive elements (accent outline + glow) */
   a:focus-visible,
   button:focus-visible,
   input:focus-visible,
-  textarea:focus-visible {
+  textarea:focus-visible,
+  select:focus-visible {
     outline: 2px solid var(--teal);
     outline-offset: 2px;
     border-radius: 6px;
+    box-shadow: var(--glow);
+  }
+
+  /* Glow: live status dots on /stats (steady glow; the pulse stops under reduced motion). */
+  .live-dot {
+    box-shadow: 0 0 8px var(--green);
   }
 }

@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { FiArrowLeft, FiArrowUpRight, FiGithub, FiStar } from "react-icons/fi";
 import Markdown from "@/components/Markdown";
 import ProjectImage from "@/components/ProjectImage";
+import { CategoryLabel, SyntaxChip } from "@/components/SyntaxChip";
+import { roleColor, syntaxRole } from "@/lib/categories";
 import { getProject, getProjects } from "@/lib/data";
 import { SECTION_KEYS, type CaseStudySource } from "@/lib/schema";
 
@@ -56,7 +58,7 @@ export default async function ProjectPage(props: Params) {
   const sections = SECTION_KEYS.filter((key) => project.sections[key].trim());
 
   return (
-    <article className="rounded-card border border-line bg-panel px-6 py-10 shadow-soft sm:px-10 lg:px-14 lg:py-14">
+    <article className="rounded-card border border-line bg-panel bg-grid px-6 py-10 shadow-soft sm:px-10 lg:px-14 lg:py-14">
       <Link
         href="/#projects"
         className="inline-flex items-center gap-2 font-mono text-sm text-txtdim transition-colors hover:text-teal"
@@ -66,7 +68,7 @@ export default async function ProjectPage(props: Params) {
       </Link>
 
       <header className="mt-8">
-        {project.category ? <p className="font-mono text-sm text-teal">{project.category}</p> : null}
+        {project.category ? <CategoryLabel category={project.category} className="block text-sm" /> : null}
         <h1 className="fluid-heading mt-3 font-display font-bold tracking-tight text-txt">{project.title}</h1>
         {project.tagline ? (
           <p className="mt-4 max-w-3xl text-[15px] leading-[1.75] text-txtdim">{project.tagline}</p>
@@ -79,7 +81,7 @@ export default async function ProjectPage(props: Params) {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-teal px-6 text-sm font-semibold text-bg transition hover:brightness-110"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-teal px-6 text-sm font-semibold text-bg glow-hover"
               >
                 Live demo
                 <FiArrowUpRight aria-hidden />
@@ -90,7 +92,7 @@ export default async function ProjectPage(props: Params) {
                 href={project.repoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-line bg-panel2 px-6 text-sm font-medium text-txt transition hover:border-teal hover:text-teal"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-line-strong bg-panel2 px-6 text-sm font-medium text-txt transition hover:border-teal hover:text-teal"
               >
                 <FiGithub aria-hidden />
                 Source code
@@ -144,12 +146,7 @@ export default async function ProjectPage(props: Params) {
               <h2 className="font-mono text-sm text-teal">{"// stack"}</h2>
               <ul className="mt-4 flex flex-wrap gap-2">
                 {project.stack.map((tag) => (
-                  <li
-                    key={tag}
-                    className="rounded-md border border-line bg-panel px-2.5 py-1 font-mono text-[11px] text-txtdim"
-                  >
-                    {tag}
-                  </li>
+                  <SyntaxChip key={tag} label={tag} as="li" />
                 ))}
               </ul>
             </div>
@@ -158,23 +155,22 @@ export default async function ProjectPage(props: Params) {
           {project.languages.length ? (
             <div>
               <h2 className="font-mono text-sm text-teal">{"// languages"}</h2>
-              <div className="mt-4 flex h-2 overflow-hidden rounded-full bg-bg2" aria-hidden>
-                {project.languages.map((language, index) => (
+              <div className="mt-4 flex h-2 gap-px overflow-hidden rounded-full bg-bg2" aria-hidden>
+                {project.languages.map((language) => (
                   <span
                     key={language.name}
                     className="h-full"
-                    style={{
-                      width: `${language.percent}%`,
-                      backgroundColor: "var(--teal)",
-                      opacity: Math.max(1 - index * 0.2, 0.25)
-                    }}
+                    style={{ width: `${language.percent}%`, backgroundColor: roleColor(syntaxRole(language.name)) }}
                   />
                 ))}
               </div>
               <ul className="mt-3 space-y-1 font-mono text-[11px] text-txtdim">
                 {project.languages.slice(0, 5).map((language) => (
                   <li key={language.name} className="flex justify-between gap-3">
-                    <span>{language.name}</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <span aria-hidden className="h-2 w-2 rounded-full" style={{ backgroundColor: roleColor(syntaxRole(language.name)) }} />
+                      {language.name}
+                    </span>
                     <span>{language.percent}%</span>
                   </li>
                 ))}
