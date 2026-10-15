@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import { FiMenu, FiX, FiMail } from "react-icons/fi";
 import ThemeToggle from "@/components/ThemeToggle";
 import CommandPalette from "@/components/CommandPalette";
-import { sections } from "@/lib/config";
+import Link from "next/link";
+import { STATS_PATH, sections } from "@/lib/config";
 import type { Profile } from "@/lib/schema";
 
 // Root-relative so the links also work from /projects/[slug].
@@ -111,6 +112,17 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
               </a>
             </li>
           ))}
+          <li className="hidden lg:block">
+            <Link
+              href={STATS_PATH}
+              aria-current={pathname === STATS_PATH ? "page" : undefined}
+              className={`font-mono text-[13px] transition-colors duration-200 hover:text-teal ${
+                pathname === STATS_PATH ? "text-teal" : "text-txtdim"
+              }`}
+            >
+              Stats
+            </Link>
+          </li>
         </ul>
 
         <div className="flex items-center gap-3">
@@ -119,7 +131,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
             target="_blank"
             rel="noreferrer"
             aria-label="LinkedIn"
-            className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal lg:inline"
+            className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal xl:inline"
           >
             LinkedIn
           </a>
@@ -128,7 +140,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
             target="_blank"
             rel="noreferrer"
             aria-label="GitHub"
-            className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal lg:inline"
+            className="hidden font-mono text-[13px] text-txtdim transition-colors hover:text-teal xl:inline"
           >
             GitHub
           </a>
@@ -185,6 +197,16 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
                 </a>
               </li>
             ))}
+            <li>
+              <Link
+                href={STATS_PATH}
+                onClick={handleNavClick}
+                className="flex min-h-12 w-full items-center rounded-xl border border-line px-5 font-mono text-lg text-txtdim transition-colors"
+              >
+                <span className="mr-3 text-txtfaint">{`0${links.length + 1}`}</span>
+                Stats
+              </Link>
+            </li>
           </ul>
           <div className="flex items-center gap-4 font-mono text-[13px] text-txtdim">
             <a href={profile.socials.github} target="_blank" rel="noreferrer" className="hover:text-teal">

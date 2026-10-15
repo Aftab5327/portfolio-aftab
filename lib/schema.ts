@@ -245,6 +245,38 @@ export const screenshotsFileSchema = z.record(slug, screenshotEntrySchema);
 
 export type ScreenshotEntry = z.infer<typeof screenshotEntrySchema>;
 
+/** data/github-stats.json, written by scripts/github-stats.ts during the portfolio sync. */
+export const githubStatsSchema = z
+  .object({
+    username: nonEmpty,
+    calendar: z
+      .object({
+        from: z.string(),
+        to: z.string(),
+        total: z.number().int().nonnegative(),
+        /** Weeks (Sunday first), each with up to 7 days. */
+        weeks: z.array(z.array(z.object({ date: z.string(), count: z.number().int().nonnegative() }).strict()))
+      })
+      .strict(),
+    /** "2026-10" */
+    month: z.string().regex(/^\d{4}-\d{2}$/),
+    commitsThisMonth: z.number().int().nonnegative(),
+    publicRepos: z.number().int().nonnegative(),
+    /** Stars across non-fork public repos. */
+    stars: z.number().int().nonnegative(),
+    /** Top languages by bytes across non-fork public repos, largest first. */
+    languages: z.array(
+      z.object({ name: nonEmpty, color: z.string(), bytes: z.number().int().nonnegative(), percent: z.number().min(0).max(100) }).strict()
+    )
+  })
+  .strict();
+
+export const githubStatsFileSchema = z
+  .object({ $comment: z.string().optional(), stats: githubStatsSchema.nullable() })
+  .strict();
+
+export type GitHubStats = z.infer<typeof githubStatsSchema>;
+
 export const FRONTMATTER_KEYS = Object.keys(portfolioFrontmatterSchema.shape);
 
 export type Profile = z.infer<typeof profileSchema>;

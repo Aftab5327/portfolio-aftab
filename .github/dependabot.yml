@@ -1,0 +1,41 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:00"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(dev-deps)"
+    groups:
+      # All runtime minor + patch updates in one PR…
+      production-minor-patch:
+        dependency-type: production
+        update-types: [minor, patch]
+      # …and dev-dependency minor + patch updates in another.
+      development-minor-patch:
+        dependency-type: development
+        update-types: [minor, patch]
+    ignore:
+      # Major upgrades of the framework/tooling are done by hand (breaking changes).
+      - dependency-name: next
+        update-types: ["version-update:semver-major"]
+      - dependency-name: tailwindcss
+        update-types: ["version-update:semver-major"]
+      - dependency-name: eslint-config-next
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:00"
+    commit-message:
+      prefix: "chore(actions)"
+    groups:
+      github-actions:
+        patterns: ["*"]

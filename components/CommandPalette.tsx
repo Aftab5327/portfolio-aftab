@@ -4,8 +4,22 @@ import { KeyboardEvent as ReactKeyboardEvent, ReactNode, useCallback, useEffect,
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { FiCopy, FiDownload, FiFileText, FiGithub, FiHash, FiLinkedin, FiMoon, FiSearch, FiSun, FiTwitter } from "react-icons/fi";
-import { RESUME_PAGE_PATH, RESUME_PATH, sections } from "@/lib/config";
+import {
+  FiActivity,
+  FiBookOpen,
+  FiCopy,
+  FiCpu,
+  FiDownload,
+  FiFileText,
+  FiGithub,
+  FiHash,
+  FiLinkedin,
+  FiMoon,
+  FiSearch,
+  FiSun,
+  FiTwitter
+} from "react-icons/fi";
+import { AUTOMATION_DOCS_PATH, LOG_PATH, RESUME_PAGE_PATH, RESUME_PATH, STATS_PATH, sections } from "@/lib/config";
 import type { Profile } from "@/lib/schema";
 
 type Command = {
@@ -163,6 +177,30 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
         keywords: "cv html print",
         icon: <FiFileText />,
         run: () => router.push(RESUME_PAGE_PATH)
+      },
+      {
+        id: "stats",
+        label: "Open engineering stats",
+        group: "Navigate",
+        keywords: "dashboard uptime lighthouse github metrics",
+        icon: <FiActivity />,
+        run: () => router.push(STATS_PATH)
+      },
+      {
+        id: "log",
+        label: "Read the build log",
+        group: "Navigate",
+        keywords: "weekly updates commits blog rss",
+        icon: <FiBookOpen />,
+        run: () => router.push(LOG_PATH)
+      },
+      {
+        id: "automation",
+        label: "How this site runs itself",
+        group: "Navigate",
+        keywords: "automation pipeline docs workflows",
+        icon: <FiCpu />,
+        run: () => router.push(AUTOMATION_DOCS_PATH)
       },
       {
         id: "copy-email",

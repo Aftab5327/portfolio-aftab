@@ -14,6 +14,8 @@ import { trackQuestion } from "@/lib/analytics";
 import { collectActions, toolDefinitions, type RawToolCall, type ToolContext } from "@/lib/chat-tools";
 import { GROQ_MODEL, RESUME_PAGE_PATH, RESUME_PATH, sections } from "@/lib/config";
 import { getProfile, getProjects } from "@/lib/data";
+import { topicOf } from "@/lib/knowledge";
+import { checkChatRateLimit } from "@/lib/rate-limit";
 import { getRetriever, type RetrievedChunk } from "@/lib/retrieval";
 
 export const dynamic = "force-dynamic";
@@ -21,34 +23,15 @@ export const dynamic = "force-dynamic";
 const MAX_TURNS = 6;
 const MAX_MESSAGE_CHARS = 500;
 const MAX_TOTAL_CHARS = 3_000;
-const RATE_LIMIT = 10;
-const RATE_WINDOW_MS = 60_000;
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 const GENERIC_ERROR = "The assistant is temporarily unavailable.";
 
 // ── Guardrails ───────────────────────────────────────────────────────────────
 
-// Best-effort, per-instance limiter. Serverless instances don't share memory,
-// so this blunts casual spam but isn't a global guarantee.
-const hits = new Map<string, { count: number; resetAt: number }>();
-
 function clientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   return forwarded || request.headers.get("x-real-ip") || "unknown";
-}
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  if (hits.size > 5_000) hits.forEach((entry, key) => entry.resetAt <= now && hits.delete(key));
-
-  const entry = hits.get(ip);
-  if (!entry || entry.resetAt <= now) {
-    hits.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > RATE_LIMIT;
 }
 
 const requestSchema = z
@@ -162,8 +145,13 @@ function citationsFor(answer: string, chunks: RetrievedChunk[]) {
 }
 
 export async function POST(request: Request) {
-  if (isRateLimited(clientIp(request))) {
-    return json(429, { error: "Too many requests. Please wait a minute and try again." }, { "Retry-After": String(RATE_WINDOW_MS / 1000) });
+  const limit = await checkChatRateLimit(clientIp(request));
+  if (!limit.ok) {
+    const error =
+      limit.scope === "global"
+        ? "The assistant has reached its daily limit. Please try again tomorrow."
+        : "Too many requests. Please wait a minute and try again.";
+    return json(429, { error }, { "Retry-After": String(limit.retryAfterSeconds) });
   }
 
   let body: unknown;
@@ -186,8 +174,9 @@ export async function POST(request: Request) {
   const retrieval = getRetriever().retrieve(question, previousUser, 5);
 
   // Anonymous topic signal only: no message text, no IP.
-  trackQuestion({
-    tags: [...new Set(retrieval.chunks.flatMap((chunk) => [chunk.type, ...chunk.tags.slice(0, 3)]))].slice(0, 10),
+  // Started now, awaited when the stream ends (so it completes on serverless without delaying the answer).
+  const tracking = trackQuestion({
+    topics: retrieval.chunks.slice(0, 3).map((chunk) => topicOf(chunk.id)),
     resultCount: retrieval.chunks.length,
     followUp: retrieval.followUp
   });
@@ -289,6 +278,7 @@ export async function POST(request: Request) {
           send("error", { error: GENERIC_ERROR });
         }
       } finally {
+        await tracking;
         controller.close();
       }
     },

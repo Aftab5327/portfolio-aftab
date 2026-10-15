@@ -10,9 +10,12 @@
 import profileJson from "@/content/profile.json";
 import projectsJson from "@/data/projects.json";
 import screenshotsJson from "@/data/screenshots.json";
+import githubStatsJson from "@/data/github-stats.json";
 import {
   formatZodError,
+  githubStatsFileSchema,
   profileSchema,
+  type GitHubStats,
   projectsFileSchema,
   screenshotsFileSchema,
   type Profile,
@@ -77,4 +80,11 @@ export function getProjects(): ResolvedProject[] {
 
 export function getProject(slug: string): ResolvedProject | undefined {
   return getProjects().find((project) => project.slug === slug);
+}
+
+/** Committed GitHub stats (data/github-stats.json), or null before the first sync. */
+export function getGitHubStats(): GitHubStats | null {
+  const result = githubStatsFileSchema.safeParse(githubStatsJson);
+  if (!result.success) throw new Error(formatZodError(result.error, "data/github-stats.json"));
+  return result.data.stats;
 }

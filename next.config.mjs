@@ -8,9 +8,14 @@ const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  env: {
+    // Shown on /stats as "last build".
+    BUILD_TIME: new Date().toISOString()
+  },
   experimental: {
-    // Load react-pdf from node_modules at runtime instead of bundling it (it relies on Node APIs and its own React reconciler).
-    serverComponentsExternalPackages: ["@react-pdf/renderer"]
+    // Load these from node_modules at runtime instead of bundling them: react-pdf relies on Node APIs and its
+    // own React reconciler; gray-matter (build-log frontmatter) pulls in optional parser engines.
+    serverComponentsExternalPackages: ["@react-pdf/renderer", "gray-matter"]
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

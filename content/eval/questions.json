@@ -30,6 +30,7 @@
       "history": ["What is the Product Catalog?"],
       "question": "Which database does it use?",
       "expect": ["product-catalog"]
-    }
+    },
+    { "question": "What has he been working on recently?", "expect": ["log:*"], "requires": "log:*" }
   ]
 }

@@ -38,10 +38,20 @@ jobs:
         run: npm run sync
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: the sync records a "last sync" heartbeat for /stats (no commit).
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+
+      - name: GitHub stats for /stats
+        # Stats are nice-to-have: a GraphQL hiccup must not block the data commit.
+        continue-on-error: true
+        run: npm run github-stats
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push changes
         run: |
-          # data/ includes projects.json and the assistant's knowledge-index.json.
+          # data/ includes projects.json, knowledge-index.json and github-stats.json.
           if [ -z "$(git status --porcelain -- data public/projects)" ]; then
             echo "No portfolio changes."
             exit 0

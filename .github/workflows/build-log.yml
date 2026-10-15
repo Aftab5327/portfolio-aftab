@@ -1,0 +1,52 @@
+name: Build log
+
+on:
+  schedule:
+    - cron: "30 3 * * 1" # Mondays 03:30 UTC = 09:00 IST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Shares the group with Sync portfolio / Refresh screenshots so pushes to main never overlap.
+concurrency:
+  group: portfolio-sync
+  cancel-in-progress: false
+
+jobs:
+  write:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Write this week's post
+        id: log
+        run: npm run build-log
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add the post to the assistant's knowledge index
+        if: steps.log.outputs.written == 'true'
+        run: npm run knowledge
+
+      - name: Commit and push
+        if: steps.log.outputs.written == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- content/build-log data/knowledge-index.json
+          git commit -m "docs(build-log): ${{ steps.log.outputs.slug }}"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

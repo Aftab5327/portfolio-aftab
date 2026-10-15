@@ -9,6 +9,16 @@ export const RESUME_JSON_PATH = "/resume.json";
 
 /** Page rendering docs/ai-assistant.md ("How this assistant works"). */
 export const AI_DOCS_PATH = "/ai-assistant";
+/** Page rendering docs/automation.md ("How this works" on /stats). */
+export const AUTOMATION_DOCS_PATH = "/automation";
+export const STATS_PATH = "/stats";
+export const LOG_PATH = "/log";
+
+/** This site's own GitHub repo name (under profile.githubUsername); included in the weekly build log. */
+export const SOURCE_REPO_NAME = "portfolio-aftab";
+
+/** Set at build time (next.config.mjs). */
+export const BUILD_TIME = process.env.BUILD_TIME ?? "";
 
 /** Groq model used by the chat assistant and the case-study draft script. */
 export const GROQ_MODEL = "llama-3.1-8b-instant";

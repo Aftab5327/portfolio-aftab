@@ -1,0 +1,25 @@
+name: Secret scan
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch: # manual run scans the full history
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Fails the run if any secret is found in the scanned commits.
+      # Personal-account repos need no license; organisation repos need the GITLEAKS_LICENSE secret.
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}

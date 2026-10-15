@@ -1,0 +1,117 @@
+name: Lighthouse
+
+on:
+  # Vercel reports deployments to GitHub. Production → record scores in Redis; Preview → enforce budgets on the PR.
+  deployment_status:
+  workflow_dispatch:
+
+concurrency:
+  group: lighthouse-${{ github.event.deployment.environment || 'manual' }}-${{ github.event.deployment.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  production:
+    name: Production → Redis
+    # Read-only: scores go to Redis. Committing them would trigger a deploy → Lighthouse → commit… (loop).
+    permissions:
+      contents: read
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Audit the public production domain (deployment URLs can be behind Vercel's deployment protection).
+      SITE_URL: ${{ vars.SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Run Lighthouse (mobile, 3 runs per page)
+        run: |
+          if [ -z "$SITE_URL" ]; then
+            echo "::error::Set the repository variable SITE_URL (Settings → Secrets and variables → Actions → Variables)."
+            exit 1
+          fi
+          bash scripts/lighthouse.sh "$SITE_URL" lh
+
+      - name: Record median scores in Redis
+        run: npm run lighthouse:record -- lh
+        env:
+          DEPLOY_SHA: ${{ github.event.deployment.sha || github.sha }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+
+  preview-gate:
+    name: Preview budget gate
+    permissions:
+      contents: read
+      pull-requests: write
+    if: >-
+      github.event_name == 'deployment_status' &&
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment.environment != 'Production'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PREVIEW_URL: ${{ github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}
+      # Optional: Vercel → Settings → Deployment Protection → "Protection Bypass for Automation".
+      BYPASS: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Run Lighthouse on the preview (mobile, 3 runs per page)
+        run: |
+          extra=(--skip-audits=is-crawlable)  # previews are served with X-Robots-Tag: noindex by design
+          if [ -n "$BYPASS" ]; then
+            extra+=("--extra-headers={\"x-vercel-protection-bypass\":\"$BYPASS\",\"x-vercel-set-bypass-cookie\":\"true\"}")
+          fi
+          bash scripts/lighthouse.sh "$PREVIEW_URL" lh "${extra[@]}"
+
+      - name: Check budgets
+        id: gate
+        continue-on-error: true
+        run: npm run lighthouse:gate -- lh lighthouse-report.md "$PREVIEW_URL"
+
+      - name: Post or update the PR comment
+        if: always() && hashFiles('lighthouse-report.md') != ''
+        run: |
+          SHA="${{ github.event.deployment.sha }}"
+          PR=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SHA}/pulls" --jq '.[0].number // empty')
+          if [ -z "$PR" ]; then
+            echo "No pull request for ${SHA}; skipping the comment."
+            exit 0
+          fi
+          COMMENT_ID=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" --paginate \
+            --jq '[.[] | select(.body | contains("<!-- lighthouse-gate -->"))][0].id // empty')
+          if [ -n "$COMMENT_ID" ]; then
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${COMMENT_ID}" -F body=@lighthouse-report.md > /dev/null
+            echo "Updated comment ${COMMENT_ID} on #${PR}"
+          else
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" -F body=@lighthouse-report.md > /dev/null
+            echo "Commented on #${PR}"
+          fi
+
+      - name: Fail if below budget
+        if: steps.gate.outcome == 'failure'
+        run: |
+          echo "::error::Lighthouse scores are below the budgets in lighthouse-budgets.json (see the PR comment / job summary)."
+          exit 1

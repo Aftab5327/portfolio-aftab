@@ -6,6 +6,7 @@
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { getBuildLogPosts, plainText } from "../../lib/build-log";
 import { RESUME_JSON_PATH, RESUME_PAGE_PATH, RESUME_PATH } from "../../lib/config";
 import { getProfile, getProjects } from "../../lib/data";
 import { createIndex, type KnowledgeChunk, type KnowledgeIndexFile } from "../../lib/knowledge";
@@ -220,6 +221,21 @@ export function buildChunks(): { chunks: KnowledgeChunk[]; stopWords: string[] }
         text: body
       });
     }
+  }
+
+  // ── Build log: one chunk per weekly post (answers "what has he been working on?") ──
+  for (const post of getBuildLogPosts()) {
+    add({
+      id: `log:${post.slug}`,
+      type: "log",
+      title: `Build log: ${post.title}`,
+      url: `/log/${post.slug}`,
+      tags: ["log", "build", "working", "recent", "recently", "lately", "latest", "update", "progress", "week", "commits", ...post.repos.flatMap((repo) => words(repo))],
+      text: lines(
+        `Week of ${post.weekStart} to ${post.weekEnd}: ${post.commitCount} commits across ${post.repos.join(", ")}.`,
+        plainText(post.body)
+      )
+    });
   }
 
   // The owner's name appears in nearly every chunk, so it carries no signal.

@@ -13,6 +13,7 @@ import { appendFile, mkdir, readdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { GROQ_MODEL } from "../lib/config";
+import { callGroq, cleanOutput, inventedMetrics, type ChatMessage } from "./lib/groq";
 import { SECTION_KEYS, formatZodError, profileSchema } from "../lib/schema";
 import {
   PORTFOLIO_FILE,
@@ -202,43 +203,7 @@ async function buildContext(repo: GitHubRepo): Promise<string> {
   return truncate(sections.join("\n\n"), MAX_CONTEXT_CHARS);
 }
 
-// ── Model call + validation ──────────────────────────────────────────────────
-
-type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
-
-async function callGroq(messages: ChatMessage[]): Promise<string> {
-  for (let attempt = 0; ; attempt += 1) {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
-      body: JSON.stringify({ model: GROQ_MODEL, temperature: 0.2, max_tokens: 2000, messages })
-    });
-
-    if (response.status === 429 && attempt < 2) {
-      const wait = Math.min(Number(response.headers.get("retry-after")) || 20, 60);
-      console.log(`    rate limited by Groq; waiting ${wait}s`);
-      await new Promise((resolve) => setTimeout(resolve, wait * 1000));
-      continue;
-    }
-    if (!response.ok) throw new Error(`Groq API ${response.status}: ${(await response.text()).slice(0, 200)}`);
-
-    const data = (await response.json()) as { choices?: { message?: { content?: unknown } }[] };
-    const content = data.choices?.[0]?.message?.content;
-    if (typeof content !== "string" || !content.trim()) throw new Error("Groq returned an empty response");
-    return content;
-  }
-}
-
-/** Removes a code fence wrapped around the whole document, if the model added one. */
-function cleanOutput(text: string): string {
-  const trimmed = text.trim();
-  const wrapped = trimmed.match(/^```(?:markdown|md)?\s*\n([\s\S]*?)\n```$/);
-  return `${(wrapped ? wrapped[1] : trimmed).trim()}\n`;
-}
-
-/** Metric-like numbers: "40%", "3x", "10k", "500+", "120 ms", "1,000 users"... */
-const METRIC_PATTERN =
-  /\b(\d[\d,.]*)\s*(%|x\b|×|k\b|\+|ms\b|users?\b|customers?\b|clients?\b|downloads?\b|visitors?\b|requests?\b|hours?\b|minutes?\b|seconds?\b|days?\b|times\b)/gi;
+// ── Validation ───────────────────────────────────────────────────────────────
 
 function validateDraft(markdown: string, context: string, slug: string): string[] {
   const problems: string[] = [];
@@ -273,13 +238,9 @@ function validateDraft(markdown: string, context: string, slug: string): string[
     .split("\n")
     .filter((line) => !line.includes("TODO:"))
     .join("\n");
-  const invented = [...prose.matchAll(METRIC_PATTERN)]
-    .filter((match) => !context.includes(match[1]))
-    .map((match) => match[0].trim());
+  const invented = inventedMetrics(prose, context);
   if (invented.length) {
-    problems.push(
-      `These numbers do not appear in the CONTEXT and must be removed or replaced with a TODO: line: ${[...new Set(invented)].join(", ")}`
-    );
+    problems.push(`These numbers do not appear in the CONTEXT and must be removed or replaced with a TODO: line: ${invented.join(", ")}`);
   }
 
   return problems;

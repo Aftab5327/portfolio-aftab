@@ -6,7 +6,16 @@
  */
 import MiniSearch, { type Options, type SearchOptions } from "minisearch";
 
-export type ChunkType = "profile" | "skills" | "experience" | "education" | "certifications" | "resume" | "project";
+export type ChunkType = "profile" | "skills" | "experience" | "education" | "certifications" | "resume" | "project" | "log";
+
+/**
+ * Coarse topic of a chunk for anonymous analytics: a project's sections collapse
+ * into the project ("project:infrasense-360:challenges" → "project:infrasense-360").
+ */
+export const topicOf = (chunkId: string) => {
+  const parts = chunkId.split(":");
+  return parts[0] === "project" ? parts.slice(0, 2).join(":") : chunkId;
+};
 
 export type KnowledgeChunk = {
   /** Stable id, e.g. "profile:contact", "skills:database", "project:infrasense-360:challenges". */

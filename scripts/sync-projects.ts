@@ -412,6 +412,11 @@ async function main() {
   const { writeKnowledgeIndex } = await import("./lib/knowledge-index");
   const knowledge = await writeKnowledgeIndex();
   console.log(`  Knowledge index: ${knowledge.chunks} chunks, data/knowledge-index.json ${knowledge.changed ? "written" : "unchanged"}`);
+
+  // Heartbeat for /stats ("last sync"), kept in Redis so an unchanged sync makes no commit.
+  const { markSync } = await import("../lib/pipeline");
+  const marked = await markSync({ projects: projects.length, chunks: knowledge.chunks });
+  console.log(`  Sync heartbeat: ${marked ? "recorded in Redis" : "skipped (Redis not configured)"}`);
   console.log("");
 }
 

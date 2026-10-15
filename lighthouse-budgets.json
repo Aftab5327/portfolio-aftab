@@ -1,0 +1,7 @@
+{
+  "$comment": "Minimum Lighthouse scores (0-100, mobile, median of 3 runs) that preview deployments must meet. Enforced by .github/workflows/lighthouse.yml via scripts/lighthouse-gate.ts.",
+  "performance": 85,
+  "accessibility": 95,
+  "bestPractices": 95,
+  "seo": 95
+}
