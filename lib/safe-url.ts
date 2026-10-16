@@ -75,6 +75,13 @@ export function safeUrl(input: unknown, policy: UrlPolicy = {}): string | null {
 /** Image sources: same-site paths or GitHub-hosted images. */
 export const safeImageSrc = (input: unknown) => safeUrl(input, { hosts: GITHUB_IMAGE_HOSTS });
 
+/**
+ * Project live-demo links: demos live on vercel.app and other hosts, so any https:// host is allowed.
+ * Every other rule still applies (no credentials or ports, no control characters, no javascript:/data:/http:),
+ * and a demo is always absolute, so relative paths are not accepted.
+ */
+export const safeLiveUrl = (input: unknown) => safeUrl(input, { hosts: "any", relative: false });
+
 /** Relative, same-site links only (chat citations, internal navigation). */
 export const safeInternalHref = (input: unknown) => safeUrl(input, { hosts: [] });
 

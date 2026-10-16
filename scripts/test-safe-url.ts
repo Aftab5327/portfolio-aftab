@@ -10,7 +10,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import Markdown from "../components/Markdown";
 import { buildLogFrontmatterSchema } from "../lib/build-log";
 import { collectActions, type ToolContext } from "../lib/chat-tools";
-import { internalPath, safeActionHref, safeImageSrc, safeInternalHref, safeMarkdownUrl, safeUrl } from "../lib/safe-url";
+import { internalPath, safeActionHref, safeImageSrc, safeInternalHref, safeLiveUrl, safeMarkdownUrl, safeUrl } from "../lib/safe-url";
 
 let passed = 0;
 function check(name: string, fn: () => void) {
@@ -83,6 +83,36 @@ check("safeActionHref drops every malicious input (owner email set)", () => {
 check("safeMarkdownUrl turns every malicious scheme / protocol-relative input into an empty href", () => {
   const schemeOrHostTricks = MALICIOUS.filter((input) => !input.startsWith("https://") || /@|:\d|\s/.test(input));
   for (const input of schemeOrHostTricks) assert.equal(safeMarkdownUrl(input), "", `should drop ${JSON.stringify(input)}`);
+});
+
+check("safeLiveUrl allows demos on any https host", () => {
+  assert.equal(safeLiveUrl("https://pulsegrid-xi.vercel.app"), "https://pulsegrid-xi.vercel.app/");
+  assert.equal(safeLiveUrl("https://pulsegrid-xi.vercel.app/dashboard?tab=live"), "https://pulsegrid-xi.vercel.app/dashboard?tab=live");
+  assert.equal(safeLiveUrl("https://aftab5327.github.io/demo/"), "https://aftab5327.github.io/demo/");
+});
+
+check("safeLiveUrl still drops every malicious input (only plain other-host https URLs are now valid)", () => {
+  const otherHostOnly = new Set(["https://evil.com/github.com", "https://github.com.evil.com/x", "https://evilgithub.com/x"]);
+  for (const input of MALICIOUS.filter((value) => !otherHostOnly.has(value))) {
+    assert.equal(safeLiveUrl(input), null, `should drop ${JSON.stringify(input)}`);
+  }
+  for (const input of [
+    "http://pulsegrid-xi.vercel.app",
+    "https://user:pass@pulsegrid-xi.vercel.app",
+    "https://pulsegrid-xi.vercel.app@evil.com",
+    "https://pulsegrid-xi.vercel.app:8443/",
+    "/projects/pulsegrid",
+    "//pulsegrid-xi.vercel.app",
+    " https://pulsegrid-xi.vercel.app",
+    "https://pulsegrid-xi.vercel.app/\tx"
+  ]) {
+    assert.equal(safeLiveUrl(input), null, `should drop ${JSON.stringify(input)}`);
+  }
+});
+
+check("repo links stay GitHub-only", () => {
+  assert.equal(safeUrl("https://pulsegrid-xi.vercel.app"), null);
+  assert.equal(safeUrl("https://github.com/Aftab5327/pulsegrid"), "https://github.com/Aftab5327/pulsegrid");
 });
 
 check("non-string values are dropped", () => {

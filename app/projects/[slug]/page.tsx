@@ -5,7 +5,7 @@ import { FiArrowLeft, FiArrowUpRight, FiGithub, FiStar } from "react-icons/fi";
 import Markdown from "@/components/Markdown";
 import ProjectImage from "@/components/ProjectImage";
 import { getProject, getProjects } from "@/lib/data";
-import { internalPath, safeImageSrc, safeUrl } from "@/lib/safe-url";
+import { internalPath, safeImageSrc, safeLiveUrl, safeUrl } from "@/lib/safe-url";
 import { SECTION_KEYS, type CaseStudySource } from "@/lib/schema";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -56,8 +56,9 @@ export default async function ProjectPage(props: Params) {
   if (!project) notFound();
 
   const sections = SECTION_KEYS.filter((key) => project.sections[key].trim());
-  // Stored links (projects.json / PORTFOLIO.md): only https://github.com/... or same-site paths become links.
-  const liveUrl = safeUrl(project.liveUrl);
+  // Stored links (projects.json / PORTFOLIO.md): the repo must be https://github.com/...; a live demo may be
+  // any https:// host. Anything else (javascript:, data:, http:, credentials...) is dropped.
+  const liveUrl = safeLiveUrl(project.liveUrl);
   const repoUrl = safeUrl(project.repoUrl);
 
   return (
