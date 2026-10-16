@@ -5,6 +5,7 @@ import { FiArrowLeft, FiArrowUpRight, FiGithub, FiStar } from "react-icons/fi";
 import Markdown from "@/components/Markdown";
 import ProjectImage from "@/components/ProjectImage";
 import { getProject, getProjects } from "@/lib/data";
+import { internalPath, safeImageSrc, safeUrl } from "@/lib/safe-url";
 import { SECTION_KEYS, type CaseStudySource } from "@/lib/schema";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -28,6 +29,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
   const project = getProject(params.slug);
   if (!project) return {};
+  const ogImage = safeImageSrc(project.displayImage);
 
   return {
     title: project.title,
@@ -37,8 +39,8 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
       title: project.title,
       description: project.tagline || undefined,
       type: "article",
-      url: `/projects/${project.slug}`,
-      ...(project.displayImage ? { images: [{ url: project.displayImage, width: 1600, height: 900 }] } : {})
+      url: internalPath("projects", project.slug),
+      ...(ogImage ? { images: [{ url: ogImage, width: 1600, height: 900 }] } : {})
     },
     twitter: {
       card: "summary_large_image",
@@ -54,6 +56,9 @@ export default async function ProjectPage(props: Params) {
   if (!project) notFound();
 
   const sections = SECTION_KEYS.filter((key) => project.sections[key].trim());
+  // Stored links (projects.json / PORTFOLIO.md): only https://github.com/... or same-site paths become links.
+  const liveUrl = safeUrl(project.liveUrl);
+  const repoUrl = safeUrl(project.repoUrl);
 
   return (
     <article className="rounded-card border border-line bg-panel px-6 py-10 shadow-soft sm:px-10 lg:px-14 lg:py-14">
@@ -72,11 +77,11 @@ export default async function ProjectPage(props: Params) {
           <p className="mt-4 max-w-3xl text-[15px] leading-[1.75] text-txtdim">{project.tagline}</p>
         ) : null}
 
-        {project.repoUrl || project.liveUrl ? (
+        {repoUrl || liveUrl ? (
           <div className="mt-7 flex flex-wrap gap-3">
-            {project.liveUrl ? (
+            {liveUrl ? (
               <a
-                href={project.liveUrl}
+                href={liveUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-teal px-6 text-sm font-semibold text-bg transition hover:brightness-110"
@@ -85,9 +90,9 @@ export default async function ProjectPage(props: Params) {
                 <FiArrowUpRight aria-hidden />
               </a>
             ) : null}
-            {project.repoUrl ? (
+            {repoUrl ? (
               <a
-                href={project.repoUrl}
+                href={repoUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-line bg-panel2 px-6 text-sm font-medium text-txt transition hover:border-teal hover:text-teal"

@@ -5,6 +5,8 @@
  * navigates without the visitor clicking.
  */
 
+import { safeActionHref } from "./safe-url";
+
 export type ChatAction = {
   type: "open_project" | "show_section" | "get_resume" | "contact";
   label: string;
@@ -101,7 +103,10 @@ export function validateToolCall(call: RawToolCall, ctx: ToolContext): ChatActio
 export function collectActions(calls: RawToolCall[], ctx: ToolContext, max = MAX_ACTIONS): ChatAction[] {
   const actions: ChatAction[] = [];
   for (const call of calls) {
-    const action = validateToolCall(call, ctx);
+    const validated = validateToolCall(call, ctx);
+    // Hrefs come from stored config (projects, profile socials), so they pass the URL allow-list too.
+    const href = validated ? safeActionHref(validated.href, ctx.email) : null;
+    const action = validated && href ? { ...validated, href } : null;
     if (action && !actions.some((existing) => existing.href === action.href)) actions.push(action);
     if (actions.length >= max) break;
   }

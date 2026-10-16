@@ -16,6 +16,7 @@
     "knowledge": "tsx scripts/build-knowledge.ts",
     "eval:rag": "tsx scripts/eval-retrieval.ts",
     "test:chat": "tsx scripts/test-chat-tools.ts",
+    "test:safe-url": "tsx scripts/test-safe-url.ts",
     "github-stats": "tsx scripts/github-stats.ts",
     "uptime": "tsx scripts/check-uptime.ts",
     "lighthouse:record": "tsx scripts/record-lighthouse.ts",

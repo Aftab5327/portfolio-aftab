@@ -4,6 +4,7 @@ import { FiRss } from "react-icons/fi";
 import { getBuildLogPosts } from "@/lib/build-log";
 import { AUTOMATION_DOCS_PATH } from "@/lib/config";
 import { getProfile } from "@/lib/data";
+import { internalPath } from "@/lib/safe-url";
 
 export const dynamic = "force-static";
 
@@ -44,7 +45,7 @@ export default function BuildLogPage() {
           {posts.map((post) => (
             <li key={post.slug}>
               <Link
-                href={`/log/${post.slug}`}
+                href={internalPath("log", post.slug)}
                 className="block rounded-xl border border-line bg-panel2 p-5 transition-all duration-200 hover:-translate-y-0.5"
               >
                 <p className="font-mono text-[11px] text-txtdim">

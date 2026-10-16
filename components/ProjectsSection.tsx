@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
 import ProjectImage from "@/components/ProjectImage";
 import type { ResolvedProject } from "@/lib/data";
+import { internalPath } from "@/lib/safe-url";
 
 export type ProjectCard = Pick<ResolvedProject, "slug" | "title" | "category" | "tagline" | "stack" | "displayImage">;
 
@@ -31,7 +32,7 @@ export default function ProjectsSection({ projects }: { projects: ProjectCard[] 
             transition={{ duration: 0.45, delay: index * 0.06, ease: "easeOut" }}
             className="group overflow-hidden rounded-xl border border-line bg-panel2 transition-all duration-200 hover:shadow-glow has-focus-visible:ring-2 has-focus-visible:ring-teal"
           >
-            <Link href={`/projects/${project.slug}`} className="flex h-full flex-col focus-visible:outline-hidden">
+            <Link href={internalPath("projects", project.slug)} className="flex h-full flex-col focus-visible:outline-hidden">
               {/* IDE window top bar */}
               <div className="flex items-center justify-between border-b border-line bg-panel px-4 py-2.5">
                 <div className="flex items-center gap-1.5" aria-hidden>

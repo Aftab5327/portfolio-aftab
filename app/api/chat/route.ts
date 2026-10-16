@@ -17,6 +17,7 @@ import { getProfile, getProjects } from "@/lib/data";
 import { topicOf } from "@/lib/knowledge";
 import { checkChatRateLimit } from "@/lib/rate-limit";
 import { getRetriever, type RetrievedChunk } from "@/lib/retrieval";
+import { safeInternalHref } from "@/lib/safe-url";
 
 export const dynamic = "force-dynamic";
 
@@ -140,7 +141,9 @@ function citationsFor(answer: string, chunks: RetrievedChunk[]) {
   const seen = new Set<string>();
   return [...cited]
     .sort((a, b) => a - b)
-    .map((i) => ({ n: i + 1, title: chunks[i].title, url: chunks[i].url }))
+    // Citations link to the chunk's page on this site: same-site paths only.
+    .map((i) => ({ n: i + 1, title: chunks[i].title, url: safeInternalHref(chunks[i].url) }))
+    .filter((citation): citation is { n: number; title: string; url: string } => citation.url !== null)
     .filter((citation) => !seen.has(citation.url) && seen.add(citation.url));
 }
 

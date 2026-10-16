@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { safeImageSrc } from "@/lib/safe-url";
 
 type ProjectImageProps = {
   src: string;
@@ -14,7 +15,9 @@ type ProjectImageProps = {
  * 16:9 project image. Without a `src` it renders a generated placeholder card
  * (title on the themed grid background) so every project has a visual.
  */
-export default function ProjectImage({ src, title, category, sizes, priority = false, className = "" }: ProjectImageProps) {
+export default function ProjectImage({ src: rawSrc, title, category, sizes, priority = false, className = "" }: ProjectImageProps) {
+  // Stored image references: same-site paths or GitHub-hosted images only; anything else gets the placeholder.
+  const src = safeImageSrc(rawSrc);
   if (!src) {
     return (
       <div

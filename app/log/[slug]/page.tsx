@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { FiArrowLeft, FiCpu, FiGitCommit } from "react-icons/fi";
 import Markdown from "@/components/Markdown";
 import { getBuildLogPost, getBuildLogPosts, plainText } from "@/lib/build-log";
+import { internalPath, safeUrl } from "@/lib/safe-url";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -24,8 +25,8 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   return {
     title: `${post.title} · Build log`,
     description,
-    alternates: { canonical: `/log/${post.slug}` },
-    openGraph: { title: post.title, description, type: "article", url: `/log/${post.slug}`, publishedTime: post.date }
+    alternates: { canonical: internalPath("log", post.slug) },
+    openGraph: { title: post.title, description, type: "article", url: internalPath("log", post.slug), publishedTime: post.date }
   };
 }
 
@@ -69,17 +70,26 @@ export default async function BuildLogPostPage(props: Params) {
             {"// source commits"}
           </h2>
           <ul className="mt-4 space-y-2">
-            {post.commits.map((commit) => (
-              <li key={commit.sha} className="flex gap-3 text-sm text-txtdim">
-                <FiGitCommit aria-hidden className="mt-1 shrink-0 text-teal" />
-                <span>
-                  <a href={commit.url} target="_blank" rel="noreferrer" className="font-mono text-xs text-teal underline-offset-2 hover:underline">
-                    {commit.repo}@{commit.sha.slice(0, 7)}
-                  </a>{" "}
-                  {commit.message}
-                </span>
-              </li>
-            ))}
+            {post.commits.map((commit) => {
+              // Re-checked at render time too: only https://github.com/... becomes a link.
+              const href = safeUrl(commit.url, { relative: false });
+              const label = `${commit.repo}@${commit.sha.slice(0, 7)}`;
+              return (
+                <li key={commit.sha} className="flex gap-3 text-sm text-txtdim">
+                  <FiGitCommit aria-hidden className="mt-1 shrink-0 text-teal" />
+                  <span>
+                    {href ? (
+                      <a href={href} target="_blank" rel="noreferrer" className="font-mono text-xs text-teal underline-offset-2 hover:underline">
+                        {label}
+                      </a>
+                    ) : (
+                      <span className="font-mono text-xs text-teal">{label}</span>
+                    )}{" "}
+                    {commit.message}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </section>
       ) : null}
