@@ -32,6 +32,16 @@ export function rewriteQuery(question: string, previousUserMessage?: string): { 
   return { query: followUp ? `${previousUserMessage!.trim()} ${trimmed}` : trimmed, followUp };
 }
 
+/**
+ * At most this many chunks from one project in a result set, so a project with many
+ * case-study sections can't crowd out everything else (e.g. the experience entry that
+ * describes the same work).
+ */
+export const MAX_CHUNKS_PER_PROJECT = 3;
+
+/** "project:hrms:solution" -> "project:hrms"; other chunks are their own group. */
+const sourceOf = (id: string) => (id.startsWith("project:") ? id.split(":").slice(0, 2).join(":") : id);
+
 export function createRetriever(file: KnowledgeIndexFile) {
   const index = MiniSearch.loadJSON<IndexedChunk>(file.index, miniSearchOptions(file.stopWords));
   const byId = new Map(file.chunks.map((chunk) => [chunk.id, chunk]));
@@ -42,12 +52,18 @@ export function createRetriever(file: KnowledgeIndexFile) {
       const { query, followUp } = rewriteQuery(question, previousUserMessage);
       let results = index.search(query);
       if (results.length === 0) results = index.search(GENERAL_QUERY);
-      const chunks = results
-        .slice(0, limit)
-        .flatMap((result) => {
-          const chunk = byId.get(String(result.id));
-          return chunk ? [{ ...chunk, score: Math.round(result.score * 100) / 100 }] : [];
-        });
+      const perSource = new Map<string, number>();
+      const chunks: RetrievedChunk[] = [];
+      for (const result of results) {
+        if (chunks.length >= limit) break;
+        const chunk = byId.get(String(result.id));
+        if (!chunk) continue;
+        const source = sourceOf(chunk.id);
+        const taken = perSource.get(source) ?? 0;
+        if (taken >= MAX_CHUNKS_PER_PROJECT) continue;
+        perSource.set(source, taken + 1);
+        chunks.push({ ...chunk, score: Math.round(result.score * 100) / 100 });
+      }
       return { chunks, query, followUp };
     }
   };

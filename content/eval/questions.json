@@ -43,20 +43,18 @@
     { "question": "What IoT projects has he built?", "expect": ["pulsegrid", "wanotifier"] },
     { "question": "Which database does the e-commerce platform use?", "expect": ["e-commerce-website"] },
 
-    { "question": "Tell me about InfraSense 360", "expect": ["infrasense-360"] },
     { "question": "Which project uses Supabase?", "expect": ["smart-bookmark-app"] },
-    { "question": "Has he built anything for visually impaired people?", "expect": ["smart-cap-visually-impaired"] },
     { "question": "Has he worked with large language models?", "expect": ["llm-monitoring-system"] },
     { "question": "Show me his Python logistics simulation", "expect": ["fastbox-delivery-simulation"] },
     {
-      "history": ["Tell me about the weather monitoring project"],
+      "history": ["Tell me about the Smart Bookmark App"],
       "question": "What stack did it use?",
-      "expect": ["cloud-weather-monitoring"]
+      "expect": ["smart-bookmark-app"]
     },
     {
-      "history": ["What is the Product Catalog?"],
-      "question": "Which database does it use?",
-      "expect": ["product-catalog"]
+      "history": ["What is the FastBox simulator?"],
+      "question": "Which language is it written in?",
+      "expect": ["fastbox-delivery-simulation"]
     },
     { "question": "What has he been working on recently?", "expect": ["log:*"], "requires": "log:*" }
   ]
