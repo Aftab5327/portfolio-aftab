@@ -6,11 +6,12 @@ import GitHubActivity from "@/components/GitHubActivity";
 import AIChatSection from "@/components/AIChatSection";
 import ContactSection from "@/components/ContactSection";
 import { AI_DOCS_PATH } from "@/lib/config";
-import { getProfile, getProjects } from "@/lib/data";
+import { getPrimaryResume, getProfile, getProjects } from "@/lib/data";
 
 export default function HomePage() {
   const profile = getProfile();
   const projects = getProjects();
+  const cv = getPrimaryResume();
 
   // Suggested chat questions built from the data (projects are already featured-first).
   const skillGroup = profile.skills.find((group) => /ai|ml|iot/i.test(group.category)) ?? profile.skills[0];
@@ -45,6 +46,7 @@ export default function HomePage() {
             socials: profile.socials,
             avatar: profile.avatar
           }}
+          cv={cv}
         />
       </div>
       <div id="about" className="scroll-mt-24">
@@ -61,6 +63,7 @@ export default function HomePage() {
             certifications: profile.certifications,
             stats: profile.stats
           }}
+          cv={cv}
         />
       </div>
       <div id="skills" className="scroll-mt-24">
@@ -78,7 +81,8 @@ export default function HomePage() {
         <ContactSection
           profile={{
             email: profile.email,
-            phone: profile.phone,
+            // Shown only when profile.resume.showPhone is on.
+            phone: profile.resume.showPhone ? profile.phone : "",
             location: profile.location,
             socials: profile.socials
           }}

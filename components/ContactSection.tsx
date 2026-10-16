@@ -242,7 +242,7 @@ export default function ContactSection({ profile }: { profile: ContactProfile })
           </div>
 
           <ContactCard icon={<FiMail />} label="email" value={profile.email} />
-          <ContactCard icon={<FiPhone />} label="mobile" value={profile.phone} />
+          {profile.phone ? <ContactCard icon={<FiPhone />} label="mobile" value={profile.phone} /> : null}
           <ContactCard icon={<FiMapPin />} label="location" value={profile.location} />
 
           <div className="rounded-2xl border border-line bg-panel2 p-5 sm:p-6">

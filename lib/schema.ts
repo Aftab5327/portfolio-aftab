@@ -25,13 +25,26 @@ const educationSchema = z
     /** Compact label used for the chips under the About heading. */
     short: nonEmpty,
     /** Graduation year or range shown on the resume, e.g. "2023" or "2019 – 2023". */
-    year: z.string().optional()
+    year: z.string().optional(),
+    /** e.g. "GPA 8.56/10 (First Class with Distinction)" (JSON Resume `score`). */
+    grade: z.string().optional(),
+    /** Main subjects/tools covered (JSON Resume `courses`). */
+    courses: z.array(nonEmpty).optional()
   })
   .strict();
 
-/** Resume-only settings (the resume itself is generated from the rest of the profile). */
+/**
+ * Resume settings. "View my CV"/"Download resume" links point at the uploaded PDF in public/ when
+ * `source` is "uploaded"; the generated /resume.pdf and /resume page are built from the profile either way.
+ */
 const resumeSettingsSchema = z
   .object({
+    source: z.enum(["uploaded", "generated"]).default("generated"),
+    /** Site path of the uploaded PDF in public/, required when source is "uploaded". */
+    uploadedPath: z
+      .string()
+      .regex(/^\/[A-Za-z0-9._-]+\.pdf$/, "must be a /file.pdf path in public/")
+      .optional(),
     /** Print the phone number on the PDF/JSON resume. */
     showPhone: z.boolean().default(false),
     /** How many projects (featured first) the resume lists. */
@@ -40,6 +53,10 @@ const resumeSettingsSchema = z
     extraSections: z.array(z.object({ title: nonEmpty, items: z.array(nonEmpty).min(1) }).strict()).default([])
   })
   .strict()
+  .refine((settings) => settings.source !== "uploaded" || Boolean(settings.uploadedPath), {
+    message: 'resume.uploadedPath is required when resume.source is "uploaded"',
+    path: ["uploadedPath"]
+  })
   .default({});
 
 const experienceSchema = z
@@ -60,7 +77,9 @@ const certificationSchema = z
     name: nonEmpty,
     issuer: nonEmpty,
     year: z.string(),
-    url: optionalUrl
+    url: optionalUrl,
+    /** "in-progress" is shown as "In progress" instead of a date. */
+    status: z.enum(["earned", "in-progress"]).default("earned")
   })
   .strict();
 

@@ -1,5 +1,5 @@
 {
-  "$comment": "Retrieval eval for the AI assistant (npm run eval:rag). Each `expect` entry is a chunk id (\"skills:database\"), a chunk-id prefix ending in \"*\" or a project slug; all must appear in the top 5 results. `history` holds earlier user turns for follow-up questions. Update this file when you add projects or change profile sections.",
+  "$comment": "Retrieval eval for the AI assistant (npm run eval:rag). Each `expect` entry is a chunk id (\"skills:databases\"), a chunk-id prefix ending in \"*\" or a project slug; all must appear in the top 5 results. `history` holds earlier user turns for follow-up questions. Update this file when you add projects or change profile sections.",
   "minRecall": 0.85,
   "questions": [
     { "question": "Who is Aftab?", "expect": ["profile:about"] },
@@ -7,20 +7,47 @@
     { "question": "Where is he based?", "expect": ["profile:contact"] },
     { "question": "Is he open to new job opportunities?", "expect": ["profile:contact"] },
     { "question": "How many years of experience does he have?", "expect": ["profile:stats"] },
-    { "question": "What is his education background?", "expect": ["profile:education"] },
     { "question": "Can I download his resume or CV?", "expect": ["resume"] },
-    { "question": "Does he know React and TypeScript?", "expect": ["skills:frontend-development"] },
-    { "question": "Which databases has he worked with?", "expect": ["skills:database"] },
-    { "question": "Any experience with Arduino or ESP32?", "expect": ["skills:iot-embedded-systems"] },
-    { "question": "What AI or machine learning skills does he have?", "expect": ["skills:ai-ml"] },
-    { "question": "What DevOps tools does he use?", "expect": ["skills:tools-devops"] },
+
+    { "question": "Where does he work now?", "expect": ["experience:1-orglineai"] },
+    { "question": "What did he do at SAS Automation?", "expect": ["experience:2-sas-automation-pvt-ltd"] },
+    { "question": "Did he do an internship?", "expect": ["experience:3-zidio-development"] },
+    { "question": "Has he deployed apps to production servers with Nginx and PM2?", "expect": ["experience:1-orglineai", "hrms"] },
+
+    { "question": "What is his education background?", "expect": ["profile:education"] },
+    { "question": "What was his GPA?", "expect": ["profile:education"] },
+    { "question": "Did he study IoT at C-DAC?", "expect": ["profile:education"] },
+
+    { "question": "Does he have any certifications?", "expect": ["profile:certifications"] },
+    { "question": "Is he AWS certified?", "expect": ["profile:certifications"] },
+
+    { "question": "Which programming languages does he know?", "expect": ["skills:languages-core"] },
+    { "question": "Does he know React and Redux?", "expect": ["skills:frontend"] },
+    { "question": "Has he used NestJS or GraphQL?", "expect": ["skills:backend-api"] },
+    { "question": "Which databases has he worked with?", "expect": ["skills:databases"] },
+    { "question": "What cloud and DevOps tools does he use?", "expect": ["skills:cloud-devops"] },
+    { "question": "How does he test his code?", "expect": ["skills:testing-tools"] },
+
+    { "question": "Tell me about PulseGrid", "expect": ["pulsegrid"] },
+    { "question": "How does PulseGrid get data from devices to the dashboard?", "expect": ["pulsegrid"] },
+    { "question": "What production issues did he debug in PulseGrid?", "expect": ["pulsegrid"] },
+    {
+      "history": ["Tell me about PulseGrid"],
+      "question": "Where is it hosted?",
+      "expect": ["pulsegrid"]
+    },
+    { "question": "Which project sends WhatsApp alerts?", "expect": ["wanotifier"] },
+    { "question": "How fast are WaNotifier alerts?", "expect": ["wanotifier"] },
+    { "question": "Tell me about the HRMS he built", "expect": ["hrms"] },
+    { "question": "How does the HRMS keep each organization's data separate?", "expect": ["hrms"] },
+    { "question": "What IoT projects has he built?", "expect": ["pulsegrid", "wanotifier"] },
+    { "question": "Which database does the e-commerce platform use?", "expect": ["e-commerce-website"] },
+
     { "question": "Tell me about InfraSense 360", "expect": ["infrasense-360"] },
-    { "question": "What IoT projects has he built?", "expect": ["cloud-weather-monitoring", "infrasense-360"] },
     { "question": "Which project uses Supabase?", "expect": ["smart-bookmark-app"] },
     { "question": "Has he built anything for visually impaired people?", "expect": ["smart-cap-visually-impaired"] },
     { "question": "Has he worked with large language models?", "expect": ["llm-monitoring-system"] },
     { "question": "Show me his Python logistics simulation", "expect": ["fastbox-delivery-simulation"] },
-    { "question": "What does the e-commerce website do?", "expect": ["e-commerce-website"] },
     {
       "history": ["Tell me about the weather monitoring project"],
       "question": "What stack did it use?",

@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { FiDownload, FiPrinter } from "react-icons/fi";
-import { RESUME_JSON_PATH, RESUME_PATH } from "@/lib/config";
-import { buildResume, educationLine, experienceMeta, formatDate } from "@/lib/resume";
+import { RESUME_JSON_PATH } from "@/lib/config";
+import { getPrimaryResume } from "@/lib/data";
+import { buildResume, certificationMeta, educationLine, experienceMeta, formatDate } from "@/lib/resume";
 import PrintButton from "@/components/PrintButton";
 
 const resume = buildResume();
+// "Download PDF" serves the primary CV (the uploaded designed PDF when profile.resume.source is "uploaded").
+const cv = getPrimaryResume();
 
 export const metadata: Metadata = {
   title: "Resume",
@@ -33,8 +36,8 @@ export default function ResumePage() {
     <article className="mx-auto max-w-3xl rounded-card border border-line bg-panel px-6 py-10 text-[15px] leading-relaxed text-txtdim shadow-soft sm:px-10 print:max-w-none print:rounded-none print:border-0 print:p-0 print:text-[10.5pt] print:shadow-none">
       <div className="mb-8 flex flex-wrap gap-3 print:hidden">
         <a
-          href={RESUME_PATH}
-          download={resume.meta.fileName}
+          href={cv.href}
+          download={cv.fileName}
           className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-teal px-5 text-sm font-semibold text-bg transition hover:brightness-110"
         >
           <FiDownload aria-hidden />
@@ -161,7 +164,7 @@ export default function ResumePage() {
                 ) : (
                   <span className="text-txt">{cert.name}</span>
                 )}
-                {` — ${cert.issuer}${cert.year ? `, ${cert.year}` : ""}`}
+                {` — ${certificationMeta(cert)}`}
               </li>
             ))}
           </ul>

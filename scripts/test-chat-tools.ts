@@ -41,6 +41,16 @@ check("valid calls become safe actions", () => {
   assert.equal(validateToolCall(call("show_section", { id: "contact" }), ctx)?.href, "/#contact");
   assert.equal(validateToolCall(call("get_resume", { format: "pdf" }), ctx)?.href, "/resume.pdf");
   assert.equal(validateToolCall(call("get_resume", { format: "web" }), ctx)?.href, "/resume");
+  // With an uploaded CV the PDF chip downloads that file under its own name; the web chip still opens /resume.
+  const uploaded = { ...ctx, resume: { pdf: "/Aftab-Dhalait-Resume.pdf", web: "/resume", fileName: "Aftab-Dhalait-Resume.pdf" } };
+  assert.deepEqual(validateToolCall(call("get_resume", { format: "pdf" }), uploaded), {
+    type: "get_resume",
+    label: "Download resume (PDF)",
+    href: "/Aftab-Dhalait-Resume.pdf",
+    external: false,
+    download: "Aftab-Dhalait-Resume.pdf"
+  });
+  assert.equal(validateToolCall(call("get_resume", { format: "web" }), uploaded)?.href, "/resume");
   assert.equal(validateToolCall(call("contact", { channel: "email" }), ctx)?.href, "mailto:aftab@example.com");
   assert.equal(validateToolCall(call("contact", { channel: "linkedin" }), ctx)?.external, true);
 });

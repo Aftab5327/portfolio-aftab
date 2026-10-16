@@ -49,5 +49,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Check generated resume (valid PDF, < 300 KB, ≤ 2 pages)
+      - name: Check resumes (generated < 300 KB & ≤ 2 pages; uploaded CV exists, valid, < 1 MB)
         run: npm run check:resume

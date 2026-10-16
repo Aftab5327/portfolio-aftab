@@ -3,20 +3,22 @@
   "firstName": "Aftab",
   "lastName": "Dhalait",
   "title": "Full Stack Developer",
-  "roles": ["Full Stack Developer", "IoT Engineer", "AI Builder", "MERN Stack Developer"],
-  "headline": "Full Stack Developer. IoT Engineer. Business-Driven Technologist.",
+  "roles": ["Full Stack Developer", "React.js & NestJS Developer", "IoT & Cloud Developer", "Production DevOps"],
+  "headline": "Full Stack Developer. Production SaaS. Real-time IoT.",
   "summary": [
-    "I'm Aftab Dhalait — a Software Developer who bridges hardware and software, web and IoT, engineering and business.",
-    "B.E. + CDAC. I build full-stack systems that solve real-world problems with precision and purpose."
+    "Full Stack Developer with 2+ years of experience building and deploying enterprise SaaS, currently shipping 35+ live HRMS modules (React.js, NestJS, PostgreSQL) at a funded startup and running the platform in production on Ubuntu with Nginx, PM2 and SSL.",
+    "Strong in REST API design, multi-tenant architecture, secure auth (JWT, OAuth 2.0, role-based access) and real-time dashboards, with hands-on AWS IoT Core and MQTT experience, owning work end-to-end from Figma design to a secure, fast production system."
   ],
-  "heroIntro": "From crafting pixel-perfect interfaces to engineering embedded systems — I build software that lives in browsers, servers, and the real world. React frontends, scalable backend APIs, and IoT devices talking to the cloud, connected with precision and purpose.",
-  "recruiterNote": "Aftab bridges hardware & software, web & IoT. B.E. + CDAC. Open to Full Stack, IoT & AI roles.",
+  "heroIntro": "From Figma designs to secure production servers: I build multi-tenant SaaS apps with React.js, NestJS and PostgreSQL, real-time dashboards, and IoT pipelines that connect devices to the cloud.",
+  "recruiterNote": "Full Stack Developer (React.js · NestJS · PostgreSQL) with 2+ years shipping production SaaS. B.E. E&TC + PG-DIoT (C-DAC). Open to Full Stack, IoT & AI roles.",
   "quote": "Most developers live in one world - web or hardware. I chose to master both.",
   "location": "Pune, India",
   "email": "aftab.iot@gmail.com",
   "phone": "+91 9370312566",
   "avatar": "/aftab.png",
   "resume": {
+    "source": "uploaded",
+    "uploadedPath": "/Aftab-Dhalait-Resume.pdf",
     "showPhone": false,
     "projectLimit": 4,
     "extraSections": []
@@ -28,23 +30,25 @@
     "twitter": ""
   },
   "seo": {
-    "description": "Software Developer specializing in Full Stack Development, IoT & Embedded Systems, and React & Backend Development. Based in Pune, India.",
+    "description": "Full Stack Developer (React.js, NestJS, Node.js, PostgreSQL) building production SaaS, real-time dashboards and IoT systems. Based in Pune, India.",
     "keywords": [
       "Aftab Dhalait",
       "Full Stack Developer",
+      "React.js Developer",
+      "NestJS",
+      "Node.js",
+      "PostgreSQL",
       "IoT Developer",
-      "React Developer",
+      "AWS IoT Core",
       "Next.js Portfolio",
-      "MERN Stack",
-      "Embedded Systems",
       "Pune India"
     ]
   },
   "stats": [
-    { "value": "2+", "label": "Years of Experience" },
-    { "value": "10+", "label": "Projects Built" },
-    { "value": "3", "label": "Specializations (Web · IoT · AI)" },
-    { "value": "2+", "label": "IoT Systems Deployed" }
+    { "value": "2+", "label": "Years building production software" },
+    { "value": "35+", "label": "HRMS modules shipped" },
+    { "value": "500+", "label": "Users on the live HRMS" },
+    { "value": "< 2 s", "label": "IoT event to WhatsApp alert" }
   ],
   "interests": [
     { "icon": "⚡", "text": "Integrating Hardware & Software" },
@@ -57,84 +61,151 @@
   ],
   "education": [
     {
-      "degree": "B.E. Electronics & Telecommunication",
-      "detail": "with Honors in Data Science",
-      "institution": "",
-      "short": "B.E. Electronics & Telecommunication · Data Science Honors"
+      "degree": "B.E. Electronics & Telecommunication Engineering (Hons. Data Science)",
+      "detail": "",
+      "institution": "Savitribai Phule Pune University",
+      "short": "B.E. E&TC (Hons. Data Science) · SPPU",
+      "year": "2018 – 2022",
+      "grade": "GPA 8.56/10 (First Class with Distinction)"
     },
     {
-      "degree": "PG Diploma in Advanced Computing",
+      "degree": "Post Graduate Diploma in Internet of Things (PG-DIoT)",
       "detail": "",
-      "institution": "CDAC",
-      "short": "CDAC Advanced Computing"
+      "institution": "C-DAC, Bangalore",
+      "short": "PG-DIoT · C-DAC Bangalore",
+      "year": "2022 – 2023",
+      "courses": ["AWS IoT Core", "MQTT", "Embedded C/C++", "Raspberry Pi", "STM32", "Network Security"]
     }
   ],
-  "experience": [],
+  "experience": [
+    {
+      "role": "Software Developer",
+      "company": "OrgLineAI",
+      "location": "Pune · Remote",
+      "start": "Sep 2024",
+      "end": "Present",
+      "summary": "Funded SaaS startup building a multi-tenant HRMS.",
+      "highlights": [
+        "Built and shipped 35+ HRMS modules (payroll, attendance, leave, analytics) with React.js, NestJS/Node.js and PostgreSQL for a live multi-tenant customer base.",
+        "Deployed the platform to a self-managed Ubuntu 24.04 server: Nginx reverse proxy, PM2 process management and Let's Encrypt SSL/HTTPS for the app and the API.",
+        "Hardened the server with a UFW firewall, fail2ban and a non-root deploy user, with automated PostgreSQL backups before every deploy so PM2 restarts cleanly after crashes or reboots.",
+        "Enforced multi-tenant data isolation with an organization ID on every record, Prisma middleware and JWT-based checks, with role-based access on every API endpoint.",
+        "Sped up endpoints for large record sets with server-side pagination and targeted PostgreSQL indexes, and replaced manual HR reporting with live, filterable dashboards.",
+        "Ran a Git-based deployment workflow with Prisma migrations and turned Figma designs into responsive, production-ready UI."
+      ]
+    },
+    {
+      "role": "Software Developer",
+      "company": "SAS Automation Pvt Ltd",
+      "location": "Pune, India",
+      "start": "Jan 2024",
+      "end": "Aug 2024",
+      "summary": "",
+      "highlights": [
+        "Delivered three products end-to-end: an e-commerce platform, the WaNotifier IoT alert system and SAS Simulator, a browser-based simulation game.",
+        "Built reusable React.js components (multi-step forms, validation, data tables) for the e-commerce storefront and admin panel, and integrated REST APIs for products, orders and secure PDF invoices with error-handling middleware.",
+        "Built the WaNotifier alert pipeline: device telemetry over MQTT through AWS IoT Core and API Gateway/Lambda to WhatsApp notifications.",
+        "Developed SAS Simulator's core game logic, state management and real-time UI, and fixed recurring UI and API bugs at the root cause from QA and support reports."
+      ]
+    },
+    {
+      "role": "Web Developer Intern",
+      "company": "Zidio Development",
+      "location": "Bangalore · Remote",
+      "start": "Aug 2023",
+      "end": "Nov 2023",
+      "summary": "",
+      "highlights": [
+        "Built a full-stack MERN application (React.js, Node.js, Express.js, MongoDB) with real-time WebSocket notifications for multiple concurrent user roles.",
+        "Worked across the stack in a remote Agile team, from database schema design to deployed UI, building reusable components for a consistent interface."
+      ]
+    }
+  ],
   "skills": [
     {
-      "category": "Frontend Development",
-      "glyph": "</>",
+      "category": "Languages & Core",
+      "glyph": "λ",
       "items": [
-        { "name": "React.js", "level": 90 },
-        { "name": "Next.js", "level": 80 },
-        { "name": "JavaScript", "level": 85 },
-        { "name": "TypeScript", "level": 80 },
+        { "name": "JavaScript" },
+        { "name": "TypeScript" },
+        { "name": "Python" },
         { "name": "HTML5" },
         { "name": "CSS3" },
-        { "name": "Tailwind CSS" }
+        { "name": "Embedded C/C++" }
       ]
     },
     {
-      "category": "Backend Development",
+      "category": "Frontend",
+      "glyph": "</>",
+      "items": [
+        { "name": "React.js" },
+        { "name": "Next.js" },
+        { "name": "Redux" },
+        { "name": "Redux Toolkit" },
+        { "name": "Tailwind CSS" },
+        { "name": "Responsive & Cross-browser UI" }
+      ]
+    },
+    {
+      "category": "Backend & API",
       "glyph": "{ }",
       "items": [
-        { "name": "Node.js", "level": 85 },
+        { "name": "Node.js" },
+        { "name": "NestJS" },
         { "name": "Express.js" },
-        { "name": "Python", "level": 80 },
-        { "name": "REST APIs" }
+        { "name": "REST APIs" },
+        { "name": "GraphQL" },
+        { "name": "JWT" },
+        { "name": "OAuth 2.0" },
+        { "name": "WebSocket" },
+        { "name": "Microservices" }
       ]
     },
     {
-      "category": "Database",
+      "category": "Databases",
       "glyph": "⌁",
-      "items": [
-        { "name": "MongoDB", "level": 82 },
-        { "name": "MySQL", "level": 75 }
-      ]
+      "items": [{ "name": "PostgreSQL" }, { "name": "DynamoDB" }, { "name": "TypeORM" }, { "name": "Prisma" }]
     },
     {
-      "category": "IoT & Embedded Systems",
-      "glyph": "⚙",
-      "items": [
-        { "name": "Arduino", "level": 88 },
-        { "name": "ESP32", "level": 88 },
-        { "name": "MQTT Protocol", "level": 85 },
-        { "name": "Embedded C" },
-        { "name": "Sensor Integration" }
-      ]
-    },
-    {
-      "category": "AI / ML",
-      "glyph": "◈",
-      "items": [
-        { "name": "TensorFlow", "level": 75 },
-        { "name": "OpenCV", "level": 78 },
-        { "name": "CNN" },
-        { "name": "LLM Integration" }
-      ]
-    },
-    {
-      "category": "Tools & DevOps",
+      "category": "Cloud & DevOps",
       "glyph": "⌘",
       "items": [
-        { "name": "Git & GitHub" },
+        { "name": "AWS Lambda" },
+        { "name": "API Gateway" },
         { "name": "Docker" },
-        { "name": "Linux" },
-        { "name": "Postman" },
-        { "name": "VS Code" },
-        { "name": "Vercel" }
+        { "name": "CI/CD" },
+        { "name": "GitHub Actions" },
+        { "name": "Git" },
+        { "name": "Vercel" },
+        { "name": "Nginx" },
+        { "name": "PM2" },
+        { "name": "ThingSpeak" },
+        { "name": "InfluxDB Cloud" },
+        { "name": "HiveMQ Cloud" },
+        { "name": "Ubuntu / Linux VPS" },
+        { "name": "Let's Encrypt SSL" },
+        { "name": "Render" }
       ]
+    },
+    {
+      "category": "Testing & Tools",
+      "glyph": "✓",
+      "items": [{ "name": "Jest (Unit Testing)" }, { "name": "Postman" }, { "name": "Linux" }, { "name": "VS Code" }]
     }
   ],
-  "certifications": []
+  "certifications": [
+    {
+      "name": "Juniper Networks Certified — Networking Fundamentals",
+      "issuer": "Juniper Networks",
+      "year": "Mar 2023",
+      "url": ""
+    },
+    {
+      "name": "AWS Certified Cloud Practitioner (CLF-C02)",
+      "issuer": "Amazon Web Services",
+      "year": "",
+      "url": "",
+      "status": "in-progress"
+    }
+  ]
 }

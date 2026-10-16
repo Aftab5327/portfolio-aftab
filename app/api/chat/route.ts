@@ -12,8 +12,8 @@
 import { z } from "zod";
 import { trackQuestion } from "@/lib/analytics";
 import { collectActions, toolDefinitions, type RawToolCall, type ToolContext } from "@/lib/chat-tools";
-import { GROQ_MODEL, RESUME_PAGE_PATH, RESUME_PATH, sections } from "@/lib/config";
-import { getProfile, getProjects } from "@/lib/data";
+import { GROQ_MODEL, RESUME_PAGE_PATH, sections } from "@/lib/config";
+import { getPrimaryResume, getProfile, getProjects } from "@/lib/data";
 import { topicOf } from "@/lib/knowledge";
 import { checkChatRateLimit } from "@/lib/rate-limit";
 import { getRetriever, type RetrievedChunk } from "@/lib/retrieval";
@@ -66,13 +66,14 @@ const json = (status: number, body: Record<string, unknown>, headers: Record<str
 
 function toolContext(): ToolContext {
   const profile = getProfile();
+  const cv = getPrimaryResume();
   return {
     firstName: profile.firstName,
     email: profile.email,
     socials: { github: profile.socials.github, linkedin: profile.socials.linkedin },
     projects: getProjects().map(({ slug, title }) => ({ slug, title })),
     sections,
-    resume: { pdf: RESUME_PATH, web: RESUME_PAGE_PATH }
+    resume: { pdf: cv.href, web: RESUME_PAGE_PATH, fileName: cv.fileName }
   };
 }
 

@@ -81,7 +81,9 @@ export async function GET() {
       compact({
         institution: item.institution || undefined,
         ...splitDegree(item.degree, item.detail),
-        endDate: lastYear(item.year)
+        endDate: lastYear(item.year),
+        score: item.grade || undefined,
+        courses: item.courses
       })
     ),
     skills: resume.skills.map((group) => ({ name: group.category, keywords: group.items })),
@@ -94,8 +96,14 @@ export async function GET() {
         url: project.link.url
       })
     ),
+    // JSON Resume has no status field: an in-progress certification is named as such and carries no date.
     certificates: resume.certifications.map((cert) =>
-      compact({ name: cert.name, issuer: cert.issuer, date: isoDate(cert.year), url: cert.url })
+      compact({
+        name: cert.status === "in-progress" ? `${cert.name} (in progress)` : cert.name,
+        issuer: cert.issuer,
+        date: cert.status === "in-progress" ? undefined : isoDate(cert.year),
+        url: cert.url
+      })
     ),
     // Not part of the JSON Resume schema (which allows extra keys); kept so no resume content is lost.
     extraSections: resume.extraSections,

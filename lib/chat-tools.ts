@@ -10,6 +10,8 @@ export type ChatAction = {
   label: string;
   href: string;
   external: boolean;
+  /** Set for file downloads (the resume PDF): rendered as <a download="…">. */
+  download?: string;
 };
 
 export type ToolContext = {
@@ -18,7 +20,8 @@ export type ToolContext = {
   socials: { github: string; linkedin: string };
   projects: { slug: string; title: string }[];
   sections: { id: string; label: string }[];
-  resume: { pdf: string; web: string };
+  /** pdf: the primary CV file (uploaded or generated, see lib/resume-file.ts); web: the /resume page. */
+  resume: { pdf: string; web: string; fileName?: string };
 };
 
 export type RawToolCall = { name: string; arguments: string };
@@ -81,7 +84,9 @@ export function validateToolCall(call: RawToolCall, ctx: ToolContext): ChatActio
     }
     case "get_resume": {
       const format = singleArg(call.arguments, "format");
-      if (format === "pdf") return { type: "get_resume", label: "Download resume (PDF)", href: ctx.resume.pdf, external: false };
+      if (format === "pdf") {
+        return { type: "get_resume", label: "Download resume (PDF)", href: ctx.resume.pdf, external: false, ...(ctx.resume.fileName ? { download: ctx.resume.fileName } : {}) };
+      }
       if (format === "web") return { type: "get_resume", label: "View resume", href: ctx.resume.web, external: false };
       return null;
     }

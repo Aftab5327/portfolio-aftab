@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { FiArrowRight, FiMail } from "react-icons/fi";
-import { RESUME_PATH } from "@/lib/config";
+import type { ResumeFile } from "@/lib/resume-file";
 import type { Profile } from "@/lib/schema";
 
 export type HeroProfile = Pick<
@@ -50,7 +50,7 @@ while (curious) {
   learn(); build(); refactor();
 }`;
 
-export default function HomeSection({ profile }: { profile: HeroProfile }) {
+export default function HomeSection({ profile, cv }: { profile: HeroProfile; cv: ResumeFile }) {
   const roles = profile.roles;
   const [roleIndex, setRoleIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
@@ -197,7 +197,7 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
 
             <div className="mt-9 flex flex-wrap items-center gap-5">
               <a
-                href={RESUME_PATH}
+                href={cv.href}
                 target="_blank"
                 rel="noopener"
                 className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-teal bg-teal/5 px-6 text-sm font-semibold text-teal transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal/15"

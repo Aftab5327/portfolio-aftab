@@ -7,8 +7,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { getBuildLogPosts, plainText } from "../../lib/build-log";
-import { RESUME_JSON_PATH, RESUME_PAGE_PATH, RESUME_PATH } from "../../lib/config";
-import { getProfile, getProjects } from "../../lib/data";
+import { RESUME_JSON_PATH, RESUME_PAGE_PATH } from "../../lib/config";
+import { getPrimaryResume, getProfile, getProjects } from "../../lib/data";
 import { createIndex, type KnowledgeChunk, type KnowledgeIndexFile } from "../../lib/knowledge";
 import { buildResume } from "../../lib/resume";
 import { SECTION_KEYS, type SectionKey } from "../../lib/schema";
@@ -54,6 +54,7 @@ export function buildChunks(): { chunks: KnowledgeChunk[]; stopWords: string[] }
   const profile = getProfile();
   const projects = getProjects();
   const resume = buildResume();
+  const cv = getPrimaryResume();
   const chunks: KnowledgeChunk[] = [];
   const add = (chunk: KnowledgeChunk) => chunks.push({ ...chunk, text: clip(chunk.text.trim()), tags: uniq(chunk.tags) });
 
@@ -83,7 +84,8 @@ export function buildChunks(): { chunks: KnowledgeChunk[]; stopWords: string[] }
     tags: ["contact", "email", "reach", "hire", "hiring", "availability", "available", "open", "location", "based", "linkedin", "github", "phone", "work", "roles", "opportunities"],
     text: lines(
       `Email: ${profile.email}`,
-      profile.phone && `Phone: ${profile.phone}`,
+      // The phone is only shared where profile.resume.showPhone allows it (it's off: no phone on the site).
+      profile.resume.showPhone && profile.phone && `Phone: ${profile.phone}`,
       `Location: ${profile.location}`,
       `LinkedIn: ${profile.socials.linkedin}`,
       `GitHub: ${profile.socials.github}`,
@@ -123,7 +125,13 @@ export function buildChunks(): { chunks: KnowledgeChunk[]; stopWords: string[] }
       url: "/#about",
       tags: ["education", "degree", "study", "studied", "university", "college", "qualification", "diploma", "graduate"],
       text: profile.education
-        .map((item) => [item.degree, item.detail, item.institution && `(${item.institution})`, item.year].filter(Boolean).join(" "))
+        .map((item) =>
+          lines(
+            [item.degree, item.detail, item.institution && `(${item.institution})`, item.year].filter(Boolean).join(" "),
+            item.grade && `  ${item.grade}`,
+            item.courses?.length ? `  Covered: ${item.courses.join(", ")}` : undefined
+          )
+        )
         .join("\n")
     });
   }
@@ -163,7 +171,9 @@ export function buildChunks(): { chunks: KnowledgeChunk[]; stopWords: string[] }
       title: "Certifications",
       url: RESUME_PAGE_PATH,
       tags: ["certifications", "certificates", "certified", "courses", "credentials"],
-      text: profile.certifications.map((cert) => `- ${cert.name}, ${cert.issuer}${cert.year ? ` (${cert.year})` : ""}`).join("\n")
+      text: profile.certifications
+        .map((cert) => `- ${cert.name}, ${cert.issuer}${cert.status === "in-progress" ? " (in progress, not yet earned)" : cert.year ? ` (${cert.year})` : ""}`)
+        .join("\n")
     });
   }
 
@@ -175,8 +185,10 @@ export function buildChunks(): { chunks: KnowledgeChunk[]; stopWords: string[] }
     url: RESUME_PAGE_PATH,
     tags: ["resume", "cv", "pdf", "download", "curriculum", "vitae", "json"],
     text: lines(
-      `${profile.firstName}'s resume is generated from this portfolio and always up to date.`,
-      `PDF: ${RESUME_PATH} · Web version: ${RESUME_PAGE_PATH} · JSON Resume: ${RESUME_JSON_PATH}`,
+      cv.source === "uploaded"
+        ? `${profile.firstName}'s CV is a designed PDF: ${cv.href} ("View my CV" on the home page). A version generated from this portfolio is also available.`
+        : `${profile.firstName}'s resume is generated from this portfolio and always up to date.`,
+      `CV (PDF): ${cv.href} · Web version: ${RESUME_PAGE_PATH} · JSON Resume: ${RESUME_JSON_PATH}`,
       `Sections: ${["Summary", resume.experience.length && "Experience", "Projects", "Skills", "Education", resume.certifications.length && "Certifications"].filter(Boolean).join(", ")}.`,
       `Projects on the resume: ${resume.projects.map((project) => project.title).join(", ")}.`
     )

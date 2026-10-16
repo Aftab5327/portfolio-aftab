@@ -8,6 +8,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import CommandPalette from "@/components/CommandPalette";
 import Link from "next/link";
 import { STATS_PATH, sections } from "@/lib/config";
+import type { ResumeFile } from "@/lib/resume-file";
 import type { Profile } from "@/lib/schema";
 
 // Root-relative so the links also work from /projects/[slug].
@@ -15,7 +16,7 @@ const links = sections.map((section) => ({ ...section, href: `/#${section.id}` }
 
 export type NavProfile = Pick<Profile, "firstName" | "lastName" | "email" | "socials">;
 
-export default function Navbar({ profile }: { profile: NavProfile }) {
+export default function Navbar({ profile, cv }: { profile: NavProfile; cv: ResumeFile }) {
   const pathname = usePathname();
   const [activeSection, setActiveSection] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -152,7 +153,7 @@ export default function Navbar({ profile }: { profile: NavProfile }) {
             <FiMail className="h-4 w-4" />
           </a>
 
-          <CommandPalette profile={profile} />
+          <CommandPalette profile={profile} cv={cv} />
           <ThemeToggle />
 
           <button

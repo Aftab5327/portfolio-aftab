@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { RESUME_PATH } from "@/lib/config";
+import type { ResumeFile } from "@/lib/resume-file";
 import type { Profile } from "@/lib/schema";
 
 export type AboutProfile = Pick<
@@ -21,7 +21,10 @@ export type AboutProfile = Pick<
 const educationLine = (item: AboutProfile["education"][number]) =>
   [item.degree, item.detail].filter(Boolean).join(" ") + (item.institution ? ` - ${item.institution}` : "");
 
-export default function AboutSection({ profile }: { profile: AboutProfile }) {
+/** "2018 – 2022 · GPA 8.56/10 (First Class with Distinction)" */
+const educationMeta = (item: AboutProfile["education"][number]) => [item.year, item.grade].filter(Boolean).join(" · ");
+
+export default function AboutSection({ profile, cv }: { profile: AboutProfile; cv: ResumeFile }) {
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -144,6 +147,8 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
                   <div key={item.short} className="relative pl-7">
                     <span className="absolute left-0 top-1.5 inline-flex h-2.5 w-2.5 rounded-full border border-teal bg-teal/30" />
                     <p className="text-sm leading-relaxed text-txtdim">{educationLine(item)}</p>
+                    {educationMeta(item) ? <p className="mt-0.5 font-mono text-[11px] text-txtdim">{educationMeta(item)}</p> : null}
+                    {item.courses?.length ? <p className="mt-1 font-mono text-[11px] text-txtfaint">{item.courses.join(" · ")}</p> : null}
                   </div>
                 ))}
               </div>
@@ -166,7 +171,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
                     <span className="font-mono text-[11px]">
                       {" "}
                       · {cert.issuer}
-                      {cert.year ? ` · ${cert.year}` : ""}
+                      {cert.status === "in-progress" ? " · In progress" : cert.year ? ` · ${cert.year}` : ""}
                     </span>
                   </li>
                 ))}
@@ -197,9 +202,8 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
               Hire Me
             </button>
             <a
-              href={RESUME_PATH}
-              target="_blank"
-              rel="noopener"
+              href={cv.href}
+              download={cv.fileName}
               className="inline-flex min-h-12 items-center rounded-xl border border-line bg-panel px-6 text-sm font-medium text-txt transition duration-200 hover:-translate-y-0.5 hover:border-teal hover:text-teal"
             >
               Download Resume

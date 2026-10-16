@@ -37,8 +37,8 @@ export type Resume = {
     link: ResumeLink;
   }[];
   skills: { category: string; items: string[] }[];
-  education: { degree: string; detail: string; institution: string; year: string }[];
-  certifications: { name: string; issuer: string; year: string; url: string }[];
+  education: { degree: string; detail: string; institution: string; year: string; grade: string; courses: string[] }[];
+  certifications: { name: string; issuer: string; year: string; url: string; status: "earned" | "in-progress" }[];
   extraSections: { title: string; items: string[] }[];
   meta: {
     /** ISO time the resume was generated (build time for the static routes). */
@@ -103,7 +103,9 @@ export function buildResume(): Resume {
       degree: item.degree,
       detail: item.detail,
       institution: item.institution,
-      year: item.year ?? ""
+      year: item.year ?? "",
+      grade: item.grade ?? "",
+      courses: item.courses ?? []
     })),
     certifications: profile.certifications.map((cert) => ({ ...cert })),
     extraSections: settings.extraSections,
@@ -116,9 +118,13 @@ export function buildResume(): Resume {
   };
 }
 
-/** "B.E. Electronics & Telecommunication with Honors in Data Science, CDAC · 2023" */
+/** "B.E. Electronics & Telecommunication Engineering (Hons. Data Science), Savitribai Phule Pune University, 2018 – 2022, GPA 8.56/10 (…)" */
 export const educationLine = (item: Resume["education"][number]) =>
-  [[item.degree, item.detail].filter(Boolean).join(" "), item.institution, item.year].filter(Boolean).join(", ");
+  [[item.degree, item.detail].filter(Boolean).join(" "), item.institution, item.year, item.grade].filter(Boolean).join(", ");
+
+/** "Juniper Networks, Mar 2023" or "Amazon Web Services, In progress" */
+export const certificationMeta = (cert: Resume["certifications"][number]) =>
+  [cert.issuer, cert.status === "in-progress" ? "In progress" : cert.year].filter(Boolean).join(", ");
 
 /** "Pune · Jan 2024 – Present" */
 export const experienceMeta = (item: Resume["experience"][number]) =>

@@ -19,7 +19,8 @@ import {
   FiSun,
   FiTwitter
 } from "react-icons/fi";
-import { AUTOMATION_DOCS_PATH, LOG_PATH, RESUME_PAGE_PATH, RESUME_PATH, STATS_PATH, sections } from "@/lib/config";
+import { AUTOMATION_DOCS_PATH, LOG_PATH, RESUME_PAGE_PATH, STATS_PATH, sections } from "@/lib/config";
+import type { ResumeFile } from "@/lib/resume-file";
 import type { Profile } from "@/lib/schema";
 
 type Command = {
@@ -62,7 +63,7 @@ function fuzzyScore(query: string, text: string): number | null {
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export default function CommandPalette({ profile }: { profile: Pick<Profile, "email" | "socials"> }) {
+export default function CommandPalette({ profile, cv }: { profile: Pick<Profile, "email" | "socials">; cv: ResumeFile }) {
   const router = useRouter();
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
@@ -161,13 +162,29 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
         run: goTo(section.id)
       })),
       {
+        id: "resume-view",
+        label: "View my CV (PDF)",
+        group: "Actions",
+        keywords: "resume cv pdf open",
+        icon: <FiFileText />,
+        run: () => {
+          window.open(cv.href, "_blank", "noopener");
+        }
+      },
+      {
         id: "resume",
         label: "Download resume",
         group: "Actions",
-        keywords: "cv pdf",
+        keywords: "cv pdf save",
         icon: <FiDownload />,
         run: () => {
-          window.open(RESUME_PATH, "_blank", "noopener");
+          // A temporary <a download> so the file is saved under its real name.
+          const link = document.createElement("a");
+          link.href = cv.href;
+          link.download = cv.fileName;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
         }
       },
       {
@@ -253,7 +270,7 @@ export default function CommandPalette({ profile }: { profile: Pick<Profile, "em
     }
 
     return list;
-  }, [pathname, profile, resolvedTheme, router, setTheme]);
+  }, [cv, pathname, profile, resolvedTheme, router, setTheme]);
 
   const results = useMemo(() => {
     if (!query.trim()) return commands;

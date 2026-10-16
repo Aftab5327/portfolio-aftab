@@ -21,6 +21,7 @@ import {
   type Profile,
   type Project
 } from "@/lib/schema";
+import { primaryResume, type ResumeFile } from "@/lib/resume-file";
 
 /** A project with its display image resolved (see resolveImage). */
 export type ResolvedProject = Project & {
@@ -41,6 +42,12 @@ export function getProfile(): Profile {
     profileCache = result.data;
   }
   return profileCache;
+}
+
+/** The PDF that "View my CV" / "Download resume" links open (see lib/resume-file.ts). */
+export function getPrimaryResume(): ResumeFile {
+  const profile = getProfile();
+  return primaryResume(profile.resume, profile.firstName);
 }
 
 /**

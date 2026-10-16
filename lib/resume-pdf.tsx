@@ -5,7 +5,7 @@
  */
 import path from "node:path";
 import { Document, Font, Link, Page, StyleSheet, Text, View, renderToBuffer } from "@react-pdf/renderer";
-import { educationLine, experienceMeta, formatDate, type Resume } from "@/lib/resume";
+import { certificationMeta, educationLine, experienceMeta, formatDate, type Resume } from "@/lib/resume";
 
 const FONT_DIR = path.join(process.cwd(), "assets", "fonts");
 let fontsRegistered = false;
@@ -231,7 +231,7 @@ function ResumeDocument({ resume }: { resume: Resume }) {
                 ) : (
                   cert.name
                 )}
-                {` — ${cert.issuer}${cert.year ? `, ${cert.year}` : ""}`}
+                {` — ${certificationMeta(cert)}`}
               </Text>
             ))}
           </Section>

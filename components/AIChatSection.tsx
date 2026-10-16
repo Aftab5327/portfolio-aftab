@@ -79,6 +79,14 @@ function historyFor(messages: Message[]): { role: Message["role"]; content: stri
 function ActionChip({ action }: { action: ChatAction }) {
   const className =
     "inline-flex items-center gap-1.5 rounded-lg border border-teal/40 bg-teal/10 px-3 py-1.5 font-mono text-xs text-teal transition-colors hover:bg-teal/20";
+  // Files (the resume PDF) are plain downloads, not client-side navigations.
+  if (action.download) {
+    return (
+      <a href={action.href} download={action.download} className={className}>
+        {action.label}
+      </a>
+    );
+  }
   if (!action.external) {
     return (
       <Link href={action.href} className={className}>

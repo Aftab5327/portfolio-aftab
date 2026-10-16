@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Providers from "@/app/providers";
 import { siteUrl } from "@/lib/config";
-import { getProfile } from "@/lib/data";
+import { getPrimaryResume, getProfile } from "@/lib/data";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="font-sans antialiased">
         <Providers>
-          <Navbar profile={{ firstName, lastName, email, socials }} />
+          <Navbar profile={{ firstName, lastName, email, socials }} cv={getPrimaryResume()} />
           <main className="mx-auto w-[min(1180px,92%)] pb-16 pt-6 md:pt-8">{children}</main>
           <Footer />
         </Providers>
