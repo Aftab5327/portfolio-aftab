@@ -80,7 +80,7 @@ export default async function GitHubActivity() {
                 href={repo.html_url}
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-full flex-col rounded-xl border border-line bg-panel2 p-5 transition-all duration-200 hover:-translate-y-1 hover:border-teal/60"
+                className="flex h-full flex-col rounded-xl border border-line bg-panel2 p-5 transition-all duration-200 hover:-translate-y-1"
               >
                 <span className="flex items-center gap-2 font-mono text-sm font-semibold text-txt">
                   <FiGitBranch aria-hidden className="shrink-0 text-teal" />

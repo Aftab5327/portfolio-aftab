@@ -7,6 +7,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { z } from "zod";
+import { safeUrl } from "./safe-url";
 
 export const BUILD_LOG_DIR = path.join(process.cwd(), "content", "build-log");
 export const POST_SLUG = /^\d{4}-w\d{2}$/;
@@ -17,6 +18,11 @@ const dateString = z.preprocess(
   z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
 );
 
+/** Commit links are rendered as hrefs, so only https://github.com/... passes (z.string().url() alone accepts javascript:). */
+const githubUrl = z.string().refine((value) => safeUrl(value, { relative: false }) !== null, {
+  message: "must be an https://github.com/ URL"
+});
+
 export const buildLogFrontmatterSchema = z
   .object({
     title: z.string().trim().min(1).max(120),
@@ -24,16 +30,16 @@ export const buildLogFrontmatterSchema = z
     date: dateString,
     weekStart: dateString,
     weekEnd: dateString,
-    repos: z.array(z.string().min(1)).min(1),
+    repos: z.array(z.string().regex(/^[\w.-]{1,100}$/, "must be a repository name")).min(1),
     commitCount: z.number().int().positive(),
     aiGenerated: z.boolean(),
     model: z.string().optional(),
     commits: z.array(
       z
         .object({
-          repo: z.string().min(1),
+          repo: z.string().regex(/^[\w.-]{1,100}$/, "must be a repository name"),
           sha: z.string().regex(/^[0-9a-f]{7,40}$/),
-          url: z.string().url(),
+          url: githubUrl,
           message: z.string().min(1),
           date: z.string()
         })
@@ -46,16 +52,19 @@ export type BuildLogPost = z.infer<typeof buildLogFrontmatterSchema> & { slug: s
 
 /** All posts, newest first. Invalid files fail the build with a readable error. */
 export function getBuildLogPosts(dir = BUILD_LOG_DIR): BuildLogPost[] {
+  // Posts are only read at build time (every consumer is prerendered), so Turbopack
+  // needn't trace these `dir`-relative reads into the server bundle.
+  const root = path.join(/*turbopackIgnore: true*/ dir);
   let files: string[];
   try {
-    files = readdirSync(dir).filter((file) => file.endsWith(".md") && POST_SLUG.test(file.slice(0, -3)));
+    files = readdirSync(root).filter((file) => file.endsWith(".md") && POST_SLUG.test(file.slice(0, -3)));
   } catch {
     return [];
   }
 
   return files
     .map((file) => {
-      const raw = readFileSync(path.join(dir, file), "utf8").replace(/^﻿/, "");
+      const raw = readFileSync(path.join(/*turbopackIgnore: true*/ root, file), "utf8").replace(/^﻿/, "");
       const parsed = matter(raw, {});
       const result = buildLogFrontmatterSchema.safeParse(parsed.data);
       if (!result.success) {

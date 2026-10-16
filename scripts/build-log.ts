@@ -13,8 +13,9 @@ import { appendFile, mkdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
-import { BUILD_LOG_DIR } from "../lib/build-log";
+import { BUILD_LOG_DIR, buildLogFrontmatterSchema } from "../lib/build-log";
 import { GROQ_MODEL, SOURCE_REPO_NAME } from "../lib/config";
+import { safeUrl } from "../lib/safe-url";
 import { profileSchema } from "../lib/schema";
 import { readJson } from "./lib/fs";
 import { githubJson, isPortfolioRepo, listPublicRepos } from "./lib/github";
@@ -185,10 +186,13 @@ export async function main(args = process.argv.slice(2)) {
     const repoName = fullName.split("/")[1];
     for (const item of await fetchCommits(fullName, week.since, week.until)) {
       if (!isMeaningful(item)) continue;
+      // The link is rendered on /log/[slug]: keep only https://github.com/... commit URLs.
+      const url = safeUrl(item.html_url, { relative: false });
+      if (!url) continue;
       commits.push({
         repo: repoName,
         sha: item.sha,
-        url: item.html_url,
+        url,
         message: item.commit.message.trim(),
         date: item.commit.author?.date ?? ""
       });
@@ -240,19 +244,21 @@ export async function main(args = process.argv.slice(2)) {
   }
 
   const parsed = matter(output, {});
+  // Same schema the site uses when reading posts, so an invalid value (e.g. a non-GitHub URL) fails here, before writing.
+  const data = buildLogFrontmatterSchema.parse({
+    title: String(parsed.data.title).trim(),
+    date: week.date,
+    weekStart: week.weekStart,
+    weekEnd: week.weekEnd,
+    repos: activeRepos,
+    commitCount: commits.length,
+    aiGenerated: true,
+    model: GROQ_MODEL,
+    commits: commits.map(({ repo, sha, url, message, date }) => ({ repo, sha: sha.slice(0, 12), url, message: message.split("\n")[0].trim(), date }))
+  });
   const file = [
     "---",
-    frontmatter({
-      title: String(parsed.data.title).trim(),
-      date: week.date,
-      weekStart: week.weekStart,
-      weekEnd: week.weekEnd,
-      repos: activeRepos,
-      commitCount: commits.length,
-      aiGenerated: true,
-      model: GROQ_MODEL,
-      commits: commits.map(({ repo, sha, url, message, date }) => ({ repo, sha: sha.slice(0, 12), url, message: message.split("\n")[0].trim(), date }))
-    }),
+    frontmatter(data),
     "---",
     "",
     parsed.content.trim(),

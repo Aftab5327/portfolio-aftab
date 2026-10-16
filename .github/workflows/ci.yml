@@ -43,6 +43,9 @@ jobs:
       - name: Assistant tool-call validation
         run: npm run test:chat
 
+      - name: URL allow-list (stored-XSS regression)
+        run: npm run test:safe-url
+
       - name: Type check
         run: npx tsc --noEmit
 

@@ -49,7 +49,7 @@ export default function SkillsSection({ skills }: { skills: Profile["skills"] })
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
-            className="rounded-2xl border border-line bg-panel2 p-5 transition-all duration-200 hover:-translate-y-1 hover:border-teal/50"
+            className="rounded-2xl border border-line bg-panel2 p-5 transition-all duration-200"
           >
             <h3 className="flex items-center gap-2 font-mono text-base font-semibold text-txt">
               <span className="text-teal">{group.glyph}</span>
@@ -70,7 +70,7 @@ export default function SkillsSection({ skills }: { skills: Profile["skills"] })
                     {pct ? (
                       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-bg2">
                         <div
-                          className="skill-bar-fill h-full rounded-full bg-gradient-to-r from-tealdim to-teal"
+                          className="skill-bar-fill h-full rounded-full bg-linear-to-r from-tealdim to-teal"
                           style={{ width: barsVisible ? `${pct}%` : "0%" }}
                         />
                       </div>

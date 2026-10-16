@@ -1,6 +1,7 @@
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Mermaid from "@/components/Mermaid";
+import { safeMarkdownUrl } from "@/lib/safe-url";
 
 /**
  * Safe Markdown for case-study sections: GFM (tables, task lists, strikethrough),
@@ -34,23 +35,28 @@ const components: Components = {
   ),
   ol: ({ children }) => <ol className="mt-3 list-decimal space-y-2 pl-5 text-[15px] leading-[1.75] text-txtdim marker:text-teal">{children}</ol>,
   li: ({ children }) => <li className="pl-1">{children}</li>,
-  a: ({ href, children }) => (
-    <a
-      href={href}
-      {...(isExternal(href) ? { target: "_blank", rel: "noreferrer" } : {})}
-      className="text-teal underline decoration-teal/40 underline-offset-2 hover:decoration-teal"
-    >
-      {children}
-    </a>
-  ),
+  // A URL dropped by safeMarkdownUrl arrives as "": keep the text, lose the link.
+  a: ({ href, children }) =>
+    !href ? (
+      <>{children}</>
+    ) : (
+      <a
+        href={href}
+        {...(isExternal(href) ? { target: "_blank", rel: "noreferrer" } : {})}
+        className="text-teal underline underline-offset-2 hover:decoration-teal"
+      >
+        {children}
+      </a>
+    ),
   strong: ({ children }) => <strong className="font-semibold text-txt">{children}</strong>,
   blockquote: ({ children }) => <blockquote className="mt-4 border-l-2 border-teal pl-4 italic text-txtdim">{children}</blockquote>,
   hr: () => <hr className="my-6 border-line" />,
-  img: ({ src, alt }) => (
-    // External/remote images of unknown size, so a plain <img> rather than next/image.
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt ?? ""} loading="lazy" className="my-4 h-auto max-w-full rounded-xl border border-line" />
-  ),
+  img: ({ src, alt }) =>
+    !src ? null : (
+      // External/remote images of unknown size, so a plain <img> rather than next/image.
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={src} alt={alt ?? ""} loading="lazy" className="my-4 h-auto max-w-full rounded-xl border border-line" />
+    ),
   table: ({ children }) => (
     <div className="mt-4 overflow-x-auto rounded-xl border border-line">
       <table className="w-full border-collapse text-left text-sm text-txtdim">{children}</table>
@@ -87,7 +93,13 @@ const documentComponents: Components = {
 
 export default function Markdown({ children, variant = "section" }: { children: string; variant?: "section" | "document" }) {
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml components={variant === "document" ? documentComponents : components}>
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      // Raw HTML in the source is dropped, and every link/image URL goes through the shared allow-list.
+      skipHtml
+      urlTransform={safeMarkdownUrl}
+      components={variant === "document" ? documentComponents : components}
+    >
       {children}
     </ReactMarkdown>
   );

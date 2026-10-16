@@ -13,12 +13,13 @@ export const metadata: Metadata = {
 const dateTime = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
 
 const STATUS_STYLES: Record<LeadStatus, string> = {
-  new: "border-teal/50 bg-teal/10 text-teal",
+  new: "text-teal",
   replied: "border-line bg-panel text-txtdim",
   archived: "border-line bg-panel text-txtfaint"
 };
 
-export default async function LeadsPage({ searchParams }: { searchParams: { status?: string } }) {
+export default async function LeadsPage(props: { searchParams: Promise<{ status?: string }> }) {
+  const searchParams = await props.searchParams;
   let leads: Awaited<ReturnType<typeof listLeads>> = null;
   let failed = false;
   try {

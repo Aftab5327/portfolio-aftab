@@ -24,7 +24,9 @@ export default function Mermaid({ chart }: { chart: string }) {
           startOnLoad: false,
           securityLevel: "strict",
           theme: resolvedTheme === "light" ? "neutral" : "dark",
-          fontFamily: "var(--font-mono), ui-monospace, monospace"
+          // A concrete system stack: the SVG is shown as an <img>, which can't use the page's web fonts,
+          // so measuring and drawing must use the same font.
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
         });
         await mermaid.parse(chart);
         const { svg: rendered } = await mermaid.render(`mermaid-${baseId}-${Date.now()}`, chart);
@@ -43,14 +45,19 @@ export default function Mermaid({ chart }: { chart: string }) {
   }, [baseId, chart, resolvedTheme]);
 
   if (svg && !failed) {
+    // The diagram source can come from stored/AI-drafted content, so its SVG is never injected into the
+    // DOM: as an <img> it can't run scripts or event handlers whatever it contains.
+    const maxWidth = Number(/max-width:\s*([\d.]+)px/.exec(svg)?.[1]) || undefined;
     return (
-      <div
-        role="img"
-        aria-label="Architecture diagram"
-        className="my-5 overflow-x-auto rounded-xl border border-line bg-panel2 p-4 [&_svg]:mx-auto [&_svg]:h-auto [&_svg]:max-w-full"
-        // Mermaid output is sanitised (securityLevel: "strict" runs DOMPurify).
-        dangerouslySetInnerHTML={{ __html: svg }}
-      />
+      <div className="my-5 overflow-x-auto rounded-xl border border-line bg-panel2 p-4">
+        {/* eslint-disable-next-line @next/next/no-img-element -- generated SVG data URL, not an optimisable asset */}
+        <img
+          src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`}
+          alt="Architecture diagram"
+          className="mx-auto h-auto w-full"
+          style={{ maxWidth }}
+        />
+      </div>
     );
   }
 
