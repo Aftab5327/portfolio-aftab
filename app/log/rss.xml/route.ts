@@ -1,6 +1,7 @@
 import { getBuildLogPosts, plainText } from "@/lib/build-log";
 import { siteUrl } from "@/lib/config";
 import { getProfile } from "@/lib/data";
+import { internalPath } from "@/lib/safe-url";
 
 // RSS 2.0 feed of the weekly build log, generated at build time.
 export const dynamic = "force-static";
@@ -14,7 +15,7 @@ export function GET() {
 
   const items = posts
     .map((post) => {
-      const url = `${siteUrl}/log/${post.slug}`;
+      const url = `${siteUrl}${internalPath("log", post.slug)}`;
       return [
         "    <item>",
         `      <title>${escapeXml(post.title)}</title>`,

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FiArrowUpRight, FiRotateCcw, FiSend, FiSquare, FiTrash2 } from "react-icons/fi";
 import type MarkdownComponent from "@/components/Markdown";
 import type { ChatAction } from "@/lib/chat-tools";
+import { safeActionHref, safeInternalHref } from "@/lib/safe-url";
 
 /** react-markdown is only needed once someone chats, so it's loaded on demand (keeps ~50 kB off the home page). */
 const loadMarkdown = () => import("@/components/Markdown").then((module) => module.default);
@@ -78,17 +79,20 @@ function historyFor(messages: Message[]): { role: Message["role"]; content: stri
 
 function ActionChip({ action }: { action: ChatAction }) {
   const className =
-    "inline-flex items-center gap-1.5 rounded-lg border border-teal/40 bg-teal/10 px-3 py-1.5 font-mono text-xs text-teal transition-colors hover:bg-teal/20";
+    "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-xs text-teal transition-colors";
+  // The server already validated it; checked again here because it arrives over the network.
+  const href = action.external ? safeActionHref(action.href) : safeInternalHref(action.href);
+  if (!href) return null;
   if (!action.external) {
     return (
-      <Link href={action.href} className={className}>
+      <Link href={href} className={className}>
         {action.label}
       </Link>
     );
   }
-  const isMail = action.href.startsWith("mailto:");
+  const isMail = href.startsWith("mailto:");
   return (
-    <a href={action.href} className={className} {...(isMail ? {} : { target: "_blank", rel: "noreferrer" })}>
+    <a href={href} className={className} {...(isMail ? {} : { target: "_blank", rel: "noreferrer" })}>
       {action.label}
       {isMail ? null : <FiArrowUpRight aria-hidden />}
     </a>
@@ -281,7 +285,7 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
 
             {messages.map((message) =>
               message.role === "user" ? (
-                <div key={message.id} className="ml-auto max-w-[92%] rounded-xl border border-teal/30 bg-teal/10 px-4 py-3 text-sm text-txt">
+                <div key={message.id} className="ml-auto max-w-[92%] rounded-xl border px-4 py-3 text-sm text-txt">
                   <p className="mb-1 font-mono text-[11px] text-teal">{"> you"}</p>
                   <p className="whitespace-pre-wrap">{message.content}</p>
                 </div>
@@ -334,14 +338,21 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
                   {message.citations?.length ? (
                     <p className="mt-3 border-t border-line pt-2 font-mono text-[11px] text-txtdim">
                       Sources:{" "}
-                      {message.citations.map((citation, index) => (
-                        <span key={citation.url}>
-                          {index > 0 ? " · " : ""}
-                          <Link href={citation.url} className="text-teal underline-offset-2 hover:underline">
-                            {citation.title}
-                          </Link>
-                        </span>
-                      ))}
+                      {message.citations.map((citation, index) => {
+                        const href = safeInternalHref(citation.url);
+                        return (
+                          <span key={citation.url}>
+                            {index > 0 ? " · " : ""}
+                            {href ? (
+                              <Link href={href} className="text-teal underline-offset-2 hover:underline">
+                                {citation.title}
+                              </Link>
+                            ) : (
+                              citation.title
+                            )}
+                          </span>
+                        );
+                      })}
                     </p>
                   ) : null}
                 </div>
@@ -361,13 +372,13 @@ export default function AIChatSection({ firstName, suggestions, docsHref }: Prop
                 maxLength={MAX_MESSAGE_LENGTH}
                 aria-label={`Ask the AI assistant about ${firstName}`}
                 placeholder={`Ask about ${firstName}'s skills, projects, or availability...`}
-                className="min-h-12 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-txt outline-none transition-colors placeholder:text-txtfaint focus:border-teal focus:ring-2 focus:ring-teal/40"
+                className="min-h-12 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:border-teal focus:ring-2"
               />
               {streaming ? (
                 <button
                   type="button"
                   onClick={stop}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-teal px-6 text-sm font-semibold text-teal transition hover:bg-teal/10"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-teal px-6 text-sm font-semibold text-teal transition"
                 >
                   <FiSquare aria-hidden />
                   Stop

@@ -12,11 +12,10 @@ const nextConfig = {
     // Shown on /stats as "last build".
     BUILD_TIME: new Date().toISOString()
   },
-  experimental: {
-    // Load these from node_modules at runtime instead of bundling them: react-pdf relies on Node APIs and its
-    // own React reconciler; gray-matter (build-log frontmatter) pulls in optional parser engines.
-    serverComponentsExternalPackages: ["@react-pdf/renderer", "gray-matter"]
-  },
+  // Load these from node_modules at runtime instead of bundling them: react-pdf relies on Node APIs and its
+  // own React reconciler; gray-matter (build-log frontmatter) pulls in optional parser engines.
+  // (Next 15 renamed experimental.serverComponentsExternalPackages to this stable option.)
+  serverExternalPackages: ["@react-pdf/renderer", "gray-matter"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   }

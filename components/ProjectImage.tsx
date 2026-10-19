@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { safeImageSrc } from "@/lib/safe-url";
 
 type ProjectImageProps = {
   src: string;
@@ -14,18 +15,20 @@ type ProjectImageProps = {
  * 16:9 project image. Without a `src` it renders a generated placeholder card
  * (title on the themed grid background) so every project has a visual.
  */
-export default function ProjectImage({ src, title, category, sizes, priority = false, className = "" }: ProjectImageProps) {
+export default function ProjectImage({ src: rawSrc, title, category, sizes, priority = false, className = "" }: ProjectImageProps) {
+  // Stored image references: same-site paths or GitHub-hosted images only; anything else gets the placeholder.
+  const src = safeImageSrc(rawSrc);
   if (!src) {
     return (
       <div
         aria-hidden
         className={`relative flex aspect-video items-center justify-center overflow-hidden bg-panel2 ${className}`}
       >
-        <div className="pointer-events-none absolute inset-0 bg-hero-grid bg-[size:22px_22px] opacity-60" />
-        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-teal/10 blur-2xl" />
+        <div className="pointer-events-none absolute inset-0 bg-hero-grid bg-size-[22px_22px] opacity-60" />
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full blur-2xl" />
         <div className="relative px-6 text-center">
           <span className="font-mono text-xs text-teal">{"</>"}</span>
-          <p className="mt-2 line-clamp-2 font-display text-lg font-bold leading-snug text-txt sm:text-xl">{title}</p>
+          <p className="mt-2 line-clamp-2 font-display text-lg font-bold leading-snug text-txt sm:text-xl sm:leading-7">{title}</p>
           {category ? <p className="mt-1.5 font-mono text-[11px] text-txtdim">{category}</p> : null}
         </div>
       </div>

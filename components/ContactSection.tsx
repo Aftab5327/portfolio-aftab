@@ -26,6 +26,16 @@ declare global {
   }
 }
 
+async function fetchFormToken(): Promise<string> {
+  try {
+    const response = await fetch("/api/contact/token", { cache: "no-store" });
+    const data = (await response.json()) as { token?: string };
+    return data.token ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export default function ContactSection({ profile }: { profile: ContactProfile }) {
   const [values, setValues] = useState<FormValues>(initialValues);
   const [honeypot, setHoneypot] = useState("");
@@ -37,20 +47,18 @@ export default function ContactSection({ profile }: { profile: ContactProfile })
   const turnstileRef = useRef<HTMLDivElement | null>(null);
   const widgetId = useRef<string | undefined>(undefined);
 
-  const loadToken = useCallback(async () => {
-    try {
-      const response = await fetch("/api/contact/token", { cache: "no-store" });
-      const data = (await response.json()) as { token?: string };
-      setFormToken(data.token ?? "");
-    } catch {
-      setFormToken("");
-    }
-  }, []);
+  const loadToken = useCallback(() => fetchFormToken().then(setFormToken), []);
 
   // The token's timestamp starts the "minimum time on form" clock.
   useEffect(() => {
-    void loadToken();
-  }, [loadToken]);
+    let cancelled = false;
+    void fetchFormToken().then((token) => {
+      if (!cancelled) setFormToken(token);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const renderTurnstile = useCallback(() => {
     if (!TURNSTILE_SITE_KEY || !window.turnstile || !turnstileRef.current || widgetId.current) return;
@@ -177,7 +185,7 @@ export default function ContactSection({ profile }: { profile: ContactProfile })
                   aria-invalid={Boolean(errors.message)}
                   aria-describedby={errors.message ? "contact-message-error" : "contact-message-count"}
                   onChange={(event) => update("message")(event.target.value)}
-                  className={`w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-none transition-colors placeholder:text-txtfaint focus:ring-2 focus:ring-teal/40 ${
+                  className={`w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:ring-2 ${
                     errors.message ? "border-danger" : "border-line focus:border-teal"
                   }`}
                   placeholder="Write your message..."
@@ -194,7 +202,7 @@ export default function ContactSection({ profile }: { profile: ContactProfile })
               </div>
 
               {/* Honeypot: hidden from people and assistive tech; bots tend to fill it. */}
-              <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+              <div aria-hidden="true" className="absolute left-[-9999px] h-px w-px overflow-hidden">
                 <label htmlFor={`contact-${HONEYPOT_FIELD}`}>Leave this field empty</label>
                 <input
                   id={`contact-${HONEYPOT_FIELD}`}
@@ -209,7 +217,7 @@ export default function ContactSection({ profile }: { profile: ContactProfile })
 
               {TURNSTILE_SITE_KEY ? <div ref={turnstileRef} className="min-h-[65px]" /> : null}
 
-              <p id="contact-status" role="status" aria-live="polite" className={`min-h-[1.25rem] text-sm ${status?.type === "error" ? "text-danger" : "text-txtdim"}`}>
+              <p id="contact-status" role="status" aria-live="polite" className={`min-h-5 text-sm ${status?.type === "error" ? "text-danger" : "text-txtdim"}`}>
                 {status?.type === "error" ? status.message : ""}
               </p>
 
@@ -221,7 +229,7 @@ export default function ContactSection({ profile }: { profile: ContactProfile })
               >
                 {submitting ? (
                   <>
-                    <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-bg/30 border-t-bg" />
+                    <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-t-bg" />
                     Sending...
                   </>
                 ) : (
@@ -289,7 +297,7 @@ function Field({ label, id, value, error, type = "text", autoComplete, placehold
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
         onChange={(event) => onChange(event.target.value)}
-        className={`min-h-12 w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-none transition-colors placeholder:text-txtfaint focus:ring-2 focus:ring-teal/40 ${
+        className={`min-h-12 w-full rounded-xl border bg-panel2 px-4 py-3 text-sm text-txt outline-hidden transition-colors placeholder:text-txtfaint focus:ring-2 ${
           error ? "border-danger" : "border-line focus:border-teal"
         }`}
         placeholder={placeholder}
@@ -307,7 +315,7 @@ function ContactCard({ icon, label, value }: { icon: ReactNode; label: string; v
   return (
     <div className="rounded-2xl border border-line bg-panel2 p-5 sm:p-6">
       <div className="flex items-center gap-4">
-        <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-teal/30 bg-teal/10 text-teal">{icon}</div>
+        <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border text-teal">{icon}</div>
         <div>
           <p className="font-mono text-xs text-txtdim">
             <span aria-hidden="true">{"// "}</span>
@@ -327,7 +335,7 @@ function SocialIcon({ href, ariaLabel, icon }: { href: string; ariaLabel: string
       target="_blank"
       rel="noreferrer"
       aria-label={ariaLabel}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-teal/40 bg-teal/10 text-teal transition hover:-translate-y-0.5 hover:bg-teal/20"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-xl border text-teal transition hover:-translate-y-0.5"
     >
       {icon}
     </a>

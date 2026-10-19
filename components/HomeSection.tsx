@@ -174,7 +174,7 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
                 </span>
                 Hello, I&apos;m
               </span>
-              <span className="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 font-mono text-[11px] text-teal">
+              <span className="rounded-full border px-3 py-1 font-mono text-[11px] text-teal">
                 {"// open to opportunities"}
               </span>
             </div>
@@ -200,7 +200,7 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
                 href={RESUME_PATH}
                 target="_blank"
                 rel="noopener"
-                className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-teal bg-teal/5 px-6 text-sm font-semibold text-teal transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal/15"
+                className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-teal px-6 text-sm font-semibold text-teal transition-all duration-200 hover:-translate-y-0.5"
               >
                 View my CV
                 <FiArrowRight className="transition-transform group-hover:translate-x-1" />
@@ -208,7 +208,7 @@ export default function HomeSection({ profile }: { profile: HeroProfile }) {
               <button
                 type="button"
                 onClick={() => scrollToSection("contact")}
-                className="text-sm font-medium text-txt underline decoration-teal/60 decoration-2 underline-offset-4 transition-colors hover:text-teal"
+                className="text-sm font-medium text-txt underline decoration-2 underline-offset-4 transition-colors hover:text-teal"
               >
                 Get in touch
               </button>

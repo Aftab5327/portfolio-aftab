@@ -61,7 +61,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
           ))}
 
           {profile.recruiterNote ? (
-            <div className="mt-6 rounded-xl border border-teal/30 bg-teal/10 p-4 text-sm leading-relaxed text-txt">
+            <div className="mt-6 rounded-xl border p-4 text-sm leading-relaxed text-txt">
               <span className="font-mono font-semibold text-teal">{"// for recruiters:"}</span> {profile.recruiterNote}
             </div>
           ) : null}
@@ -74,7 +74,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
                   <div key={item.text} className="flex items-center gap-3 text-sm text-txtdim">
                     <span
                       aria-hidden
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-teal/10"
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-line"
                     >
                       {item.icon}
                     </span>
@@ -108,7 +108,7 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
               <ol className="relative mt-5 space-y-6 before:absolute before:bottom-1 before:left-[5px] before:top-1 before:w-px before:bg-line before:content-['']">
                 {profile.experience.map((item) => (
                   <li key={`${item.company}-${item.role}-${item.start}`} className="relative pl-7">
-                    <span className="absolute left-0 top-1.5 inline-flex h-2.5 w-2.5 rounded-full border border-teal bg-teal/30" />
+                    <span className="absolute left-0 top-1.5 inline-flex h-2.5 w-2.5 rounded-full border border-teal" />
                     <p className="text-sm font-semibold text-txt">
                       {item.role} <span className="font-normal text-txtdim">@ {item.company}</span>
                     </p>
@@ -139,10 +139,11 @@ export default function AboutSection({ profile }: { profile: AboutProfile }) {
             <div className="rounded-xl border border-line bg-panel2 p-5">
               <h3 className="font-mono text-sm text-teal">{"// education timeline"}</h3>
               <div className="relative mt-5 space-y-5">
-                <div className="absolute bottom-1 left-[5px] top-1 w-px bg-line" />
+                {/* mb-0: Tailwind 4's space-y adds margin-bottom to this absolute line, which would shorten it by 20px. */}
+                <div className="absolute bottom-1 left-[5px] top-1 mb-0 w-px bg-line" />
                 {profile.education.map((item) => (
                   <div key={item.short} className="relative pl-7">
-                    <span className="absolute left-0 top-1.5 inline-flex h-2.5 w-2.5 rounded-full border border-teal bg-teal/30" />
+                    <span className="absolute left-0 top-1.5 inline-flex h-2.5 w-2.5 rounded-full border border-teal" />
                     <p className="text-sm leading-relaxed text-txtdim">{educationLine(item)}</p>
                   </div>
                 ))}

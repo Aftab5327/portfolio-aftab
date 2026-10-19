@@ -1,182 +1,330 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind 4 CSS-first config (migrated from tailwind.config.ts). Scan only app/ and
+   components/, exactly what the v3 `content` globs covered. */
+@import 'tailwindcss' source(none);
+@source "../app";
+@source "../components";
 
-/* ── Design tokens (dark "code-editor / IDE" theme is the canonical look) ── */
-:root,
-html.dark {
-  --bg: #0a0f0d;
-  --bg-2: #0e1512;
-  --panel: #111a16;
-  --panel-2: #0c1310;
-  --line: #1d2a24;
-  --teal: #2dd4bf;
-  --teal-dim: #1aa896;
-  --green: #4ade80;
-  --txt: #e6efe9;
-  --txt-dim: #8aa399;
-  --txt-faint: #718a7f;
-  --danger: #f87171;
-  --code: #22332c;
-  color-scheme: dark;
+/* Metric-adjusted Arial fallbacks for the self-hosted fonts (see app/layout.tsx). The values are
+   the ones next/font/google generated for these families, so glyphs outside the Latin subset
+   (e.g. "→") render exactly as before. */
+@font-face {
+  font-family: "Bricolage Grotesque Fallback";
+  src: local(Arial);
+  ascent-override: 88.21%;
+  descent-override: 25.61%;
+  line-gap-override: 0%;
+  size-adjust: 105.43%;
+}
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  src: local(Arial);
+  ascent-override: 75.79%;
+  descent-override: 22.29%;
+  line-gap-override: 0%;
+  size-adjust: 134.59%;
+}
+@font-face {
+  font-family: "Sora Fallback";
+  src: local(Arial);
+  ascent-override: 85.29%;
+  descent-override: 25.5%;
+  line-gap-override: 0%;
+  size-adjust: 113.73%;
 }
 
-/* Light variant keeps the toggle meaningful without breaking the IDE feel */
-html.light {
-  --bg: #eef2f0;
-  --bg-2: #e6ebe8;
-  --panel: #ffffff;
-  --panel-2: #f4f7f5;
-  --line: #d4ddd8;
-  --teal: #0a7166;
-  --teal-dim: #0c8678;
-  --green: #16a34a;
-  --txt: #0e1512;
-  --txt-dim: #4a5a52;
-  --txt-faint: #56655e;
-  --danger: #b91c1c;
-  --code: #c9d6cf;
-  color-scheme: light;
-}
+/* next-themes "class" strategy: same selector v3's darkMode: "class" generated. */
+@custom-variant dark (&:is(.dark *));
 
-* {
-  box-sizing: border-box;
-}
+/* v3 behaviour: hover styles also apply on touch devices (v4 gates them behind @media (hover: hover)). */
+@custom-variant hover (&:hover);
 
-html {
-  scroll-behavior: smooth;
-}
+@theme {
+  /* v3 defaults for a bare `ring-*` width utility (v4 uses currentcolor). */
+  --default-ring-color: rgb(59 130 246 / 0.5);
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+  /* v3 line-heights for the named text sizes. v4 uses unitless ratios, which children with
+     their own size (e.g. inline <code class="text-[13px]">) inherit as a ratio rather than
+     v3's absolute length, shifting layout by sub-pixels that add up down long pages. */
+  --text-xs--line-height: 1rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+
+  --color-bg: var(--bg);
+  --color-bg2: var(--bg-2);
+  --color-panel: var(--panel);
+  --color-panel2: var(--panel-2);
+  --color-line: var(--line);
+  --color-teal: var(--teal);
+  --color-tealdim: var(--teal-dim);
+  --color-green: var(--green);
+  --color-txt: var(--txt);
+  --color-txtdim: var(--txt-dim);
+  --color-txtfaint: var(--txt-faint);
+  --color-code: var(--code);
+  --color-danger: var(--danger);
+  --color-accent: var(--teal);
+
+  /* next/font variables are set on <html> in app/layout.tsx. */
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
+  --font-sans: var(--font-body), system-ui, sans-serif;
+
+  --radius-card: 22px;
+
+  --shadow-soft: 0 20px 40px -20px rgba(0, 0, 0, 0.75);
+  --shadow-card: 0 40px 90px -30px rgba(0, 0, 0, 0.85);
+  --shadow-glow:
+    0 0 0 1px var(--teal), 0 18px 50px -18px rgba(45, 212, 191, 0.35);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulseDot: pulseDot 2s ease-in-out infinite;
+  --animate-blink: blink 1.1s step-end infinite;
+
+  --background-image-hero-grid: radial-gradient(
+    circle at 1px 1px,
+    rgba(45, 212, 191, 0.1) 1px,
+    transparent 0
+  );
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-14px);
+    }
+  }
+  @keyframes pulseDot {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55);
+    }
+    70% {
+      box-shadow: 0 0 0 8px rgba(74, 222, 128, 0);
+    }
+  }
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
   }
 }
 
-body {
-  margin: 0;
-  overflow-x: hidden;
-  color: var(--txt);
-  font-family: var(--font-body), system-ui, sans-serif;
-  min-height: 100vh;
-  /* ambient radial teal glows: top-right + mid-left on near-black */
-  background:
-    radial-gradient(60% 50% at 88% -5%, rgba(45, 212, 191, 0.14), transparent 60%),
-    radial-gradient(48% 52% at -8% 42%, rgba(45, 212, 191, 0.1), transparent 55%),
-    var(--bg);
-  background-attachment: fixed;
-  transition: background 300ms ease, color 300ms ease;
-}
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
 
-/* ── Type scale helpers ── */
-.fluid-display {
-  font-size: clamp(2.25rem, 5.6vw, 4.6rem);
-  line-height: 1.02;
-}
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
 
-.fluid-heading {
-  font-size: clamp(1.8rem, 3.6vw, 2.9rem);
-  line-height: 1.08;
-}
-
-.fluid-subhead {
-  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
-}
-
-.fluid-body {
-  font-size: clamp(0.9rem, 1.4vw, 1.02rem);
-}
-
-/* ── Panel surface (legacy ".glass" usages still resolve to a clean panel) ── */
-.glass,
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-}
-
-/* ── Skill bars ── */
-.skill-bar-fill {
-  transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* ── Hero 3D avatar cut-out ──
-   Transparent PNG figure: contained (not cropped), no rounding, sized taller
-   than the disc and bottom-anchored so the figure spills over the top edge. */
-.avatar {
-  position: absolute;
-  left: 50%;
-  bottom: 8%;
-  transform: translateX(-50%);
-  width: auto;
-  height: 104%;
-  max-width: none;
-  object-fit: contain;
-  filter: contrast(1.03) saturate(1.05);
-  pointer-events: none;
-}
-
-/* ── Code-rain backdrop (low-opacity mono code, faded left → right) ── */
-.code-rain {
-  font-family: var(--font-mono), monospace;
-  color: var(--code);
-  white-space: pre;
-  user-select: none;
-  pointer-events: none;
-  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.85), transparent 78%);
-  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.85), transparent 78%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-float,
-  .animate-pulseDot,
-  .animate-blink {
-    animation: none !important;
+  /* v3 preflight gave buttons a pointer cursor; v4 uses the browser default. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
 
-/* ── Print: Ctrl+P gives a clean black-on-white page (used by /resume) ── */
+/* Print page box (used by /resume); @page stays outside any layer. */
 @page {
   size: A4;
   margin: 14mm 16mm;
 }
 
-@media print {
+/* Custom rules (tokens included) live in the utilities layer after the generated utilities,
+   so they cascade against utilities by specificity then source order, exactly like the
+   unlayered v3 output. Unlayered, v4 would let every rule here beat every utility. */
+@layer utilities {
+  /* ── Design tokens (dark "code-editor / IDE" theme is the canonical look) ── */
   :root,
-  html.dark,
+  html.dark {
+    --bg: #0a0f0d;
+    --bg-2: #0e1512;
+    --panel: #111a16;
+    --panel-2: #0c1310;
+    --line: #1d2a24;
+    --teal: #2dd4bf;
+    --teal-dim: #1aa896;
+    --green: #4ade80;
+    --txt: #e6efe9;
+    --txt-dim: #8aa399;
+    --txt-faint: #718a7f;
+    --danger: #f87171;
+    --code: #22332c;
+    color-scheme: dark;
+  }
+
+  /* Light variant keeps the toggle meaningful without breaking the IDE feel */
   html.light {
-    --bg: #ffffff;
-    --bg-2: #ffffff;
+    --bg: #eef2f0;
+    --bg-2: #e6ebe8;
     --panel: #ffffff;
-    --panel-2: #ffffff;
-    --line: #c8d0cc;
-    --teal: #0a5a52;
-    --txt: #000000;
-    --txt-dim: #1f2924;
-    --txt-faint: #4a5a52;
+    --panel-2: #f4f7f5;
+    --line: #d4ddd8;
+    --teal: #0a7166;
+    --teal-dim: #0c8678;
+    --green: #16a34a;
+    --txt: #0e1512;
+    --txt-dim: #4a5a52;
+    --txt-faint: #56655e;
+    --danger: #b91c1c;
+    --code: #c9d6cf;
     color-scheme: light;
   }
 
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   body {
-    background: #ffffff !important;
+    margin: 0;
+    overflow-x: hidden;
+    color: var(--txt);
+    font-family: var(--font-body), system-ui, sans-serif;
+    min-height: 100vh;
+    /* ambient radial teal glows: top-right + mid-left on near-black */
+    background:
+      radial-gradient(60% 50% at 88% -5%, rgba(45, 212, 191, 0.14), transparent 60%),
+      radial-gradient(48% 52% at -8% 42%, rgba(45, 212, 191, 0.1), transparent 55%),
+      var(--bg);
+    background-attachment: fixed;
+    transition: background 300ms ease, color 300ms ease;
   }
 
-  main {
-    width: auto !important;
-    padding: 0 !important;
+  /* ── Type scale helpers ── */
+  .fluid-display {
+    font-size: clamp(2.25rem, 5.6vw, 4.6rem);
+    line-height: 1.02;
   }
 
-  a {
-    text-decoration: none;
+  .fluid-heading {
+    font-size: clamp(1.8rem, 3.6vw, 2.9rem);
+    line-height: 1.08;
   }
-}
 
-/* Accessible focus ring across interactive elements */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--teal);
-  outline-offset: 2px;
-  border-radius: 6px;
+  .fluid-subhead {
+    font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  }
+
+  .fluid-body {
+    font-size: clamp(0.9rem, 1.4vw, 1.02rem);
+  }
+
+  /* ── Panel surface (legacy ".glass" usages still resolve to a clean panel) ── */
+  .glass,
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+  }
+
+  /* ── Skill bars ── */
+  .skill-bar-fill {
+    transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ── Hero 3D avatar cut-out ──
+     Transparent PNG figure: contained (not cropped), no rounding, sized taller
+     than the disc and bottom-anchored so the figure spills over the top edge. */
+  .avatar {
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    transform: translateX(-50%);
+    width: auto;
+    height: 104%;
+    max-width: none;
+    object-fit: contain;
+    filter: contrast(1.03) saturate(1.05);
+    pointer-events: none;
+  }
+
+  /* ── Code-rain backdrop (low-opacity mono code, faded left → right) ── */
+  .code-rain {
+    font-family: var(--font-jetbrains), monospace;
+    color: var(--code);
+    white-space: pre;
+    user-select: none;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.85), transparent 78%);
+    mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.85), transparent 78%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-float,
+    .animate-pulseDot,
+    .animate-blink {
+      animation: none !important;
+    }
+  }
+
+  /* ── Print: Ctrl+P gives a clean black-on-white page (used by /resume) ── */
+  @media print {
+    :root,
+    html.dark,
+    html.light {
+      --bg: #ffffff;
+      --bg-2: #ffffff;
+      --panel: #ffffff;
+      --panel-2: #ffffff;
+      --line: #c8d0cc;
+      --teal: #0a5a52;
+      --txt: #000000;
+      --txt-dim: #1f2924;
+      --txt-faint: #4a5a52;
+      color-scheme: light;
+    }
+
+    body {
+      background: #ffffff !important;
+    }
+
+    main {
+      width: auto !important;
+      padding: 0 !important;
+    }
+
+    a {
+      text-decoration: none;
+    }
+  }
+
+  /* Accessible focus ring across interactive elements */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
 }
