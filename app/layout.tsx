@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, JetBrains_Mono, Sora } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,27 +7,50 @@ import Providers from "@/app/providers";
 import { siteUrl } from "@/lib/config";
 import { getProfile } from "@/lib/data";
 
-const display = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["700", "800"],
+/*
+ * Self-hosted fonts (app/fonts/*, SIL OFL 1.1, licences next to each file), so builds never
+ * download from Google Fonts. They are the exact Latin-subset variable woff2 files Google
+ * serves, with one face per weight pointing at the same file, as Google's CSS declares them
+ * (a weight range would render in-between weights differently).
+ *
+ * Glyphs missing from the Latin subset (e.g. "→") render from a metric-adjusted Arial fallback.
+ * next/font/local would derive its own metrics from the subset file, so the fallback faces are
+ * declared in app/globals.css with the exact values next/font/google used.
+ */
+const display = localFont({
+  src: [
+    { path: "./fonts/bricolage-grotesque/BricolageGrotesque-latin.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/bricolage-grotesque/BricolageGrotesque-latin.woff2", weight: "800", style: "normal" }
+  ],
   // Not --font-display: Tailwind 4 emits its theme tokens (--font-display/--font-mono) as CSS
   // variables on :root, which would collide with next/font's variables and form a cycle.
   variable: "--font-bricolage",
-  display: "swap"
+  display: "swap",
+  adjustFontFallback: false,
+  fallback: ["Bricolage Grotesque Fallback"]
 });
 
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "600"],
+const mono = localFont({
+  src: [
+    { path: "./fonts/jetbrains-mono/JetBrainsMono-latin.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/jetbrains-mono/JetBrainsMono-latin.woff2", weight: "600", style: "normal" }
+  ],
   variable: "--font-jetbrains",
-  display: "swap"
+  display: "swap",
+  adjustFontFallback: false,
+  fallback: ["JetBrains Mono Fallback"]
 });
 
-const body = Sora({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+const body = localFont({
+  src: [
+    { path: "./fonts/sora/Sora-latin.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/sora/Sora-latin.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/sora/Sora-latin.woff2", weight: "600", style: "normal" }
+  ],
   variable: "--font-body",
-  display: "swap"
+  display: "swap",
+  adjustFontFallback: false,
+  fallback: ["Sora Fallback"]
 });
 
 const profile = getProfile();

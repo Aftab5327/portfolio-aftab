@@ -4,6 +4,34 @@
 @source "../app";
 @source "../components";
 
+/* Metric-adjusted Arial fallbacks for the self-hosted fonts (see app/layout.tsx). The values are
+   the ones next/font/google generated for these families, so glyphs outside the Latin subset
+   (e.g. "→") render exactly as before. */
+@font-face {
+  font-family: "Bricolage Grotesque Fallback";
+  src: local(Arial);
+  ascent-override: 88.21%;
+  descent-override: 25.61%;
+  line-gap-override: 0%;
+  size-adjust: 105.43%;
+}
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  src: local(Arial);
+  ascent-override: 75.79%;
+  descent-override: 22.29%;
+  line-gap-override: 0%;
+  size-adjust: 134.59%;
+}
+@font-face {
+  font-family: "Sora Fallback";
+  src: local(Arial);
+  ascent-override: 85.29%;
+  descent-override: 25.5%;
+  line-gap-override: 0%;
+  size-adjust: 113.73%;
+}
+
 /* next-themes "class" strategy: same selector v3's darkMode: "class" generated. */
 @custom-variant dark (&:is(.dark *));
 
